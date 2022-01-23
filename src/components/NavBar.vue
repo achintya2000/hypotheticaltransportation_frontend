@@ -14,6 +14,59 @@
 
       <v-spacer></v-spacer>
 
+      <v-dialog v-model="dialog" persistent max-width="600px">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn text v-bind="attrs" v-on="on"> login </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="text-h5">Login</span>
+          </v-card-title>
+          <v-card-text>
+            <v-form ref="loginForm" v-model="valid" lazy-validation>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    v-model="loginEmail"
+                    :rules="loginEmailRules"
+                    label="E-mail"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    v-model="loginPassword"
+                    :append-icon="show1 ? 'eye' : 'eye-off'"
+                    :rules="[rules.required, rules.min]"
+                    :type="show1 ? 'text' : 'password'"
+                    name="input-10-1"
+                    label="Password"
+                    hint="At least 8 characters"
+                    counter
+                    @click:append="show1 = !show1"
+                  ></v-text-field>
+                </v-col>
+                <v-col class="d-flex" cols="12" sm="6" xsm="12"> </v-col>
+                <v-spacer></v-spacer>
+                <v-col class="d-flex" cols="12" sm="3" xsm="12" align-end>
+                  <v-btn
+                    text
+                    :disabled="!valid"
+                    color="blue darken-1"
+                    @click="
+                      validate;
+                      dialog = false;
+                    "
+                  >
+                    Login
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
       <v-btn
         class="hidden-sm-and-down"
         text
@@ -27,55 +80,53 @@
         >
       </v-btn>
     </v-app-bar>
-
-    <v-navigation-drawer v-model="drawer" app class="hidden-md-and-up">
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title class="title">Application</v-list-item-title>
-          <v-list-item-subtitle>subtext</v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-divider></v-divider>
-
-      <v-list dense nav>
-        <v-list-item v-for="name in names" :key="name.title" link :to="name.to">
-          <v-list-item-content>
-            <v-list-item-title>{{ name.title }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-
-      <v-divider></v-divider>
-
-      <v-list dense nav>
-        <v-list-item
-          v-for="contact in contactpoints"
-          :key="contact.title"
-          link
-          :href="contact.link"
-          target="_blank"
-        >
-          <v-list-item-icon>
-            <v-icon>{{ contact.icon }}</v-icon>
-          </v-list-item-icon>
-
-          <v-list-item-content>
-            <v-list-item-title>{{ contact.title }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
   </nav>
 </template>
 
 <script>
 export default {
+  methods: {
+    validate() {
+      if (this.$refs.loginForm.validate()) {
+        // submit form to server/API here...
+      }
+    },
+    reset() {
+      this.$refs.form.reset();
+    },
+    resetValidation() {
+      this.$refs.form.resetValidation();
+    },
+  },
   data() {
     return {
+      dialog: false,
       drawer: false,
-      names: [{ title: "Login", to: "/login" }],
+      names: [{ title: "About", to: "/about" }],
       contactpoints: [],
+      valid: true,
+
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      verify: "",
+      loginPassword: "",
+      loginEmail: "",
+      loginEmailRules: [
+        (v) => !!v || "Required",
+        (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+      ],
+      emailRules: [
+        (v) => !!v || "Required",
+        (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+      ],
+
+      show1: false,
+      rules: {
+        required: (value) => !!value || "Required.",
+        min: (v) => (v && v.length >= 8) || "Min 8 characters",
+      },
     };
   },
 };
