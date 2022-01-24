@@ -20,29 +20,19 @@
           <v-card-text>
             <v-form
               ref="form"
-              v-model="valid"
-              lazy-validation
             >
-
-              <v-btn
-                :disabled="!valid"
-                color="success"
-                class="mr-4"
-                @click="validate"
-              >
-                Submit
-              </v-btn>
+            <v-spacer></v-spacer>
 
               <v-btn
                 color="error"
                 class="mr-4"
-                @click="reset"
+                @click="validate"
               >
-               Clear
+                Yes, Delete
               </v-btn>
 
               <v-btn
-                color="warning"
+                color="success"
                 @click="reset"
               >
                 Cancel
