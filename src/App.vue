@@ -43,7 +43,7 @@ export default {
     async getData() {
       try {
         const response = await this.$http.get(
-          "http://jsonplaceholder.typicode.com/posts"
+          "http://vcm-24682.vm.duke.edu:8000/api/school/get/1"
         );
         // JSON responses are automatically parsed.
         this.posts = response.data;
