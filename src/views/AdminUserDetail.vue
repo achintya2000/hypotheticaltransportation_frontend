@@ -1,17 +1,26 @@
 <template>
   <v-card>
     <v-card-title>
-      Your Schools
+      John Doe
       <v-spacer></v-spacer>
-      <v-btn outlined>Add School</v-btn>
+      <v-btn outlined>Reset Password</v-btn>
       <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-      ></v-text-field>
+      <v-btn outlined>Modify</v-btn>
+      <v-spacer></v-spacer>
+      <v-btn outlined>Delete</v-btn>
+      <v-spacer></v-spacer>
+    </v-card-title>
+    <v-card-subtitle>
+    11 Duke Street, Durham NC, 27705
+    </v-card-subtitle>
+    <v-card-subtitle>
+    johndoe@gmail.com
+    </v-card-subtitle>
+    <v-card-subtitle>
+    Admin: No
+    </v-card-subtitle>
+    <v-card-title>
+        Students
     </v-card-title>
     <v-data-table
       :headers="headers"
@@ -57,26 +66,6 @@ export default {
         {
           name: "Gingerbread",
           address: 356,
-        },
-        {
-          name: "Jelly bean",
-          address: 375,
-        },
-        {
-          name: "Lollipop",
-          address: 392,
-        },
-        {
-          name: "Honeycomb",
-          address: 408,
-        },
-        {
-          name: "Donut",
-          address: 452,
-        },
-        {
-          name: "KitKat",
-          address: 518,
         },
       ],
     };

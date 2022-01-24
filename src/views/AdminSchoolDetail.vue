@@ -1,17 +1,31 @@
 <template>
   <v-card>
     <v-card-title>
-      Your Schools
+      Staples High School
       <v-spacer></v-spacer>
-      <v-btn outlined>Add School</v-btn>
+      <v-btn outlined>Modify</v-btn>
       <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-      ></v-text-field>
+      <v-btn outlined>Delete</v-btn>
+      <v-spacer></v-spacer>
+    </v-card-title>
+    <v-card-subtitle>
+    70 North Ave, Westport, CT 06880
+    </v-card-subtitle>
+    <v-card-title>
+        Bus Routes
+        <v-spacer></v-spacer>
+        <v-btn outlined>Plan New Route</v-btn>
+    </v-card-title>
+    <v-data-table
+      :headers="headers"
+      :items="addresses"
+      :search="search"
+      :sort-by="['name']"
+      :sort-desc="[true]"
+      multi-sort
+    ></v-data-table>
+    <v-card-title>
+        Students
     </v-card-title>
     <v-data-table
       :headers="headers"
@@ -57,26 +71,6 @@ export default {
         {
           name: "Gingerbread",
           address: 356,
-        },
-        {
-          name: "Jelly bean",
-          address: 375,
-        },
-        {
-          name: "Lollipop",
-          address: 392,
-        },
-        {
-          name: "Honeycomb",
-          address: 408,
-        },
-        {
-          name: "Donut",
-          address: 452,
-        },
-        {
-          name: "KitKat",
-          address: 518,
         },
       ],
     };

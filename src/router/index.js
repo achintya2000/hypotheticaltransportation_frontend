@@ -27,6 +27,37 @@ const routes = [
     path: '/adminschoollist',
     name: 'AdminSchoolList',
     component: () => import('../views/AdminSchoolList.vue')
+  },
+  {
+    path: '/adminstudentlist',
+    name: 'AdminStudentList',
+    component: () => import('../views/AdminStudentList.vue')
+  },
+  {
+    path: '/adminuserlist',
+    name: 'AdminUserList',
+    component: () => import('../views/AdminUserList.vue')
+  },
+  {
+    path: '/adminroutelist',
+    name: 'AdminRouteList',
+    component: () => import('../views/AdminRouteList.vue')
+  },
+  {
+    path: '/adminschooldetail',
+    name: 'AdminSchoolDetail',
+    component: () => import('../views/AdminSchoolDetail.vue')
+  },
+  {
+    path: '/adminuserdetail',
+    name: 'AdminUserDetail',
+    component: () => import('../views/AdminSchoolDetail.vue')
+  }
+  ,
+  {
+    path: '/adminstudentdetail',
+    name: 'AdminStudentDetail',
+    component: () => import('../views/AdminStudentDetail.vue')
   }
 ]
 
