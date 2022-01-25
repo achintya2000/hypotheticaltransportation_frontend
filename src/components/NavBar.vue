@@ -14,8 +14,6 @@
 
       <v-spacer></v-spacer>
 
-      <login></login>
-
       <v-btn
         class="hidden-sm-and-down"
         text
@@ -28,6 +26,8 @@
           >{{ name.title }}</router-link
         >
       </v-btn>
+
+      <login></login>
     </v-app-bar>
   </nav>
 </template>

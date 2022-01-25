@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="600px">
+  <v-dialog
+    v-model="dialog"
+    persistent
+    max-width="600px"
+    @click:outside="dialog = false"
+  >
     <template v-slot:activator="{ on, attrs }">
       <v-btn text v-bind="attrs" v-on="on"> login </v-btn>
     </template>
