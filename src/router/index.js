@@ -26,7 +26,10 @@ const routes = [
   {
     path: '/adminschoollist',
     name: 'AdminSchoolList',
-    component: () => import('../views/AdminSchoolList.vue')
+    component: () => import('../views/AdminSchoolList.vue'),
+    meta: {
+      requiresLogin: true
+    }
   },
   {
     path: '/adminstudentlist',
