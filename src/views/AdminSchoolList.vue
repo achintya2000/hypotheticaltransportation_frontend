@@ -75,7 +75,7 @@
 
               <v-btn
                 color="warning"
-                @click="reset"
+                @click="dialog=false"
               >
                 Cancel
               </v-btn>

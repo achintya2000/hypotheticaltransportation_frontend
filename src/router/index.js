@@ -51,13 +51,32 @@ const routes = [
   {
     path: '/adminuserdetail',
     name: 'AdminUserDetail',
-    component: () => import('../views/AdminSchoolDetail.vue')
-  }
-  ,
+    component: () => import('../views/AdminUserDetail.vue')
+  },
   {
     path: '/adminstudentdetail',
     name: 'AdminStudentDetail',
     component: () => import('../views/AdminStudentDetail.vue')
+  },
+  {
+    path: '/parentdetails',
+    name: 'ParentDetails',
+    component: () => import('../views/ParentDetails.vue')
+  },
+  {
+    path: '/adminroutecreate',
+    name: 'AdminRouteCreate',
+    component: () => import('../views/AdminRouteCreate.vue')
+  },
+  {
+    path: '/adminroutedetail',
+    name: 'AdminRouteDetail',
+    component: () => import('../views/AdminRouteDetail.vue')
+  },
+  {
+    path: '/adminusercreate',
+    name: 'AdminUserCreate',
+    component: () => import('../views/AdminUserCreate.vue')
   }
 ]
 

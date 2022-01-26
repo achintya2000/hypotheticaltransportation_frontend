@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Jane Doe
+      Route Name
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
@@ -22,35 +22,24 @@
               lazy-validation
             >
               <v-text-field
-                v-model="name"
-                :rules="nameRules"
-                label="Name"
+                v-model="routeName"
+                :rules="routeNameRules"
+                label="Route Name"
                 required
               ></v-text-field>
 
               <v-text-field
-                v-model="studentID"
-                :rules="studentIDRules"
-                label="Student ID"
+                v-model="routeDes"
+                :rules="routeDesRules"
+                label="Route Description"
                 required
               ></v-text-field>
-
-              <v-autocomplete
-                v-model="parentValue"
-                :items="parentItems"
-                label="Parent"
-              ></v-autocomplete>
 
               <v-autocomplete
                 v-model="schoolValue"
                 :items="schoolItems"
                 label="School"
-              ></v-autocomplete>
-              
-              <v-autocomplete
-                v-model="busRouteValue"
-                :items="busRouteItems"
-                label="Bus Route"
+                required
               ></v-autocomplete>
 
               <v-btn
@@ -120,14 +109,17 @@
       <v-spacer></v-spacer>
     </v-card-title>
     <v-card-subtitle>
-    jd1003098
+    Route School
     </v-card-subtitle>
     <v-card-subtitle>
-    Staples High School
+    Route Descirption
     </v-card-subtitle>
     <v-card-subtitle>
-    Bus Route
+    Students
     </v-card-subtitle>
+    <v-card-text>
+    Bullets
+    </v-card-text>
   </v-card>
 </template>
 
@@ -135,34 +127,24 @@
 export default {
   data() {
     return {
-        dialog: false,
-        dialog2: false,
-        name: 'Old Name',
-        nameRules: [
-            v => !!v || 'Name is required',
-        ],
-        studentID: 'Old Student ID',
-        studentIDRules: [
-            v => !!v || 'Student ID is required',
-        ],
-        parentValue: 'Old Parent',
-        parentRules: [
-            v => !!v || 'Parent is required',
-        ],
-        schoolValue: 'Old School',
-        schoolRules: [
-            v => !!v || 'School is required',
-        ],
-        busRouteValue: 'Old Bus Route',
-        busRouteRules: [
-            v => !!v || 'Bus Route is required',
-        ],
-        parentItems: ['Old Parent', 'bar', 'fizz', 'buzz'],
-        parentValues: ['foo', 'bar'],
-        schoolItems: ['Old School', 'bar', 'fizz', 'buzz'],
-        schoolValues: ['foo', 'bar'],
-        busRouteItems: ['Old Bus Route', 'bar', 'fizz', 'buzz'],
-        busRouteValues: ['foo', 'bar'],
+      search: "",
+      valid: true,
+      dialog: false,
+      dialog2: false,
+      routeName: 'Old Name',
+    schoolItems: ['Old School', 'bar', 'fizz', 'buzz'],
+    schoolValues: ['foo', 'bar'],
+      routeNameRules: [
+        v => !!v || 'Name is required',
+      ],
+      routeDes: 'Old Route Des',
+      routeDesRules: [
+            v => !!v || 'Address is required',
+      ],
+      schoolValue: "Old School",
+      schoolRules: [
+            v => !!v || 'Address is required',
+      ],
     };
   },
   methods: {
