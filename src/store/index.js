@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { getAPI } from '../services/axios-api.js'
+import { base_endpoint } from '../services/axios-api.js'
 
 Vue.use(Vuex)
 
@@ -33,7 +33,7 @@ export default new Vuex.Store({
     },
     userLogin(context, usercredentials) {
       return new Promise((resolve, reject) => {
-        getAPI.post('/api/login', {
+        base_endpoint.post('/api/login', {
           username: usercredentials.username,
           password: usercredentials.password
         })
