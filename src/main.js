@@ -4,11 +4,11 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import axios from 'axios'
 import store from './store'
-import * as VueGoogleMaps from 'vue2-google-maps'
+import * as VueGoogleMaps from 'vue2-google-maps-withscopedautocomp';
 
 Vue.use(VueGoogleMaps, {
   load: {
-    key: 'AIzaSyDaZoRXvQ29IcQmX6TAf5xSeKZe5XYwSQc',
+    key: 'AIzaSyCwev37Sc3k7fj7sqbnDgL9qh3IwEdrC3c',
     libraries: 'places',
   }
 });
