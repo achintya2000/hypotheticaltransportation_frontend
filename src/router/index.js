@@ -34,32 +34,50 @@ const routes = [
   {
     path: '/adminstudentlist',
     name: 'AdminStudentList',
-    component: () => import('../views/AdminStudentList.vue')
+    component: () => import('../views/AdminStudentList.vue'),
+    meta: {
+      requiresLogin: true
+    }
   },
   {
     path: '/adminuserlist',
     name: 'AdminUserList',
-    component: () => import('../views/AdminUserList.vue')
+    component: () => import('../views/AdminUserList.vue'),
+    meta: {
+      requiresLogin: true
+    }
   },
   {
     path: '/adminroutelist',
     name: 'AdminRouteList',
-    component: () => import('../views/AdminRouteList.vue')
+    component: () => import('../views/AdminRouteList.vue'),
+    meta: {
+      requiresLogin: true
+    }
   },
   {
     path: '/adminschooldetail',
     name: 'AdminSchoolDetail',
-    component: () => import('../views/AdminSchoolDetail.vue')
+    component: () => import('../views/AdminSchoolDetail.vue'),
+    meta: {
+      requiresLogin: true
+    }
   },
   {
     path: '/adminuserdetail',
     name: 'AdminUserDetail',
-    component: () => import('../views/AdminUserDetail.vue')
+    component: () => import('../views/AdminUserDetail.vue'),
+    meta: {
+      requiresLogin: true
+    }
   },
   {
     path: '/adminstudentdetail',
     name: 'AdminStudentDetail',
-    component: () => import('../views/AdminStudentDetail.vue')
+    component: () => import('../views/AdminStudentDetail.vue'),
+    meta: {
+      requiresLogin: true
+    }
   },
   {
     path: '/parentdetails',
@@ -69,17 +87,26 @@ const routes = [
   {
     path: '/adminroutecreate',
     name: 'AdminRouteCreate',
-    component: () => import('../views/AdminRouteCreate.vue')
+    component: () => import('../views/AdminRouteCreate.vue'),
+    meta: {
+      requiresLogin: true
+    }
   },
   {
     path: '/adminroutedetail',
     name: 'AdminRouteDetail',
-    component: () => import('../views/AdminRouteDetail.vue')
+    component: () => import('../views/AdminRouteDetail.vue'),
+    meta: {
+      requiresLogin: true
+    }
   },
   {
     path: '/adminusercreate',
     name: 'AdminUserCreate',
-    component: () => import('../views/AdminUserCreate.vue')
+    component: () => import('../views/AdminUserCreate.vue'),
+    meta: {
+      requiresLogin: true
+    }
   }
 ]
 
