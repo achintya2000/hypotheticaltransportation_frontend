@@ -62,8 +62,12 @@
               </v-btn>
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
-
-              <v-btn color="warning" @click="reset"> Cancel </v-btn>
+              <v-btn
+                color="warning"
+                @click="dialog=false"
+              >
+                Cancel
+              </v-btn>
             </v-form>
           </v-card-text>
         </v-card>

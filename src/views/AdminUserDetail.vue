@@ -3,11 +3,183 @@
     <v-card-title>
       John Doe
       <v-spacer></v-spacer>
-      <v-btn outlined>Reset Password</v-btn>
+      <v-dialog v-model="dialog3" width="500">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
+            Reset Password
+          </v-btn>
+        </template>
+
+        <v-card>
+          <v-card-title class="text-h5 grey lighten-2">
+            Reset Password
+          </v-card-title>
+
+          <v-card-text>
+            <v-form
+              ref="form"
+              v-model="valid3"
+              lazy-validation
+            >
+              <v-text-field
+                v-model="newPassword"
+                :rules="newPasswordRules"
+                label="New Password"
+                required
+              ></v-text-field>
+
+              <v-text-field
+                v-model="newPassword2"
+                :rules="newPassword2Rules"
+                label="Confirm New Password"
+                required
+              ></v-text-field>
+
+              <v-btn
+                :disabled="!valid3"
+                color="success"
+                class="mr-4"
+                @click="validate"
+              >
+                Save
+              </v-btn>
+
+              <v-btn
+                color="error"
+                class="mr-4"
+                @click="reset"
+              >
+               Clear
+              </v-btn>
+
+              <v-btn
+                color="warning"
+                @click="dialog3 = false"
+              >
+                Cancel
+              </v-btn>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
       <v-spacer></v-spacer>
-      <v-btn outlined>Modify</v-btn>
+      <v-dialog v-model="dialog2" width="500">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
+            Modify
+          </v-btn>
+        </template>
+
+        <v-card>
+          <v-card-title class="text-h5 grey lighten-2">
+            Modify
+          </v-card-title>
+
+          <v-card-text>
+            <v-form
+              ref="form"
+              v-model="valid"
+              lazy-validation
+            >
+              <v-text-field
+                v-model="name2"
+                :rules="name2Rules"
+                label="Name"
+                required
+              ></v-text-field>
+
+              <v-text-field
+                v-model="address"
+                :rules="addressRules"
+                label="Address"
+                required
+              ></v-text-field>
+
+              <v-text-field
+                v-model="city"
+                :rules="cityRules"
+                label="City"
+                required
+              ></v-text-field>
+
+              <v-text-field
+                v-model="state"
+                :rules="stateRules"
+                label="State"
+                required
+              ></v-text-field>
+              
+              <v-text-field
+                v-model="zipcode"
+                :rules="zipcodeRules"
+                label="Zipcode"
+                required
+              ></v-text-field>
+
+              <v-btn
+                :disabled="!valid"
+                color="success"
+                class="mr-4"
+                @click="validate"
+              >
+                Save
+              </v-btn>
+
+              <v-btn
+                color="error"
+                class="mr-4"
+                @click="reset"
+              >
+               Clear
+              </v-btn>
+
+              <v-btn
+                color="warning"
+                @click="dialog2 = false"
+              >
+                Cancel
+              </v-btn>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
       <v-spacer></v-spacer>
-      <v-btn outlined>Delete</v-btn>
+      <v-dialog v-model="dialog" width="500">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
+            Delete
+          </v-btn>
+        </template>
+
+        <v-card>
+          <v-card-title class="text-h5 grey lighten-2">
+            Please Confirm
+          </v-card-title>
+
+          <v-card-text>
+            <v-form
+              ref="form"
+            >
+            <v-spacer></v-spacer>
+
+              <v-btn
+                color="error"
+                class="mr-4"
+                @click="validate"
+              >
+                Yes, Delete
+              </v-btn>
+
+              <v-btn
+                color="success"
+                @click="dialog = false"
+              >
+                Cancel
+              </v-btn>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
     <v-card-subtitle>
@@ -38,6 +210,29 @@ export default {
   data() {
     return {
       search: "",
+      dialog: false,
+        dialog2: false,
+        dialog3: false,
+              name2: 'Old Name',
+      name2Rules: [
+        v => !!v || 'Name is required',
+      ],
+      address: 'Old Address',
+      addressRules: [
+            v => !!v || 'Address is required',
+      ],
+      city: 'Old City',
+      cityRules: [
+        v => !!v || 'City is required',
+      ],
+      state: 'Old State',
+      stateRules: [
+        v => !!v || 'State is required',
+        ],
+        zipcode: 'Old Zipcode',
+        zipcodeRules: [
+            v => !!v || 'Zipcode is required',
+        ],
       headers: [
         {
           text: "Name",
@@ -70,6 +265,17 @@ export default {
       ],
     };
   },
+  methods: {
+      validate () {
+        this.$refs.form.validate()
+      },
+      reset () {
+        this.$refs.form.reset()
+      },
+      resetValidation () {
+        this.$refs.form.resetValidation()
+      },
+    },
 };
 </script>
 
