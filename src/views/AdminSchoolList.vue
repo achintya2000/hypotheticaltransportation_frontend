@@ -4,7 +4,9 @@
       Your Schools
       <v-spacer></v-spacer>
 
-      <create-new-school></create-new-school>
+      <create-new-school
+        @schoolcreated="getRequestAllSchools"
+      ></create-new-school>
 
       <v-spacer></v-spacer>
       <v-text-field
@@ -97,20 +99,24 @@ export default {
         address: item.address,
       };
     },
+    getRequestAllSchools() {
+      console.log("GOT HERE!!!");
+      base_endpoint
+        .get("/api/school/getall", {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.addresses = response.data.map(this.getDisplayAddress);
+          //this.$store.state.addresses = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
   //computed: mapState(["APIData"]),
   created() {
-    base_endpoint
-      .get("/api/school/getall", {
-        headers: { Authorization: `Token ${this.$store.state.accessToken}` },
-      })
-      .then((response) => {
-        this.addresses = response.data.map(this.getDisplayAddress);
-        //this.$store.state.addresses = response.data;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    this.getRequestAllSchools();
   },
 };
 </script>

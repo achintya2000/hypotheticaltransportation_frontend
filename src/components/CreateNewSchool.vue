@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
     return {
@@ -84,10 +85,28 @@ export default {
     };
   },
   methods: {
-    submitData() {},
+    submitData() {
+      base_endpoint.post(
+        "/api/school/create",
+        {
+          name: this.name,
+          address: this.address,
+        },
+        {
+          headers: {
+            Authorization: `Token ${this.$store.state.accessToken}`,
+          },
+        }
+      );
+    },
     validate() {
       this.$refs.form.validate();
       this.submitData();
+      this.dialog = false;
+      this.$emit(
+        "schoolcreated",
+        "A new school has been created and sent to database"
+      );
     },
     reset() {
       this.$refs.form.reset();
