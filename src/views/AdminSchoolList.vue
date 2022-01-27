@@ -62,12 +62,7 @@
               </v-btn>
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
-              <v-btn
-                color="warning"
-                @click="dialog=false"
-              >
-                Cancel
-              </v-btn>
+              <v-btn color="warning" @click="dialog = false"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -121,48 +116,49 @@ export default {
         },
         { text: "Address", value: "address" },
       ],
-      addresses: [
-        {
-          name: "Frozen Yogurt",
-          address: 159,
-        },
-        {
-          name: "Ice cream sandwich",
-          address: 237,
-        },
-        {
-          name: "Eclair",
-          address: 262,
-        },
-        {
-          name: "Cupcake",
-          address: 305,
-        },
-        {
-          name: "Gingerbread",
-          address: 356,
-        },
-        {
-          name: "Jelly bean",
-          address: 375,
-        },
-        {
-          name: "Lollipop",
-          address: 392,
-        },
-        {
-          name: "Honeycomb",
-          address: 408,
-        },
-        {
-          name: "Donut",
-          address: 452,
-        },
-        {
-          name: "KitKat",
-          address: 518,
-        },
-      ],
+      addresses: [],
+      // addresses: [
+      //   {
+      //     name: "Frozen Yogurt",
+      //     address: 159,
+      //   },
+      //   {
+      //     name: "Ice cream sandwich",
+      //     address: 237,
+      //   },
+      //   {
+      //     name: "Eclair",
+      //     address: 262,
+      //   },
+      //   {
+      //     name: "Cupcake",
+      //     address: 305,
+      //   },
+      //   {
+      //     name: "Gingerbread",
+      //     address: 356,
+      //   },
+      //   {
+      //     name: "Jelly bean",
+      //     address: 375,
+      //   },
+      //   {
+      //     name: "Lollipop",
+      //     address: 392,
+      //   },
+      //   {
+      //     name: "Honeycomb",
+      //     address: 408,
+      //   },
+      //   {
+      //     name: "Donut",
+      //     address: 452,
+      //   },
+      //   {
+      //     name: "KitKat",
+      //     address: 518,
+      //   },
+      // ],
     };
   },
   methods: {
@@ -175,6 +171,12 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
+    getDisplayAddress(item) {
+      return {
+        name: item.name,
+        address: item.address,
+      };
+    },
   },
   computed: mapState(["APIData"]),
   created() {
@@ -183,7 +185,8 @@ export default {
         headers: { Authorization: `Token ${this.$store.state.accessToken}` },
       })
       .then((response) => {
-        console.log(response.data[0]["1"]);
+        console.log(response.data[0]);
+        this.addresses = response.data.map(this.getDisplayAddress);
         this.$store.state.addresses = response.data;
       })
       .catch((err) => {
