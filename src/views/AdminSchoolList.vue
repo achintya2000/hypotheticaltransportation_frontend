@@ -180,7 +180,7 @@ export default {
       })
       .then((response) => {
         console.log(response.data[0]["1"]);
-        this.$store.state.APIData = response.data;
+        this.$store.state.addresses = response.data;
       })
       .catch((err) => {
         console.log(err);

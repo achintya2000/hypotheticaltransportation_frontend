@@ -8,7 +8,7 @@ export default new Vuex.Store({
   state: {
     accessToken: null,
     refreshToken: null,
-    APIData: ''
+    addresses: ''
   },
   mutations: {
     updateStorage(state, { access, refresh }) {
