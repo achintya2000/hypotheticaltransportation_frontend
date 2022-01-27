@@ -14,8 +14,6 @@
 
       <v-spacer></v-spacer>
 
-      <login></login>
-
       <v-btn
         class="hidden-sm-and-down"
         text
@@ -28,15 +26,20 @@
           >{{ name.title }}</router-link
         >
       </v-btn>
+
+      <login v-if="accessToken == null"></login>
+      <logout v-if="accessToken != null"></logout>
     </v-app-bar>
   </nav>
 </template>
 
 <script>
 import Login from "./Login.vue";
+import Logout from "./Logout.vue";
+import { mapState } from "vuex";
 
 export default {
-  components: { Login },
+  components: { Login, Logout },
   methods: {},
   data() {
     return {
@@ -45,6 +48,7 @@ export default {
       contactpoints: [],
     };
   },
+  computed: mapState(["accessToken"]),
 };
 </script>
 

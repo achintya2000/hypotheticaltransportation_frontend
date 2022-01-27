@@ -16,11 +16,7 @@
           </v-card-title>
 
           <v-card-text>
-            <v-form
-              ref="form"
-              v-model="valid"
-              lazy-validation
-            >
+            <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="name"
                 :rules="nameRules"
@@ -48,7 +44,7 @@
                 label="State"
                 required
               ></v-text-field>
-              
+
               <v-text-field
                 v-model="zipcode"
                 :rules="zipcodeRules"
@@ -65,14 +61,7 @@
                 Submit
               </v-btn>
 
-              <v-btn
-                color="error"
-                class="mr-4"
-                @click="reset"
-              >
-               Clear
-              </v-btn>
-
+              <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
               <v-btn
                 color="warning"
                 @click="dialog=false"
@@ -92,6 +81,7 @@
         hide-details
       ></v-text-field>
     </v-card-title>
+
     <v-data-table
       :headers="headers"
       :items="addresses"
@@ -104,31 +94,24 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+import { getAPI } from "../services/axios-api";
+
 export default {
   data() {
     return {
       dialog: false,
       valid: true,
-      name: '',
-      nameRules: [
-        v => !!v || 'Name is required',
-      ],
-      address: '',
-      addressRules: [
-        v => !!v || 'Address is required',
-      ],
-      city: '',
-      cityRules: [
-        v => !!v || 'City is required',
-      ],
-      state: '',
-      stateRules: [
-        v => !!v || 'State is required',
-      ],
-      zipcode: '',
-      zipcodeRules: [
-        v => !!v || 'Zipcode is required',
-      ],
+      name: "",
+      nameRules: [(v) => !!v || "Name is required"],
+      address: "",
+      addressRules: [(v) => !!v || "Address is required"],
+      city: "",
+      cityRules: [(v) => !!v || "City is required"],
+      state: "",
+      stateRules: [(v) => !!v || "State is required"],
+      zipcode: "",
+      zipcodeRules: [(v) => !!v || "Zipcode is required"],
       search: "",
       headers: [
         {
@@ -183,16 +166,30 @@ export default {
     };
   },
   methods: {
-      validate () {
-        this.$refs.form.validate()
-      },
-      reset () {
-        this.$refs.form.reset()
-      },
-      resetValidation () {
-        this.$refs.form.resetValidation()
-      },
+    validate() {
+      this.$refs.form.validate();
     },
+    reset() {
+      this.$refs.form.reset();
+    },
+    resetValidation() {
+      this.$refs.form.resetValidation();
+    },
+  },
+  computed: mapState(["APIData"]),
+  created() {
+    getAPI
+      .get("/api/school/getall", {
+        headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+      })
+      .then((response) => {
+        console.log(response.data[0]["1"]);
+        this.$store.state.addresses = response.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
 };
 </script>
 
