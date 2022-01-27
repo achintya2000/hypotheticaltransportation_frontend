@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+//import { mapState } from "vuex";
 import { getAPI } from "../services/axios-api";
 
 export default {
@@ -178,16 +178,15 @@ export default {
       };
     },
   },
-  computed: mapState(["APIData"]),
+  //computed: mapState(["APIData"]),
   created() {
     getAPI
       .get("/api/school/getall", {
         headers: { Authorization: `Token ${this.$store.state.accessToken}` },
       })
       .then((response) => {
-        console.log(response.data[0]);
         this.addresses = response.data.map(this.getDisplayAddress);
-        this.$store.state.addresses = response.data;
+        //this.$store.state.addresses = response.data;
       })
       .catch((err) => {
         console.log(err);
