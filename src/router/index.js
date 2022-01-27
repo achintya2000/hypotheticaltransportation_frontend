@@ -107,6 +107,11 @@ const routes = [
     meta: {
       requiresLogin: true
     }
+  },
+  {
+    path: '/maptest',
+    name: 'MapTest',
+    component: () => import('../views/MapTest.vue')
   }
 ]
 

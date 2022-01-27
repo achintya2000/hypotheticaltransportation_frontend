@@ -4,6 +4,14 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import axios from 'axios'
 import store from './store'
+import * as VueGoogleMaps from 'vue2-google-maps'
+
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: 'AIzaSyDaZoRXvQ29IcQmX6TAf5xSeKZe5XYwSQc',
+    libraries: 'places',
+  }
+});
 
 Vue.config.productionTip = false
 
