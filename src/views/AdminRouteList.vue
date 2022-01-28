@@ -3,6 +3,11 @@
     <v-card-title>
       Your Routes
       <v-spacer></v-spacer>
+
+      <create-new-route
+        @routecreated="getRequestAllRoutes"
+      ></create-new-route>
+
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
@@ -13,16 +18,18 @@
     </v-card-title>
     <v-data-table
       :headers="headers"
-      :items="addresses"
+      :items="schools"
       :search="search"
-      :sort-by="['calories', 'fat']"
-      :sort-desc="[false, true]"
+      :sort-by="['name']"
+      :sort-desc="[true]"
       multi-sort
     ></v-data-table>
   </v-card>
 </template>
 
 <script>
+import { base_endpoint } from "../services/axios-api";
+
 export default {
   data() {
     return {
@@ -33,64 +40,42 @@ export default {
           align: "start",
           value: "name",
         },
-        { text: "School Name", value: "schoolName" },
-        { text: "# of Students", value: "numStudents" },
+        { text: "School", value: "school" },
+        { text: "Description", value: "description" },
       ],
-      addresses: [
-        {
-          name: "Frozen Yogurt",
-          schoolName: "Hello 1",
-          numStudents: 1,
-        },
-        {
-          name: "Choclate",
-          schoolName: "Hello 1",
-          numStudents: 2,
-        },
-        {
-          name: "Frozen Yogurt",
-          schoolName: "Hello 1",
-          numStudents: 3,
-        },
-        {
-          name: "Frozen Yogurt",
-          schoolName: "Hello 1",
-          numStudents: 4,
-        },
-        {
-          name: "Frozen Yogurt",
-          schoolName: "Hello 1",
-          numStudents: 5,
-        },
-        {
-          name: "Frozen Yogurt",
-          schoolName: "Hello 1",
-          numStudents: 6,
-        },
-        {
-          name: "Frozen Yogurt",
-          schoolName: "Hello 1",
-          numStudents: 7,
-        },
-        {
-          name: "Frozen Yogurt",
-          schoolName: "Hello 1",
-          numStudents: 8,
-        },
-        {
-          name: "Frozen Yogurt",
-          schoolName: "Hello 1",
-          numStudents: 9,
-        },
-        {
-          name: "Frozen Yogurt",
-          schoolName: "Hello 1",
-          numStudents: 10,
-        },
-      ],
+      schools: [],
+
     };
   },
+  methods: {
+    getDisplaySchool(item) {
+      return {
+        name: item.name,
+        school: item.school,
+        description: item.description
+      };
+    },
+    getRequestAllRoutes() {
+      console.log("GOT HERE!!!");
+      base_endpoint
+        .get("/api/route/getall", {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.schools = response.data.map(this.getDisplaySchool);
+          //this.$store.state.addresses = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  },
+  //computed: mapState(["APIData"]),
+  created() {
+    this.getRequestAllRoutes();
+  },
 };
+
 </script>
 
 <style>
