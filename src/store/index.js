@@ -31,7 +31,7 @@ export default new Vuex.Store({
       return state.accessToken != null
     },
     userIsAdmin(state) {
-      return state.isAdmin
+      return state.isAdmin == true
     }
   },
   actions: {

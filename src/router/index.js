@@ -87,7 +87,7 @@ const routes = [
     component: () => import('../views/ParentDetails.vue'),
     meta: {
       requiresLogin: true,
-      adminLocked: true
+      adminLocked: false
     }
   },
   {
