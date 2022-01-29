@@ -94,6 +94,16 @@ export default {
         })
         .then(() => {
           this.$router.push({ name: "AdminSchoolList" });
+
+          this.$store
+            .dispatch("userAdminSet", {
+              username: this.username,
+              token: localStorage.getItem("token"),
+            })
+            .then(() => {})
+            .catch((err) => {
+              console.log(err);
+            });
         })
         .catch((err) => {
           console.log(err);

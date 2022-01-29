@@ -57,12 +57,14 @@ export default {
   },
   methods: {
     editItem(item) {
-      console.log(item.name);
+      console.log(item.id);
+      this.$router.push({ name: "AdminSchoolDetail", query: { id: item.id } });
     },
     getDisplayAddress(item) {
       return {
         name: item.name,
         address: item.address,
+        id: item.id,
       };
     },
     getRequestAllSchools() {
