@@ -2,11 +2,6 @@
   <v-card>
     <v-card-title>
       Your Routes
-      <v-spacer></v-spacer>
-
-      <create-new-route
-        @routecreated="getRequestAllRoutes"
-      ></create-new-route>
 
       <v-text-field
         v-model="search"
@@ -44,7 +39,6 @@ export default {
         { text: "Description", value: "description" },
       ],
       schools: [],
-
     };
   },
   methods: {
@@ -52,11 +46,10 @@ export default {
       return {
         name: item.name,
         school: item.school,
-        description: item.description
+        description: item.description,
       };
     },
     getRequestAllRoutes() {
-      console.log("GOT HERE!!!");
       base_endpoint
         .get("/api/route/getall", {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
@@ -75,7 +68,6 @@ export default {
     this.getRequestAllRoutes();
   },
 };
-
 </script>
 
 <style>
