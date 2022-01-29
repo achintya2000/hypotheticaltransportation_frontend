@@ -25,7 +25,11 @@
       :sort-by="['name']"
       :sort-desc="[true]"
       multi-sort
-    ></v-data-table>
+    >
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small @click="editItem(item)"> mdi-eye </v-icon>
+      </template>
+    </v-data-table>
   </v-card>
 </template>
 
@@ -46,15 +50,21 @@ export default {
           value: "name",
         },
         { text: "Address", value: "address" },
+        { text: "Actions", value: "actions", sortable: false },
       ],
       addresses: [],
     };
   },
   methods: {
+    editItem(item) {
+      console.log(item.id);
+      this.$router.push({ name: "AdminSchoolDetail", query: { id: item.id } });
+    },
     getDisplayAddress(item) {
       return {
         name: item.name,
         address: item.address,
+        id: item.id,
       };
     },
     getRequestAllSchools() {
