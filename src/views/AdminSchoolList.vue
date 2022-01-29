@@ -100,7 +100,6 @@ export default {
       };
     },
     getRequestAllSchools() {
-      console.log("GOT HERE!!!");
       base_endpoint
         .get("/api/school/getall", {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },

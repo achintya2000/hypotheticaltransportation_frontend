@@ -6,7 +6,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    accessToken: null,
+    accessToken: window.localStorage.getItem('token'),
     refreshToken: null,
     addresses: ''
   },
@@ -14,6 +14,7 @@ export default new Vuex.Store({
     updateStorage(state, { access, refresh }) {
       state.accessToken = access
       state.refreshToken = refresh
+      window.localStorage.setItem('token', access)
     },
     destroyToken(state) {
       state.accessToken = null
@@ -29,6 +30,7 @@ export default new Vuex.Store({
     userLogout(context) {
       if (context.getters.loggedIn) {
         context.commit('destroyToken')
+        window.localStorage.setItem('token', null)
       }
     },
     userLogin(context, usercredentials) {
