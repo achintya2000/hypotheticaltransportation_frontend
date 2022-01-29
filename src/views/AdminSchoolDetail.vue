@@ -35,27 +35,6 @@
                 required
               ></v-text-field>
 
-              <v-text-field
-                v-model="city"
-                :rules="cityRules"
-                label="City"
-                required
-              ></v-text-field>
-
-              <v-text-field
-                v-model="state"
-                :rules="stateRules"
-                label="State"
-                required
-              ></v-text-field>
-              
-              <v-text-field
-                v-model="zipcode"
-                :rules="zipcodeRules"
-                label="Zipcode"
-                required
-              ></v-text-field>
-
               <v-btn
                 :disabled="!valid"
                 color="success"
@@ -176,6 +155,7 @@
 <script>
 export default {
   data() {
+    var theSchoolsName = "Staples High School";
     return {
       search: "",
       valid: true,
@@ -189,21 +169,10 @@ export default {
       addressRules: [
             v => !!v || 'Address is required',
       ],
-      city: 'Old City',
-      cityRules: [
-        v => !!v || 'City is required',
-      ],
-      state: 'Old State',
-      stateRules: [
-        v => !!v || 'State is required',
-        ],
-        zipcode: 'Old Zipcode',
-        zipcodeRules: [
-            v => !!v || 'Zipcode is required',
-        ],
       name: '',
       nameRules: [
         v => !!v || 'Name is required',
+        v => (v.toLowerCase() && v == theSchoolsName.toLowerCase()) || 'You must retype the name exactly',
       ],
       headers: [
         {

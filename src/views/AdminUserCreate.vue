@@ -40,30 +40,6 @@
               ></v-text-field>
 
               <v-text-field
-                v-model="city"
-                :rules="cityRules"
-                v-if="checkbox==false"
-                label="City"
-                required
-              ></v-text-field>
-
-              <v-text-field
-                v-model="state"
-                :rules="stateRules"
-                v-if="checkbox==false"
-                label="State"
-                required
-              ></v-text-field>
-              
-              <v-text-field
-                v-model="zipcode"
-                :rules="zipcodeRules"
-                v-if="checkbox==false"
-                label="Zipcode"
-                required
-              ></v-text-field>
-
-              <v-text-field
                 v-model="password"
                 :rules="passwordRules"
                 v-if="checkbox==false"

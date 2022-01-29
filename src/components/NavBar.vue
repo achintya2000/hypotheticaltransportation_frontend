@@ -61,7 +61,7 @@ export default {
     return {
       drawer: false,
       names: [{ title: "About", to: "/about" }],
-      loggedInLinks: [{ title: "School", to: "/adminschoollist" }, { title: "User", to: "/adminuserlist" }, { title: "Student", to: "/adminstudentlist" }, { title: "Route", to: "/adminroutelist" }],
+      loggedInLinks: [{ title: "School", to: "/adminschoollist" }, { title: "User", to: "/adminuserlist" }, { title: "Student", to: "/adminstudentlist" }, { title: "Route", to: "/adminroutelist" }, { title: "Your Students", to: "/parentdetails" }],
       contactpoints: [],
     };
   },

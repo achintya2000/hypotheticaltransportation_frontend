@@ -3,7 +3,7 @@
     <v-card-title>
       Your Users
       <v-spacer></v-spacer>
-      <v-btn outlined>Add User/Students</v-btn>
+      <v-btn href="/#/parentdetails">Add User/Students</v-btn>
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
