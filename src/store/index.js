@@ -8,7 +8,7 @@ export default new Vuex.Store({
   state: {
     accessToken: window.localStorage.getItem('token'),
     refreshToken: null,
-    isAdmin: false
+    isAdmin: window.localStorage.getItem('isAdmin')
   },
   mutations: {
     updateStorage(state, { access, refresh }) {
@@ -38,8 +38,8 @@ export default new Vuex.Store({
     userLogout(context) {
       if (context.getters.loggedIn) {
         context.commit('destroyToken')
-        window.localStorage.setItem('token', null)
-        window.localStorage.setItem('isAdmin', false)
+        window.localStorage.removeItem('token')
+        window.localStorage.removeItem('isAdmin')
       }
     },
     userLogin(context, usercredentials) {

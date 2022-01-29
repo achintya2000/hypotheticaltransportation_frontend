@@ -19,16 +19,12 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: null
-  },
-  {
     path: '/adminschoollist',
     name: 'AdminSchoolList',
     component: () => import('../views/AdminSchoolList.vue'),
     meta: {
-      requiresLogin: true
+      requiresLogin: true,
+      adminLocked: true
     }
   },
   {
@@ -36,7 +32,8 @@ const routes = [
     name: 'AdminStudentList',
     component: () => import('../views/AdminStudentList.vue'),
     meta: {
-      requiresLogin: true
+      requiresLogin: true,
+      adminLocked: true
     }
   },
   {
@@ -44,7 +41,8 @@ const routes = [
     name: 'AdminUserList',
     component: () => import('../views/AdminUserList.vue'),
     meta: {
-      requiresLogin: true
+      requiresLogin: true,
+      adminLocked: true
     }
   },
   {
@@ -52,7 +50,8 @@ const routes = [
     name: 'AdminRouteList',
     component: () => import('../views/AdminRouteList.vue'),
     meta: {
-      requiresLogin: true
+      requiresLogin: true,
+      adminLocked: true
     }
   },
   {
@@ -60,7 +59,8 @@ const routes = [
     name: 'AdminSchoolDetail',
     component: () => import('../views/AdminSchoolDetail.vue'),
     meta: {
-      requiresLogin: true
+      requiresLogin: true,
+      adminLocked: true
     }
   },
   {
@@ -68,7 +68,8 @@ const routes = [
     name: 'AdminUserDetail',
     component: () => import('../views/AdminUserDetail.vue'),
     meta: {
-      requiresLogin: true
+      requiresLogin: true,
+      adminLocked: true
     }
   },
   {
@@ -76,20 +77,26 @@ const routes = [
     name: 'AdminStudentDetail',
     component: () => import('../views/AdminStudentDetail.vue'),
     meta: {
-      requiresLogin: true
+      requiresLogin: true,
+      adminLocked: true
     }
   },
   {
     path: '/parentdetails',
     name: 'ParentDetails',
-    component: () => import('../views/ParentDetails.vue')
+    component: () => import('../views/ParentDetails.vue'),
+    meta: {
+      requiresLogin: true,
+      adminLocked: true
+    }
   },
   {
     path: '/adminroutecreate',
     name: 'AdminRouteCreate',
     component: () => import('../views/AdminRouteCreate.vue'),
     meta: {
-      requiresLogin: true
+      requiresLogin: true,
+      adminLocked: true
     }
   },
   {
@@ -97,7 +104,8 @@ const routes = [
     name: 'AdminRouteDetail',
     component: () => import('../views/AdminRouteDetail.vue'),
     meta: {
-      requiresLogin: true
+      requiresLogin: true,
+      adminLocked: true
     }
   },
   {
@@ -105,7 +113,8 @@ const routes = [
     name: 'AdminUserCreate',
     component: () => import('../views/AdminUserCreate.vue'),
     meta: {
-      requiresLogin: true
+      requiresLogin: true,
+      adminLocked: true
     }
   },
   {

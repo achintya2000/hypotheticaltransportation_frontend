@@ -27,12 +27,12 @@
         >
       </v-btn>
 
-      <v-container v-if="accessToken != null"> 
+      <v-container v-if="accessToken != null">
         <v-btn
-        class="hidden-sm-and-down"
-        text
-        v-for="loggedInLink in loggedInLinks"
-        :key="loggedInLink.title"
+          class="hidden-sm-and-down"
+          text
+          v-for="loggedInLink in loggedInLinks"
+          :key="loggedInLink.title"
         >
           <router-link
             :to="loggedInLink.to"
@@ -41,7 +41,6 @@
           >
         </v-btn>
       </v-container>
-      
 
       <login v-if="accessToken == null"></login>
       <logout v-if="accessToken != null"></logout>
@@ -55,13 +54,19 @@ import Logout from "./Logout.vue";
 import { mapState } from "vuex";
 
 export default {
-  components: { Login, Logout},
+  components: { Login, Logout },
   methods: {},
   data() {
     return {
       drawer: false,
       names: [{ title: "About", to: "/about" }],
-      loggedInLinks: [{ title: "School", to: "/adminschoollist" }, { title: "User", to: "/adminuserlist" }, { title: "Student", to: "/adminstudentlist" }, { title: "Route", to: "/adminroutelist" }, { title: "Your Students", to: "/parentdetails" }],
+      loggedInLinks: [
+        { title: "School", to: "/adminschoollist" },
+        { title: "User", to: "/adminuserlist" },
+        { title: "Student", to: "/adminstudentlist" },
+        { title: "Route", to: "/adminroutelist" },
+        { title: "Your Students", to: "/parentdetails" },
+      ],
       contactpoints: [],
     };
   },
