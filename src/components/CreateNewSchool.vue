@@ -27,27 +27,6 @@
             required
           ></v-text-field>
 
-          <v-text-field
-            v-model="city"
-            :rules="cityRules"
-            label="City"
-            required
-          ></v-text-field>
-
-          <v-text-field
-            v-model="state"
-            :rules="stateRules"
-            label="State"
-            required
-          ></v-text-field>
-
-          <v-text-field
-            v-model="zipcode"
-            :rules="zipcodeRules"
-            label="Zip Code"
-            required
-          ></v-text-field>
-
           <v-btn
             :disabled="!valid"
             color="success"
@@ -76,12 +55,6 @@ export default {
       nameRules: [(v) => !!v || "Name is required"],
       address: "",
       addressRules: [(v) => !!v || "Address is required"],
-      city: "",
-      cityRules: [(v) => !!v || "City is required"],
-      state: "",
-      stateRules: [(v) => !!v || "State is required"],
-      zipcode: "",
-      zipcodeRules: [(v) => !!v || "Zipcode is required"],
     };
   },
   methods: {

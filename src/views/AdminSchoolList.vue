@@ -48,48 +48,6 @@ export default {
         { text: "Address", value: "address" },
       ],
       addresses: [],
-      // addresses: [
-      //   {
-      //     name: "Frozen Yogurt",
-      //     address: 159,
-      //   },
-      //   {
-      //     name: "Ice cream sandwich",
-      //     address: 237,
-      //   },
-      //   {
-      //     name: "Eclair",
-      //     address: 262,
-      //   },
-      //   {
-      //     name: "Cupcake",
-      //     address: 305,
-      //   },
-      //   {
-      //     name: "Gingerbread",
-      //     address: 356,
-      //   },
-      //   {
-      //     name: "Jelly bean",
-      //     address: 375,
-      //   },
-      //   {
-      //     name: "Lollipop",
-      //     address: 392,
-      //   },
-      //   {
-      //     name: "Honeycomb",
-      //     address: 408,
-      //   },
-      //   {
-      //     name: "Donut",
-      //     address: 452,
-      //   },
-      //   {
-      //     name: "KitKat",
-      //     address: 518,
-      //   },
-      // ],
     };
   },
   methods: {
