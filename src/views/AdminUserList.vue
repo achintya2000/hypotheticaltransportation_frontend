@@ -61,7 +61,7 @@ export default {
         administrator: item.administrator
       };
     },
-    getRequestAllRoutes() {
+    getRequestAllUsers() {
       console.log("GOT HERE!!!");
       base_endpoint
         .get("/api/profile/getall", {

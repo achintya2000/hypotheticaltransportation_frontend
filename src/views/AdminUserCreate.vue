@@ -71,7 +71,7 @@
             <v-text-field v-model="props.item.qty1"></v-text-field>
           </template>
           <template v-slot:item.id="props">
-            <v-text-field v-model="props.item.qty1"></v-text-field>
+            <v-text-field v-model="props.item.qty2"></v-text-field>
           </template>
           <template v-slot:item.school="props">
             <v-autocomplete
@@ -82,7 +82,7 @@
           </template>
           <template v-slot:item.route="props">
             <v-autocomplete
-                v-model="props.item.qty2"
+                v-model="props.item.qty3"
                 :items="busRouteItems"
                 label="Bus Route"
               ></v-autocomplete>
@@ -124,8 +124,8 @@ export default {
   data() {
     return {
       checkbox: false,
-      schoolItems: ['Old School', 'bar', 'fizz', 'buzz'],
-        busRouteItems: ['Old Bus Route', 'bar', 'fizz', 'buzz'],
+      schoolItems: [],
+      busRouteItems: ['Old Bus Route', 'bar', 'fizz', 'buzz'],
       items: [],
     headers: [
       { text: 'Name', value: 'name' },
@@ -157,11 +157,34 @@ export default {
       })
       this.items = items
     },
-    addItem(){
+
+
+    getDisplaySchool(item) {
+      return {
+        name: item.name,
+      };
+    },
+
+    getRequestAllSchools() {
+      console.log("GOT HERE!!!");
+      base_endpoint
+        .get("/api/school/getall", {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.schoolItems = response.data.map(this.getDisplaySchool);
+          //this.$store.state.addresses = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+      addItem(){
       var my_object = {
         mail:this.name,
         date:this.id,
-        adress:this.school,
+        address:this.school,
         company: this.route,
       };
       this.items.push(my_object)
