@@ -5,6 +5,8 @@
       <gmap-autocomplete @place_changed="setPlace">
         <template v-slot:input="slotProps">
           <v-text-field
+            v-model="address"
+            label="Address"
             placeholder="Location Of Event"
             ref="input"
             v-on:listeners="slotProps.listeners"
@@ -32,6 +34,7 @@ export default {
   name: "GoogleMap",
   data() {
     return {
+      address: "",
       center: { lat: 45.508, lng: -73.587 },
       currentPlace: null,
       markers: [],
