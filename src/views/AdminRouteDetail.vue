@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Route Name
+      {{ routeName }}
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
@@ -11,16 +11,10 @@
         </template>
 
         <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
-            Modify
-          </v-card-title>
+          <v-card-title class="text-h5 grey lighten-2"> Modify </v-card-title>
 
           <v-card-text>
-            <v-form
-              ref="form"
-              v-model="valid"
-              lazy-validation
-            >
+            <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="routeName"
                 :rules="routeNameRules"
@@ -51,20 +45,9 @@
                 Save
               </v-btn>
 
-              <v-btn
-                color="error"
-                class="mr-4"
-                @click="reset"
-              >
-               Clear
-              </v-btn>
+              <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn
-                color="warning"
-                @click="dialog2 = false"
-              >
-                Cancel
-              </v-btn>
+              <v-btn color="warning" @click="dialog2 = false"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -83,81 +66,77 @@
           </v-card-title>
 
           <v-card-text>
-            <v-form
-              ref="form"
-            >
-            <v-spacer></v-spacer>
+            <v-form ref="form">
+              <v-spacer></v-spacer>
 
-              <v-btn
-                color="error"
-                class="mr-4"
-                @click="validate"
-              >
+              <v-btn color="error" class="mr-4" @click="validate">
                 Yes, Delete
               </v-btn>
 
-              <v-btn
-                color="success"
-                @click="dialog = false"
-              >
-                Cancel
-              </v-btn>
+              <v-btn color="success" @click="dialog = false"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle>
-    Route School
-    </v-card-subtitle>
-    <v-card-subtitle>
-    Route Descirption
-    </v-card-subtitle>
-    <v-card-subtitle>
-    Students
-    </v-card-subtitle>
-    <v-card-text>
-    Bullets
-    </v-card-text>
+    <v-card-subtitle> {{ routeSchool }} </v-card-subtitle>
+    <v-card-subtitle> {{ routeDescription }} </v-card-subtitle>
+    <v-card-subtitle> Students </v-card-subtitle>
+    <v-card-text> Bullets </v-card-text>
   </v-card>
 </template>
 
 <script>
+import { base_endpoint } from "../services/axios-api";
+
 export default {
   data() {
     return {
+      routeName: "",
+      routeSchool: "",
+      routeDescription: "",
       search: "",
       valid: true,
       dialog: false,
       dialog2: false,
-      routeName: 'Old Name',
-    schoolItems: ['Old School', 'bar', 'fizz', 'buzz'],
-    schoolValues: ['foo', 'bar'],
-      routeNameRules: [
-        v => !!v || 'Name is required',
-      ],
-      routeDes: 'Old Route Des',
-      routeDesRules: [
-            v => !!v || 'Address is required',
-      ],
+      schoolItems: ["Old School", "bar", "fizz", "buzz"],
+      schoolValues: ["foo", "bar"],
+      routeNameRules: [(v) => !!v || "Name is required"],
+      routeDes: "Old Route Des",
+      routeDesRules: [(v) => !!v || "Address is required"],
       schoolValue: "Old School",
-      schoolRules: [
-            v => !!v || 'Address is required',
-      ],
+      schoolRules: [(v) => !!v || "Address is required"],
     };
   },
   methods: {
-      validate () {
-        this.$refs.form.validate()
-      },
-      reset () {
-        this.$refs.form.reset()
-      },
-      resetValidation () {
-        this.$refs.form.resetValidation()
-      },
+    getSchoolInfo() {
+      base_endpoint
+        .get("/api/route/get/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.routeName = response.data.name;
+          this.routeSchool = response.data.school;
+          this.routeDescription = response.data.description;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
+    validate() {
+      this.$refs.form.validate();
+    },
+    reset() {
+      this.$refs.form.reset();
+    },
+    resetValidation() {
+      this.$refs.form.resetValidation();
+    },
+  },
+  created() {
+    this.getSchoolInfo();
+  },
 };
 </script>
 

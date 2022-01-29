@@ -103,8 +103,14 @@
       :sort-by="['name']"
       :sort-desc="[true]"
       multi-sort
-    ></v-data-table>
+    >
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small @click="viewRoute(item)"> mdi-eye </v-icon>
+      </template>
+    </v-data-table>
+
     <v-card-title> Students </v-card-title>
+
     <v-data-table
       :headers="studentsHeaders"
       :items="students"
@@ -112,7 +118,11 @@
       :sort-by="['name']"
       :sort-desc="[true]"
       multi-sort
-    ></v-data-table>
+    >
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small @click="viewStudent(item)"> mdi-eye </v-icon>
+      </template>
+    </v-data-table>
   </v-card>
 </template>
 
@@ -146,6 +156,7 @@ export default {
           value: "routeName",
         },
         { text: "Description", value: "routeDescription" },
+        { text: "Actions", value: "actions", sortable: false },
       ],
       busRoutes: [],
       studentsHeaders: [
@@ -156,11 +167,24 @@ export default {
         },
         { text: "Route", value: "studentRoute" },
         { text: "Parent", value: "studentParent" },
+        { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],
     };
   },
   methods: {
+    viewRoute(item) {
+      this.$router.push({
+        name: "AdminRouteDetail",
+        query: { id: item.routeId },
+      });
+    },
+    viewStudent(item) {
+      this.$router.push({
+        name: "AdminStudentDetail",
+        query: { id: item.studentId },
+      });
+    },
     getSchoolInfo() {
       base_endpoint
         .get("/api/school/get/" + this.$route.query.id, {
@@ -176,6 +200,7 @@ export default {
     },
     getDisplayRoutes(item) {
       return {
+        routeId: item.id,
         routeName: item.name,
         routeDescription: item.description,
       };
@@ -194,6 +219,7 @@ export default {
     },
     getDisplayStudents(item) {
       return {
+        studentId: item.id,
         studentName: item.name,
         studentRoute: item.route,
         studentParent: item.parent,
