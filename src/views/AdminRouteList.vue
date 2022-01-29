@@ -48,7 +48,7 @@ export default {
     };
   },
   methods: {
-    getDisplaySchool(item) {
+    getDisplayRoute(item) {
       return {
         name: item.name,
         school: item.school,
@@ -62,7 +62,7 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-          this.schools = response.data.map(this.getDisplaySchool);
+          this.schools = response.data.map(this.getDisplayRoute);
           //this.$store.state.addresses = response.data;
         })
         .catch((err) => {
