@@ -20,12 +20,19 @@
             required
           ></v-text-field>
 
-          <v-text-field
-            v-model="address"
-            :rules="addressRules"
-            label="Street Address"
-            required
-          ></v-text-field>
+          <gmap-autocomplete @place_changed="setPlace">
+            <template v-slot:input="slotProps">
+              <v-text-field
+                v-model="address"
+                label="Address"
+                placeholder="Start Typing"
+                ref="input"
+                v-on:listeners="slotProps.listeners"
+                v-on:attrs="slotProps.attrs"
+              >
+              </v-text-field>
+            </template>
+          </gmap-autocomplete>
 
           <v-btn
             :disabled="!valid"
@@ -55,15 +62,25 @@ export default {
       nameRules: [(v) => !!v || "Name is required"],
       address: "",
       addressRules: [(v) => !!v || "Address is required"],
+      latitude: 0,
+      longitude: 0,
+      formatted_address: "",
     };
   },
   methods: {
+    setPlace(place) {
+      this.formatted_address = place.formatted_address;
+      this.latitude = place.geometry.location.lat();
+      this.longitude = place.geometry.location.lng();
+    },
     submitData() {
       base_endpoint.post(
         "/api/school/create",
         {
           name: this.name,
-          address: this.address,
+          address: this.formatted_address,
+          latitude: this.latitude,
+          longitude: this.longitude,
         },
         {
           headers: {
@@ -80,6 +97,7 @@ export default {
         "schoolcreated",
         "A new school has been created and sent to database"
       );
+      this.reset();
     },
     reset() {
       this.$refs.form.reset();
