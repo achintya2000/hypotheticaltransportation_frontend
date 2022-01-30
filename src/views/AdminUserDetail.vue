@@ -95,26 +95,21 @@
                 required
               ></v-text-field>
 
-              <v-text-field
-                v-model="userAddress"
-                :rules="addressRules"
-                label="Address"
-                required
-              ></v-text-field>
 
-              <v-text-field
-                v-model="userLongitude"
-                :rules="longitudeRules"
-                label="Longitude"
-                required
-              ></v-text-field>
+              <gmap-autocomplete @place_changed="setPlace">
+              <template v-slot:input="slotProps">
+                <v-text-field
+                  v-model="userAddress"
+                  label="Address"
+                  placeholder="Start Typing"
+                  ref="input"
+                  v-on:listeners="slotProps.listeners"
+                  v-on:attrs="slotProps.attrs"
+                >
+                </v-text-field>
+              </template>
+            </gmap-autocomplete>
 
-              <v-text-field
-                v-model="userLatitude"
-                :rules="latitudeRules"
-                label="Latitude"
-                required
-              ></v-text-field>
 
               <v-checkbox
                 v-model="checkbox"
@@ -221,9 +216,9 @@ export default {
   data() {
     return {
       search: "",
-      email: "",
-      full_name: "",
-      currentAddress: "",
+      userEmail: "",
+      userName: "",
+      userAddress: "",
       administrator: "",
       students: [],
       dialog: false,
@@ -248,7 +243,8 @@ export default {
       emailRules: [
         v => !!v || 'Email is required',
         ],
-       
+        latitude: 0,
+        longitude: 0,
       headers: [
         {
           text: "Name",
@@ -262,6 +258,11 @@ export default {
     };
   },
   methods: {
+    setPlace(place) {
+      this.formatted_address = place.formatted_address;
+      this.latitude = place.geometry.location.lat();
+      this.longitude = place.geometry.location.lng();
+    },
       viewStudent(item) {
       this.$router.push({
         name: "AdminStudentDetail",
