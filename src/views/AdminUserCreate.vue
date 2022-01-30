@@ -10,10 +10,7 @@
               lazy-validation
             >
 
-            <v-checkbox
-                v-model="checkbox"
-                :label="'Add students to current user'"
-            ></v-checkbox>
+           
 
               <v-text-field
                 v-model="name"
@@ -62,8 +59,7 @@
 
               <v-data-table
                 :headers="headers"
-                :items="items"                      
-            >
+                :items="items">
           <template v-slot:top>
             <v-btn @click="addItem">Add Student</v-btn>
           </template>
@@ -75,7 +71,7 @@
           </template>
         <template v-slot:item.school="props">
             <v-autocomplete
-                v-model="props.item. school"
+                v-model="props.item.school"
                 :items="schoolItems"
                 item-text='name'
                 :sort-by="['name']"

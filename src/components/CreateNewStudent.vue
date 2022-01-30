@@ -14,6 +14,12 @@
       <v-card-text>
 
         <v-form ref="form" v-model="valid" lazy-validation>
+
+           <v-checkbox
+                v-model="checkbox"
+                :label="'Add students to current user'"
+            ></v-checkbox>
+
           <v-text-field
             v-model="name"
             :rules="nameRules"
@@ -28,21 +34,17 @@
             required
           ></v-text-field>
 
-          <template v-slot:item1="props">
+           <template v-slot:item.school="props">
             <v-autocomplete
-                v-model="props.item.qty2"
-                :items="schools"
+                v-model="props.item.school"
+                :items="schoolItems"
+                item-text='name'
+                :sort-by="['name']"
                 label="School"
-              ></v-autocomplete>
-          </template> 
+                @change="disable('school_selected'); getRequestSchoolRoutes(props)"
 
-          <template v-slot:item2 ="props">
-            <v-autocomplete
-                v-model="props.item.qty2"
-                :items="routes"
-                label="Bus Route"
               ></v-autocomplete>
-          </template> 
+          </template>
 
           <v-btn
             :disabled="!valid"
@@ -55,6 +57,11 @@
 
           <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
           <v-btn color="warning" @click="dialog = false"> Cancel </v-btn>
+
+
+          
+
+
         </v-form>
       </v-card-text>
     </v-card>
@@ -66,6 +73,8 @@ import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
     return {
+      checkbox: false,
+      schoolItems: [],
       dialog: false,
       valid: true,
       name: "",
