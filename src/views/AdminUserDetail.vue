@@ -82,39 +82,45 @@
               lazy-validation
             >
               <v-text-field
-                v-model="name2"
+                v-model="userName"
                 :rules="name2Rules"
                 label="Name"
                 required
               ></v-text-field>
 
               <v-text-field
-                v-model="address"
+                v-model="userEmail"
+                :rules="emailRules"
+                label="Email"
+                required
+              ></v-text-field>
+
+              <v-text-field
+                v-model="userAddress"
                 :rules="addressRules"
                 label="Address"
                 required
               ></v-text-field>
 
               <v-text-field
-                v-model="city"
-                :rules="cityRules"
-                label="City"
+                v-model="userLongitude"
+                :rules="longitudeRules"
+                label="Longitude"
                 required
               ></v-text-field>
 
               <v-text-field
-                v-model="state"
-                :rules="stateRules"
-                label="State"
+                v-model="userLatitude"
+                :rules="latitudeRules"
+                label="Latitude"
                 required
               ></v-text-field>
+
+              <v-checkbox
+                v-model="checkbox"
+                :label="'Admin Status'"
+              ></v-checkbox>
               
-              <v-text-field
-                v-model="zipcode"
-                :rules="zipcodeRules"
-                label="Zipcode"
-                required
-              ></v-text-field>
 
               <v-btn
                 :disabled="!valid"
@@ -232,17 +238,17 @@ export default {
             v => !!v || 'Address is required',
       ],
       city: 'Old City',
-      cityRules: [
-        v => !!v || 'City is required',
+      longitudeRules: [
+        v => !!v || 'Longitude is required',
       ],
       state: 'Old State',
-      stateRules: [
-        v => !!v || 'State is required',
+      latitudeRules: [
+        v => !!v || 'Latitude is required',
         ],
-        zipcode: 'Old Zipcode',
-        zipcodeRules: [
-            v => !!v || 'Zipcode is required',
+      emailRules: [
+        v => !!v || 'Email is required',
         ],
+       
       headers: [
         {
           text: "Name",
