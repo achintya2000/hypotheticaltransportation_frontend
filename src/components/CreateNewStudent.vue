@@ -12,13 +12,32 @@
       </v-card-title>
 
       <v-card-text>
-
         <v-form ref="form" v-model="valid" lazy-validation>
+          <v-checkbox
+            v-model="checkbox"
+            :label="'Add students to current user'"
+          ></v-checkbox>
 
-           <v-checkbox
-                v-model="checkbox"
-                :label="'Add students to current user'"
-            ></v-checkbox>
+          <v-text-field
+            v-if="checkbox"
+            label="Parent Name"
+            required
+          ></v-text-field>
+          <v-text-field
+            v-if="checkbox"
+            label="Parent Email"
+            required
+          ></v-text-field>
+          <v-text-field
+            v-if="checkbox"
+            label="Parent Password"
+            required
+          ></v-text-field>
+          <v-text-field
+            v-if="checkbox"
+            label="Parent Address"
+            required
+          ></v-text-field>
 
           <v-text-field
             v-model="name"
@@ -34,17 +53,17 @@
             required
           ></v-text-field>
 
-           <template v-slot:item.school="props">
-            <v-autocomplete
-                v-model="props.item.school"
-                :items="schoolItems"
-                item-text='name'
-                :sort-by="['name']"
-                label="School"
-                @change="disable('school_selected'); getRequestSchoolRoutes(props)"
+          <v-autocomplete
+            v-model="schoolSelected"
+            item-text="name"
+            label="School"
+            :items="schools"
+            @change="getRoutesForSchool()"
+            return-object
+          ></v-autocomplete>
 
-              ></v-autocomplete>
-          </template>
+          <v-autocomplete item-text="name" label="Bus Route" :items="routes">
+          </v-autocomplete>
 
           <v-btn
             :disabled="!valid"
@@ -57,11 +76,6 @@
 
           <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
           <v-btn color="warning" @click="dialog = false"> Cancel </v-btn>
-
-
-          
-
-
         </v-form>
       </v-card-text>
     </v-card>
@@ -81,8 +95,9 @@ export default {
       nameRules: [(v) => !!v || "Name is required"],
       sid: "",
       sidRules: [(v) => !!v || "Student ID is required"],
-      schools: ['sdfa'],
+      schools: [],
       routes: [],
+      schoolSelected: null,
     };
   },
   methods: {
@@ -90,18 +105,16 @@ export default {
       return {
         name: item.name,
         school: item.school,
-        description: item.description
+        description: item.description,
       };
     },
-    getRequestAllRoutes() {
-      console.log("GOT HERE!!!");
+    getRoutesForSchool() {
       base_endpoint
-        .get("/api/route/getall", {
+        .get("/api/route/getallfromschool/" + this.schoolSelected.id, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
           this.routes = response.data.map(this.getDisplayRoute);
-          //this.$store.state.addresses = response.data;
         })
         .catch((err) => {
           console.log(err);
@@ -109,6 +122,7 @@ export default {
     },
     getDisplaySchool(item) {
       return {
+        id: item.id,
         name: item.name,
         address: item.address,
       };
@@ -120,7 +134,6 @@ export default {
         })
         .then((response) => {
           this.schools = response.data.map(this.getDisplaySchool);
-          //this.$store.state.addresses = response.data;
         })
         .catch((err) => {
           console.log(err);
@@ -157,6 +170,9 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
+  },
+  created() {
+    this.getRequestAllSchools();
   },
 };
 </script>
