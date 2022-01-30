@@ -27,7 +27,7 @@
       multi-sort
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small @click="editItem(item)"> mdi-eye </v-icon>
+        <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
       </template>
     </v-data-table>
   </v-card>
@@ -56,8 +56,7 @@ export default {
     };
   },
   methods: {
-    editItem(item) {
-      console.log(item.id);
+    viewItem(item) {
       this.$router.push({ name: "AdminSchoolDetail", query: { id: item.id } });
     },
     getDisplayAddress(item) {
