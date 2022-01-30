@@ -103,6 +103,7 @@ import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
     return {
+      valid: false,
       dialog: false,
       dialog2: false,
       name: "Old Name",
