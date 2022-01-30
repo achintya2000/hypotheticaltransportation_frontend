@@ -17,14 +17,12 @@
             <v-form ref="form">
               <v-text-field
                 v-model="studentName"
-                :rules="studentNameRules"
                 label="Student Name"
                 required
               ></v-text-field>
 
               <v-text-field
                 v-model="studentId"
-                :rules="studentIDRules"
                 label="Student ID"
                 required
               ></v-text-field>
@@ -32,25 +30,20 @@
               <v-autocomplete
                 v-model="parent"
                 :items="parentItems"
-                item-text='full_name'
-                :label="studentParent"
+                item-text="full_name"
+                label="Parent"
                 return-object
               ></v-autocomplete>
-              
+
               <v-autocomplete
                 v-model="school"
                 :items="schoolItems"
-                item-text='name'
-                :label="studentSchool"
+                item-text="name"
+                label="School Name"
                 return-object
               ></v-autocomplete>
 
-
-              <v-btn
-                color="success"
-                class="mr-4"
-                @click="updateStudent"
-              >
+              <v-btn color="success" class="mr-4" @click="updateStudent">
                 Save
               </v-btn>
 
@@ -90,24 +83,23 @@
       <v-spacer></v-spacer>
     </v-card-title>
     <v-card-subtitle> ID: {{ studentId }} </v-card-subtitle>
-    <v-card-subtitle> School: {{ studentSchool }}
-      
+    <v-card-subtitle>
+      School: {{ studentSchool }}
+
       <v-icon small @click="viewSchool(studentSchoolId)"> mdi-eye </v-icon>
-      
     </v-card-subtitle>
 
-    <v-card-subtitle> Route: {{ studentRoute }}
-      
+    <v-card-subtitle>
+      Route: {{ studentRoute }}
+
       <v-icon small @click="viewRoute(studentRouteId)"> mdi-eye </v-icon>
-      
     </v-card-subtitle>
 
-    <v-card-subtitle> Parent: {{ studentParent }}
-      
+    <v-card-subtitle>
+      Parent: {{ studentParent }}
+
       <v-icon small @click="viewParent(studentParentId)"> mdi-eye </v-icon>
-      
     </v-card-subtitle>
-
   </v-card>
 </template>
 
@@ -122,7 +114,7 @@ export default {
       dialog2: false,
       name: "Old Name",
       nameRules: [(v) => !!v || "Name is required"],
-      studentID: "Old Student ID",
+      studentId: "",
       studentIDRules: [(v) => !!v || "Student ID is required"],
       parentValue: "Old Parent",
       parentRules: [(v) => !!v || "Parent is required"],
@@ -143,7 +135,10 @@ export default {
       schoolItems: [],
       parentItems: [],
       school: null,
-      parent: this.studentParent,
+      parent: null,
+      studentSchool: "",
+      studentRoute: "",
+      studentParent: "",
     };
   },
   methods: {
@@ -161,6 +156,9 @@ export default {
           this.studentSchoolId = response.data.school_id;
           this.studentRouteId = response.data.route_id;
           this.studentParentId = response.data.parent_id;
+
+          this.getSchools();
+          this.getParents();
         })
         .catch((err) => {
           console.log(err);
@@ -181,12 +179,17 @@ export default {
         })
         .then((response) => {
           this.schoolItems = response.data.map(this.getDisplaySchools);
+
+          this.schoolItems.forEach((item) => {
+            if (this.studentSchoolId == item.id) {
+              this.school = item;
+            }
+          });
         })
         .catch((err) => {
           console.log(err);
         });
     },
-
 
     getDisplayParents(item) {
       return {
@@ -201,6 +204,12 @@ export default {
         })
         .then((response) => {
           this.parentItems = response.data.map(this.getDisplayParents);
+
+          this.parentItems.forEach((item) => {
+            if (this.studentParentId == item.id) {
+              this.parent = item;
+            }
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -208,28 +217,29 @@ export default {
     },
 
     updateStudent() {
-        console.log(this.school.id)
-        console.log(this.parent.id)
-        base_endpoint.patch('/api/student/update/' + this.$route.query.id, {
-          
+      console.log(this.school.id);
+      console.log(this.parent.id);
+      base_endpoint
+        .patch(
+          "/api/student/update/" + this.$route.query.id,
+          {
             full_name: this.studentName,
             sid: this.studentId,
             school: this.school.id,
             route: this.studentRoute,
             parent: this.parent.id,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
 
-          },{ headers: { 
-            Authorization: `Token ${this.$store.state.accessToken}` 
-          } 
-        })
-          
-          .catch((err) => {
-            console.log(err);
-          });
+        .catch((err) => {
+          console.log(err);
+        });
     },
-
-
-
 
     viewSchool(item) {
       this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
@@ -252,8 +262,6 @@ export default {
   },
   created() {
     this.getStudentInfo();
-    this.getSchools();
-    this.getParents();
   },
 };
 </script>

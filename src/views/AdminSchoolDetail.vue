@@ -72,12 +72,7 @@
                 required
               ></v-text-field>
 
-              <v-btn
-                :disabled="!valid"
-                color="success"
-                class="mr-4"
-                @click="validate"
-              >
+              <v-btn :disabled="!valid" color="success" class="mr-4">
                 Submit
               </v-btn>
 
@@ -175,9 +170,9 @@ export default {
   methods: {
     planNewRoute() {
       this.$router.push({
-          name: "AdminRoutePlanner",
-          query: { id: this.$route.query.id }
-      })
+        name: "AdminRoutePlanner",
+        query: { id: this.$route.query.id },
+      });
     },
     viewRoute(item) {
       this.$router.push({
@@ -201,7 +196,6 @@ export default {
           this.newSchoolName = response.data.name;
           this.schoolAddress = response.data.address;
           this.newAddress = response.data.address;
-          
         })
         .catch((err) => {
           console.log(err);
@@ -247,21 +241,23 @@ export default {
         });
     },
     submitDataForModify() {
-      base_endpoint.patch(
-        "/api/school/update/" + this.$route.query.id,
-        {
-          name: this.newSchoolName,
-          address: this.newAddress,
-        },
-        {
-          headers: {
-            Authorization: `Token ${this.$store.state.accessToken}`,
+      base_endpoint
+        .patch(
+          "/api/school/update/" + this.$route.query.id,
+          {
+            name: this.newSchoolName,
+            address: this.newAddress,
           },
-        }
-      ).then(response => {
-          console.log(response)
-          this.getSchoolInfo()
-      });
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          this.getSchoolInfo();
+        });
     },
     validateForModify() {
       this.$refs.form.validate();
@@ -284,9 +280,6 @@ export default {
     this.getSchoolRoutes();
     this.getStudents();
   },
-  computed() {
-
-  }
 };
 </script>
 
