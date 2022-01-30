@@ -49,7 +49,7 @@ export default {
           align: "start",
           value: "name",
         },
-        { text: "Address", value: "address" },
+        { text: "Address", value: "address", sortable: false },
         { text: "Actions", value: "actions", sortable: false },
       ],
       addresses: [],

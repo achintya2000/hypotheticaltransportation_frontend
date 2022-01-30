@@ -51,7 +51,7 @@ export default {
         },
         { text: "Student ID", value: "sid" },
         { text: "School", value: "school" },
-        { text: "Route", value: "route" },
+        { text: "Route", value: "route", sortable: false },
         { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],

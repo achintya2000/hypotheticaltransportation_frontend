@@ -5,8 +5,6 @@
       <v-spacer></v-spacer>
 
       <create-new-user @usercreated="getRequestAllUsers"></create-new-user>
-
-      <v-btn href="/#/parentdetails">Add User/Students</v-btn>
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
@@ -48,9 +46,9 @@ export default {
           value: "name",
         },
         { text: "Email", value: "email" },
-        { text: "Address", value: "address" },
-        { text: "Students", value: "student_count" },
-        { text: "Administrator", value: "administrator" },
+        { text: "Address", value: "address", sortable: false },
+        { text: "Students", value: "student_count", sortable: false },
+        { text: "Administrator", value: "administrator", sortable: false },
         { text: "Actions", value: "actions", sortable: false },
       ],
       profiles: [],
