@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Route Name
+      {{ routeName }}
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
@@ -11,16 +11,10 @@
         </template>
 
         <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
-            Modify
-          </v-card-title>
+          <v-card-title class="text-h5 grey lighten-2"> Modify </v-card-title>
 
           <v-card-text>
-            <v-form
-              ref="form"
-              v-model="valid"
-              lazy-validation
-            >
+            <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="routeName"
                 :rules="routeNameRules"
@@ -29,14 +23,14 @@
               ></v-text-field>
 
               <v-text-field
-                v-model="routeDes"
+                v-model="routeDescription"
                 :rules="routeDesRules"
                 label="Route Description"
                 required
               ></v-text-field>
 
               <v-autocomplete
-                v-model="schoolValue"
+                v-model="routeSchool"
                 :items="schoolItems"
                 label="School"
                 required
@@ -51,20 +45,9 @@
                 Save
               </v-btn>
 
-              <v-btn
-                color="error"
-                class="mr-4"
-                @click="reset"
-              >
-               Clear
-              </v-btn>
+              <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn
-                color="warning"
-                @click="dialog2 = false"
-              >
-                Cancel
-              </v-btn>
+              <v-btn color="warning" @click="dialog2 = false"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -83,81 +66,117 @@
           </v-card-title>
 
           <v-card-text>
-            <v-form
-              ref="form"
-            >
-            <v-spacer></v-spacer>
+            <v-form ref="form">
+              <v-spacer></v-spacer>
 
-              <v-btn
-                color="error"
-                class="mr-4"
-                @click="validate"
-              >
+              <v-btn color="error" class="mr-4" @click="validate">
                 Yes, Delete
               </v-btn>
 
-              <v-btn
-                color="success"
-                @click="dialog = false"
-              >
-                Cancel
-              </v-btn>
+              <v-btn color="success" @click="dialog = false"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle>
-    Route School
-    </v-card-subtitle>
-    <v-card-subtitle>
-    Route Descirption
-    </v-card-subtitle>
-    <v-card-subtitle>
-    Students
-    </v-card-subtitle>
-    <v-card-text>
-    Bullets
-    </v-card-text>
+    <v-card-subtitle> {{ routeSchool }} </v-card-subtitle>
+    <v-card-subtitle> {{ routeDescription }} </v-card-subtitle>
+
+    <v-data-table
+      :headers="headers"
+      :items="students"
+      :search="search"
+      :sort-by="['name']"
+      :sort-desc="[true]"
+    >
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
+      </template>
+    </v-data-table>
   </v-card>
 </template>
 
 <script>
+import { base_endpoint } from "../services/axios-api";
+
 export default {
   data() {
     return {
+      routeName: "",
+      routeSchool: "",
+      routeDescription: "",
       search: "",
       valid: true,
       dialog: false,
       dialog2: false,
-      routeName: 'Old Name',
-    schoolItems: ['Old School', 'bar', 'fizz', 'buzz'],
-    schoolValues: ['foo', 'bar'],
-      routeNameRules: [
-        v => !!v || 'Name is required',
+      schoolItems: ["Old School", "bar", "fizz", "buzz"],
+      schoolValues: ["foo", "bar"],
+      routeNameRules: [(v) => !!v || "Name is required"],
+      routeDesRules: [(v) => !!v || "Address is required"],
+      schoolRules: [(v) => !!v || "Address is required"],
+      headers: [
+        {
+          text: "Name",
+          align: "start",
+          value: "name",
+        },
+        { text: "Actions", value: "actions", sortable: false },
       ],
-      routeDes: 'Old Route Des',
-      routeDesRules: [
-            v => !!v || 'Address is required',
-      ],
-      schoolValue: "Old School",
-      schoolRules: [
-            v => !!v || 'Address is required',
-      ],
+      students: [],
     };
   },
   methods: {
-      validate () {
-        this.$refs.form.validate()
-      },
-      reset () {
-        this.$refs.form.reset()
-      },
-      resetValidation () {
-        this.$refs.form.resetValidation()
-      },
+    getSchoolInfo() {
+      base_endpoint
+        .get("/api/route/get/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.routeName = response.data.name;
+          this.routeSchool = response.data.school;
+          this.routeDescription = response.data.description;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
+    getDisplayStudents(item) {
+      return {
+        name: item.name,
+        address: item.address,
+        id: item.id,
+      };
+    },
+    getStudentsInRoute() {
+      base_endpoint
+        .get("/api/student/getallfromroute/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.students = response.data.map(this.getDisplayStudents);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    viewItem(item) {
+      this.$router.push({ name: "AdminStudentDetail", query: { id: item.id } });
+    },
+    validate() {
+      this.$refs.form.validate();
+    },
+    reset() {
+      this.$refs.form.reset();
+    },
+    resetValidation() {
+      this.$refs.form.resetValidation();
+    },
+  },
+  created() {
+    this.getSchoolInfo();
+    this.getStudentsInRoute();
+  },
 };
 </script>
 
