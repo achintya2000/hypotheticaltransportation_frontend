@@ -16,14 +16,14 @@
           <v-card-text>
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
-                v-model="name2"
+                v-model="newSchoolName"
                 :rules="name2Rules"
                 label="Name"
                 required
               ></v-text-field>
 
               <v-text-field
-                v-model="address"
+                v-model="newAddress"
                 :rules="addressRules"
                 label="Address"
                 required
@@ -33,7 +33,7 @@
                 :disabled="!valid"
                 color="success"
                 class="mr-4"
-                @click="validate"
+                @click="validateForModify"
               >
                 Save
               </v-btn>
@@ -94,7 +94,7 @@
     <v-card-title>
       Bus Routes
       <v-spacer></v-spacer>
-      <v-btn outlined>Plan New Route</v-btn>
+      <v-btn @click="planNewRoute" outlined>Plan New Route</v-btn>
     </v-card-title>
     <v-data-table
       :headers="routeHeaders"
@@ -138,9 +138,9 @@ export default {
       valid: true,
       dialog: false,
       dialog2: false,
-      name2: "Old Name",
+      newSchoolName: "",
       name2Rules: [(v) => !!v || "Name is required"],
-      address: "Old Address",
+      newAddress: "201 Rock Haven Rd",
       addressRules: [(v) => !!v || "Address is required"],
       name: "",
       nameRules: [
@@ -173,6 +173,12 @@ export default {
     };
   },
   methods: {
+    planNewRoute() {
+      this.$router.push({
+          name: "AdminRoutePlanner",
+          query: { id: this.$route.query.id }
+      })
+    },
     viewRoute(item) {
       this.$router.push({
         name: "AdminRouteDetail",
@@ -192,7 +198,10 @@ export default {
         })
         .then((response) => {
           this.schoolName = response.data.name;
+          this.newSchoolName = response.data.name;
           this.schoolAddress = response.data.address;
+          this.newAddress = response.data.address;
+          
         })
         .catch((err) => {
           console.log(err);
@@ -237,8 +246,31 @@ export default {
           console.log(err);
         });
     },
-    validate() {
+    submitDataForModify() {
+      base_endpoint.patch(
+        "/api/school/update/" + this.$route.query.id,
+        {
+          name: this.newSchoolName,
+          address: this.newAddress,
+        },
+        {
+          headers: {
+            Authorization: `Token ${this.$store.state.accessToken}`,
+          },
+        }
+      ).then(response => {
+          console.log(response)
+          this.getSchoolInfo()
+      });
+    },
+    validateForModify() {
       this.$refs.form.validate();
+      this.submitDataForModify();
+      this.dialog2 = false;
+      this.$emit(
+        "schoolmodified",
+        "A school has been modified and sent to database"
+      );
     },
     reset() {
       this.$refs.form.reset();
@@ -252,6 +284,9 @@ export default {
     this.getSchoolRoutes();
     this.getStudents();
   },
+  computed() {
+
+  }
 };
 </script>
 
