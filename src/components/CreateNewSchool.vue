@@ -25,6 +25,7 @@
               <v-text-field
                 v-model="address"
                 label="Address"
+                placeholder="Start Typing"
                 ref="input"
                 v-on:listeners="slotProps.listeners"
                 v-on:attrs="slotProps.attrs"
@@ -96,6 +97,7 @@ export default {
         "schoolcreated",
         "A new school has been created and sent to database"
       );
+      this.reset();
     },
     reset() {
       this.$refs.form.reset();
