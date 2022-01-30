@@ -128,7 +128,7 @@
     <v-card-title>
         Bus Routes
         <v-spacer></v-spacer>
-        <v-btn outlined>Plan New Route</v-btn>
+        <v-btn href  = "/#/adminrouteplanner" outlined>Plan New Route</v-btn>
     </v-card-title>
     <v-data-table
       :headers="headers"

@@ -121,6 +121,11 @@ const routes = [
     path: '/maptest',
     name: 'MapTest',
     component: () => import('../views/MapTest.vue')
+  },
+  {
+    path: '/adminrouteplanner',
+    name: 'AdminRoutePlanner',
+    component: () => import('../views/AdminRoutePlanner.vue')
   }
 ]
 
