@@ -23,14 +23,14 @@
               ></v-text-field>
 
               <v-text-field
-                v-model="routeDes"
+                v-model="routeDescription"
                 :rules="routeDesRules"
                 label="Route Description"
                 required
               ></v-text-field>
 
               <v-autocomplete
-                v-model="schoolValue"
+                v-model="routeSchool"
                 :items="schoolItems"
                 label="School"
                 required
@@ -82,8 +82,18 @@
     </v-card-title>
     <v-card-subtitle> {{ routeSchool }} </v-card-subtitle>
     <v-card-subtitle> {{ routeDescription }} </v-card-subtitle>
-    <v-card-subtitle> Students </v-card-subtitle>
-    <v-card-text> Bullets </v-card-text>
+
+    <v-data-table
+      :headers="headers"
+      :items="students"
+      :search="search"
+      :sort-by="['name']"
+      :sort-desc="[true]"
+    >
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
+      </template>
+    </v-data-table>
   </v-card>
 </template>
 
@@ -103,10 +113,17 @@ export default {
       schoolItems: ["Old School", "bar", "fizz", "buzz"],
       schoolValues: ["foo", "bar"],
       routeNameRules: [(v) => !!v || "Name is required"],
-      routeDes: "Old Route Des",
       routeDesRules: [(v) => !!v || "Address is required"],
-      schoolValue: "Old School",
       schoolRules: [(v) => !!v || "Address is required"],
+      headers: [
+        {
+          text: "Name",
+          align: "start",
+          value: "name",
+        },
+        { text: "Actions", value: "actions", sortable: false },
+      ],
+      students: [],
     };
   },
   methods: {
@@ -124,6 +141,28 @@ export default {
           console.log(err);
         });
     },
+    getDisplayStudents(item) {
+      return {
+        name: item.name,
+        address: item.address,
+        id: item.id,
+      };
+    },
+    getStudentsInRoute() {
+      base_endpoint
+        .get("/api/student/getallfromroute/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.students = response.data.map(this.getDisplayStudents);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    viewItem(item) {
+      this.$router.push({ name: "AdminStudentDetail", query: { id: item.id } });
+    },
     validate() {
       this.$refs.form.validate();
     },
@@ -136,6 +175,7 @@ export default {
   },
   created() {
     this.getSchoolInfo();
+    this.getStudentsInRoute();
   },
 };
 </script>

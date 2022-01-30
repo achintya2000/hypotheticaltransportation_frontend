@@ -11,16 +11,10 @@
         </template>
 
         <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
-            Modify
-          </v-card-title>
+          <v-card-title class="text-h5 grey lighten-2"> Modify </v-card-title>
 
           <v-card-text>
-            <v-form
-              ref="form"
-              v-model="valid"
-              lazy-validation
-            >
+            <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="name"
                 :rules="nameRules"
@@ -46,7 +40,7 @@
                 :items="schoolItems"
                 label="School"
               ></v-autocomplete>
-              
+
               <v-autocomplete
                 v-model="busRouteValue"
                 :items="busRouteItems"
@@ -62,20 +56,9 @@
                 Save
               </v-btn>
 
-              <v-btn
-                color="error"
-                class="mr-4"
-                @click="reset"
-              >
-               Clear
-              </v-btn>
+              <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn
-                color="warning"
-                @click="dialog2 = false"
-              >
-                Cancel
-              </v-btn>
+              <v-btn color="warning" @click="dialog2 = false"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -94,88 +77,76 @@
           </v-card-title>
 
           <v-card-text>
-            <v-form
-              ref="form"
-            >
-            <v-spacer></v-spacer>
+            <v-form ref="form">
+              <v-spacer></v-spacer>
 
-              <v-btn
-                color="error"
-                class="mr-4"
-                @click="validate"
-              >
+              <v-btn color="error" class="mr-4" @click="validate">
                 Yes, Delete
               </v-btn>
 
-              <v-btn
-                color="success"
-                @click="dialog = false"
-              >
-                Cancel
-              </v-btn>
+              <v-btn color="success" @click="dialog = false"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle>
-    jd1003098
-    </v-card-subtitle>
-    <v-card-subtitle>
-    Staples High School
-    </v-card-subtitle>
-    <v-card-subtitle>
-    Bus Route
-    </v-card-subtitle>
+    <v-card-subtitle> jd1003098 </v-card-subtitle>
+    <v-card-subtitle> Staples High School </v-card-subtitle>
+    <v-card-subtitle> Bus Route </v-card-subtitle>
   </v-card>
 </template>
 
 <script>
+import { base_endpoint } from "../services/axios-api";
+
 export default {
   data() {
     return {
-        dialog: false,
-        dialog2: false,
-        name: 'Old Name',
-        nameRules: [
-            v => !!v || 'Name is required',
-        ],
-        studentID: 'Old Student ID',
-        studentIDRules: [
-            v => !!v || 'Student ID is required',
-        ],
-        parentValue: 'Old Parent',
-        parentRules: [
-            v => !!v || 'Parent is required',
-        ],
-        schoolValue: 'Old School',
-        schoolRules: [
-            v => !!v || 'School is required',
-        ],
-        busRouteValue: 'Old Bus Route',
-        busRouteRules: [
-            v => !!v || 'Bus Route is required',
-        ],
-        parentItems: ['Old Parent', 'bar', 'fizz', 'buzz'],
-        parentValues: ['foo', 'bar'],
-        schoolItems: ['Old School', 'bar', 'fizz', 'buzz'],
-        schoolValues: ['foo', 'bar'],
-        busRouteItems: ['Old Bus Route', 'bar', 'fizz', 'buzz'],
-        busRouteValues: ['foo', 'bar'],
+      dialog: false,
+      dialog2: false,
+      name: "Old Name",
+      nameRules: [(v) => !!v || "Name is required"],
+      studentID: "Old Student ID",
+      studentIDRules: [(v) => !!v || "Student ID is required"],
+      parentValue: "Old Parent",
+      parentRules: [(v) => !!v || "Parent is required"],
+      schoolValue: "Old School",
+      schoolRules: [(v) => !!v || "School is required"],
+      busRouteValue: "Old Bus Route",
+      busRouteRules: [(v) => !!v || "Bus Route is required"],
+      parentItems: ["Old Parent", "bar", "fizz", "buzz"],
+      parentValues: ["foo", "bar"],
+      schoolItems: ["Old School", "bar", "fizz", "buzz"],
+      schoolValues: ["foo", "bar"],
+      busRouteItems: ["Old Bus Route", "bar", "fizz", "buzz"],
+      busRouteValues: ["foo", "bar"],
     };
   },
   methods: {
-      validate () {
-        this.$refs.form.validate()
-      },
-      reset () {
-        this.$refs.form.reset()
-      },
-      resetValidation () {
-        this.$refs.form.resetValidation()
-      },
+    getStudentInfo() {
+      base_endpoint
+        .get("/api/student/get/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.schoolName = response.data.name;
+          this.schoolAddress = response.data.address;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
+    validate() {
+      this.$refs.form.validate();
+    },
+    reset() {
+      this.$refs.form.reset();
+    },
+    resetValidation() {
+      this.$refs.form.resetValidation();
+    },
+  },
 };
 </script>
 
