@@ -23,7 +23,12 @@
       :sort-by="['name']"
       :sort-desc="[true]"
       multi-sort
-    ></v-data-table>
+    >
+    <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
+      </template>
+    
+    </v-data-table>
   </v-card>
 </template>
 
@@ -46,12 +51,16 @@ export default {
         { text: "Address", value: "address" },
         { text: "Students", value: "student_count" },
         { text: "Administrator", value: "administrator" },
+        { text: "Actions", value: "actions", sortable: false },
       ],
       profiles: [],
     };
   },
 
   methods: {
+      viewItem(item) {
+      this.$router.push({ name: "AdminUserDetail", query: { id: item.id } });
+    },
     getDisplayUser(item) {
       return {
         name: item.full_name,
@@ -59,6 +68,7 @@ export default {
         address: item.address,
         student_count: item.student_count,
         administrator: item.administrator,
+        id: item.id,
       };
     },
     getRequestAllUsers() {
