@@ -3,7 +3,12 @@
     <v-card-title>
       Your Students
       <v-spacer></v-spacer>
-      <v-text-field
+      <create-new-student
+        @studentcreated="getRequestAllStudents"
+      ></create-new-student>
+
+    <v-spacer></v-spacer>
+    <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
         label="Search"
@@ -11,19 +16,24 @@
         hide-details
       ></v-text-field>
     </v-card-title>
+
     <v-data-table
       :headers="headers"
-      :items="addresses"
+      :items="students"
       :search="search"
-      :sort-by="['calories', 'fat']"
+      :sort-by="['sid']"
       :sort-desc="[false, true]"
       multi-sort
     ></v-data-table>
   </v-card>
 </template>
 
-<script>
+<script>//import { mapState } from "vuex";
+import { base_endpoint } from "../services/axios-api";
+import CreateNewStudent from "../components/CreateNewStudent.vue";
+
 export default {
+  components: { CreateNewStudent },
   data() {
     return {
       search: "",
@@ -33,73 +43,39 @@ export default {
           align: "start",
           value: "name",
         },
-        { text: "Student ID", value: "studentID" },
-        { text: "School Name", value: "schoolName" },
-        { text: "Route Name", value: "routeName" },
+        { text: "Student ID", value: "sid" },
+        { text: "School", value: "school" },
+        { text: "Route", value: "route" },
       ],
-      addresses: [
-        {
-          name: "Frozen Yogurt",
-          studentID: 12345,
-          schoolName: "Hello 1",
-          routeName: "Hello 2",
-        },
-        {
-          name: "Choclate",
-          studentID: 12345,
-          schoolName: "Hello 1",
-          routeName: "Hello 2",
-        },
-        {
-          name: "Frozen Yogurt",
-          studentID: 12345,
-          schoolName: "Hello 1",
-          routeName: "Hello 2",
-        },
-        {
-          name: "Frozen Yogurt",
-          studentID: 12345,
-          schoolName: "Hello 1",
-          routeName: "Hello 2",
-        },
-        {
-          name: "Frozen Yogurt",
-          studentID: 12345,
-          schoolName: "Hello 1",
-          routeName: "Hello 2",
-        },
-        {
-          name: "Frozen Yogurt",
-          studentID: 12345,
-          schoolName: "Hello 1",
-          routeName: "Hello 2",
-        },
-        {
-          name: "Frozen Yogurt",
-          studentID: 12345,
-          schoolName: "Hello 1",
-          routeName: "Hello 2",
-        },
-        {
-          name: "Frozen Yogurt",
-          studentID: 12345,
-          schoolName: "Hello 1",
-          routeName: "Hello 2",
-        },
-        {
-          name: "Frozen Yogurt",
-          studentID: 12345,
-          schoolName: "Hello 1",
-          routeName: "Hello 2",
-        },
-        {
-          name: "Frozen Yogurt",
-          studentID: 12345,
-          schoolName: "Hello 1",
-          routeName: "Hello 2",
-        },
-      ],
+      students: [],
     };
+  },
+  methods: {
+    getDisplayStudent(item) {
+      return {
+        name: item.name,
+        sid: item.sid,
+        school: item.school,
+        route: item.route,
+      };
+    },
+    getRequestAllStudents() {
+      base_endpoint
+        .get("/api/student/getall", {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.students = response.data.map(this.getDisplayStudent);
+          //this.$store.state.addresses = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  },
+  //computed: mapState(["APIData"]),
+  created() {
+    this.getRequestAllStudents();
   },
 };
 </script>

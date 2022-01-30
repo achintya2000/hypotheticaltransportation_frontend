@@ -10,10 +10,7 @@
               lazy-validation
             >
 
-            <v-checkbox
-                v-model="checkbox"
-                :label="'Add students to current user'"
-            ></v-checkbox>
+           
 
               <v-text-field
                 v-model="name"
@@ -62,35 +59,38 @@
 
               <v-data-table
                 :headers="headers"
-                :items="items"                      
-            >
+                :items="items">
           <template v-slot:top>
             <v-btn @click="addItem">Add Student</v-btn>
           </template>
           <template v-slot:item.name="props">
-            <v-text-field v-model="props.item.qty1"></v-text-field>
+            <v-text-field v-model="props.item.name"></v-text-field>
           </template>
           <template v-slot:item.id="props">
-            <v-text-field v-model="props.item.qty1"></v-text-field>
+            <v-text-field v-model="props.item.id"></v-text-field>
           </template>
-          <template v-slot:item.school="props">
+        <template v-slot:item.school="props">
             <v-autocomplete
-                v-model="props.item.qty1"
+                v-model="props.item.school"
                 :items="schoolItems"
+                item-text='name'
+                :sort-by="['name']"
                 label="School"
+                @change="disable('school_selected'); getRequestSchoolRoutes(props)"
+
               ></v-autocomplete>
           </template>
           <template v-slot:item.route="props">
             <v-autocomplete
-                v-model="props.item.qty2"
-                :items="busRouteItems"
+                v-model="props.item.route"
+                :items="routeItems"
+                item-text='name'
                 label="Bus Route"
+                :disabled="shouldDisable"
+              
               ></v-autocomplete>
           </template>          
         </v-data-table>
-        
-            
-
               <v-btn
                 :disabled="!valid"
                 color="success"
@@ -120,12 +120,14 @@
 </template>
 
 <script>
+import { base_endpoint } from "../services/axios-api";
+
 export default {
   data() {
     return {
       checkbox: false,
-      schoolItems: ['Old School', 'bar', 'fizz', 'buzz'],
-        busRouteItems: ['Old Bus Route', 'bar', 'fizz', 'buzz'],
+      schoolItems: [],
+      routeItems: [],
       items: [],
     headers: [
       { text: 'Name', value: 'name' },
@@ -133,36 +135,94 @@ export default {
       { text: 'School', value: 'school' },
       { text: 'Route', value: 'route' },
     ],
-    customer: {
-      name: 'customer',
+    student: {
+      name: 'student',
       items: [
         { name: "", id: "", school: '', route: ''},
       ]
-    }
+    },
+    shouldDisable : true
     };
   },
   created() {
     this.initialize()
+    this.getRequestAllSchools()
+    this.getRequestAllRoutes()
   },
   methods: {
     initialize() {
-      const items = [...this.customer.items]
+      const items = [...this.student.items]
       
       // deep copy is the solution
-      // const items = JSON.parse(JSON.stringify(this.customer.items))
+      //const items = JSON.parse(JSON.stringify(this.student.items))
       
       items.map(item => {
-        item.qty2 = ''
+        item.qty1 = ''
         return item
       })
       this.items = items
     },
-    addItem(){
+
+
+    getDisplaySchool(item) {
+      return {
+        name: item.name,
+        id: item.id,
+      };
+    },
+
+    getRequestAllSchools() {
+      console.log("GOT HERE!!!");
+      base_endpoint
+        .get("/api/school/getall", {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.schoolItems = response.data.map(this.getDisplaySchool);
+          //this.$store.state.addresses = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    
+    getDisplayRoute(item) {
+      return {
+        name: item.name,
+        school: item.school,
+        description: item.description,
+      };
+    },
+    getRequestSchoolRoutes(item) {
+      base_endpoint
+        .get("/api/route/getallfromschool/" + item.id.toString(), {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.routeItems = response.data.map(this.getDisplayRoute);
+          //this.$store.state.addresses = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    
+
+    disable(input){
+      if(input == 'school_selected'){
+        this.shouldDisable = false
+      } else {
+        this.shouldDisable = true
+      }
+    },
+
+
+      addItem(){
       var my_object = {
-        mail:this.name,
-        date:this.id,
-        adress:this.school,
-        company: this.route,
+        name:this.name,
+        id:this.id,
+        school:this.school,
+        route: this.route,
       };
       this.items.push(my_object)
 
