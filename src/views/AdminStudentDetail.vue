@@ -16,13 +16,13 @@
           <v-card-text>
             <v-form ref="form">
               <v-text-field
-                v-model="studentName"
+                v-model="newStudentName"
                 label="Student Name"
                 required
               ></v-text-field>
 
               <v-text-field
-                v-model="studentId"
+                v-model="newStudentId"
                 label="Student ID"
                 required
               ></v-text-field>
@@ -139,6 +139,10 @@ export default {
       studentSchool: "",
       studentRoute: "",
       studentParent: "",
+      newStudentName: "",
+      newStudentId: "",
+      newStudentSchool: "",
+      newStudentParent: "",
     };
   },
   methods: {
@@ -149,10 +153,14 @@ export default {
         })
         .then((response) => {
           this.studentName = response.data.full_name;
+          this.newStudentName = response.data.full_name;
           this.studentId = response.data.sid;
+          this.newStudentId = response.data.sid;
           this.studentSchool = response.data.school;
+          this.newStudentSchool = response.data.school;
           this.studentRoute = response.data.route;
           this.studentParent = response.data.parent;
+          this.newStudentParent = response.data.parent;
           this.studentSchoolId = response.data.school_id;
           this.studentRouteId = response.data.route_id;
           this.studentParentId = response.data.parent_id;
@@ -219,12 +227,13 @@ export default {
     updateStudent() {
       console.log(this.school.id);
       console.log(this.parent.id);
+      this.dialog2 = false;
       base_endpoint
         .patch(
           "/api/student/update/" + this.$route.query.id,
           {
-            full_name: this.studentName,
-            sid: this.studentId,
+            full_name: this.newStudentName,
+            sid: this.newStudentId,
             school: this.school.id,
             route: this.studentRoute,
             parent: this.parent.id,
@@ -234,7 +243,10 @@ export default {
               Authorization: `Token ${this.$store.state.accessToken}`,
             },
           }
-        )
+        ).then((response) => {
+          console.log(response);
+          this.getStudentInfo();
+        })
 
         .catch((err) => {
           console.log(err);
@@ -260,6 +272,7 @@ export default {
         })
         .then((response) => {
           console.log(response)
+          this.$router.push({ name: "AdminStudentList"});
         })
         .catch((err) => {
           console.log(err);

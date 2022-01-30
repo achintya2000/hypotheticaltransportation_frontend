@@ -11,13 +11,38 @@
 
       <v-card-text>
         <v-form ref="form" v-model="valid" lazy-validation>
-          <v-text-field label="Parent Name" required></v-text-field>
+          <v-text-field 
+            label="Parent Name" 
+            v-model="name"
+            :rules="nameRules"
+            required
+          ></v-text-field>
 
-          <v-text-field label="Parent Email" required></v-text-field>
+          <v-text-field 
+            label="Parent Email" 
+            v-model="email"
+            :rules="emailRules"
+            required
+          ></v-text-field>
 
-          <v-text-field label="Parent Password" required></v-text-field>
+          <v-text-field 
+            label="Parent Password" 
+            v-model="password"
+            :rules="passwordRules"
+            required
+          ></v-text-field>
 
-          <v-text-field label="Parent Address" required></v-text-field>
+          <v-text-field 
+            label="Parent Address" 
+            v-model="address"
+            :rules="addressRules"
+            required
+          ></v-text-field>
+
+          <v-checkbox
+            v-model="adminCheckbox"
+            :label="'Is Admin'"
+          ></v-checkbox>
 
           <v-btn
             :disabled="!valid"
@@ -37,18 +62,47 @@
 </template>
 
 <script>
+import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
     return {
       checkbox: false,
       dialog: false,
       valid: true,
+      name: "",
+      nameRules: [(v) => !!v || "Name is required"],
+      email: "",
+      emailRules: [(v) => !!v || "Email is required"],
+      password: "",
+      passwordRules: [(v) => !!v || "Password is required"],
+      address: "",
+      addressRules: [(v) => !!v || "Address is required"],
+      adminCheckbox: "",
     };
   },
   methods: {
+    submitData() {
+      base_endpoint.post(
+        "/api/profile/create",
+        {
+          full_name: this.name,
+          address: this.address,
+          longitude: 35.5,
+          latitude: 35.5,
+          email: this.email,
+          password: this.password,
+          is_superuser: this.adminCheckbox,
+        },
+        {
+          headers: {
+            Authorization: `Token ${this.$store.state.accessToken}`,
+          },
+        }
+      );
+    },
     validate() {
       this.$refs.form.validate();
-      this.dialog = false;
+      this.submitData();
       this.$emit(
         "usercreated",
         "A new user has been created and sent to database"
