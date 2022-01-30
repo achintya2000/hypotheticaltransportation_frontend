@@ -7,8 +7,9 @@
         @studentcreated="getRequestAllStudents"
       ></create-new-student>
 
-    <v-spacer></v-spacer>
-    <v-text-field
+      <v-spacer></v-spacer>
+
+      <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
         label="Search"
@@ -28,7 +29,7 @@
   </v-card>
 </template>
 
-<script>//import { mapState } from "vuex";
+<script>
 import { base_endpoint } from "../services/axios-api";
 import CreateNewStudent from "../components/CreateNewStudent.vue";
 
