@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Jane Doe
+      {{ studentName }}
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
@@ -14,44 +14,42 @@
           <v-card-title class="text-h5 grey lighten-2"> Modify </v-card-title>
 
           <v-card-text>
-            <v-form ref="form" v-model="valid" lazy-validation>
+            <v-form ref="form">
               <v-text-field
-                v-model="name"
-                :rules="nameRules"
-                label="Name"
+                v-model="studentName"
+                :rules="studentNameRules"
+                label="Student Name"
                 required
               ></v-text-field>
 
               <v-text-field
-                v-model="studentID"
+                v-model="studentId"
                 :rules="studentIDRules"
                 label="Student ID"
                 required
               ></v-text-field>
 
               <v-autocomplete
-                v-model="parentValue"
+                v-model="parent"
                 :items="parentItems"
-                label="Parent"
+                item-text='full_name'
+                :label="studentParent"
+                return-object
               ></v-autocomplete>
-
+              
               <v-autocomplete
-                v-model="schoolValue"
+                v-model="school"
                 :items="schoolItems"
-                label="School"
+                item-text='name'
+                :label="studentSchool"
+                return-object
               ></v-autocomplete>
 
-              <v-autocomplete
-                v-model="busRouteValue"
-                :items="busRouteItems"
-                label="Bus Route"
-              ></v-autocomplete>
 
               <v-btn
-                :disabled="!valid"
                 color="success"
                 class="mr-4"
-                @click="validate"
+                @click="updateStudent"
               >
                 Save
               </v-btn>
@@ -91,9 +89,25 @@
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle> jd1003098 </v-card-subtitle>
-    <v-card-subtitle> Staples High School </v-card-subtitle>
-    <v-card-subtitle> Bus Route </v-card-subtitle>
+    <v-card-subtitle> ID: {{ studentId }} </v-card-subtitle>
+    <v-card-subtitle> School: {{ studentSchool }}
+      
+      <v-icon small @click="viewSchool(studentSchoolId)"> mdi-eye </v-icon>
+      
+    </v-card-subtitle>
+
+    <v-card-subtitle> Route: {{ studentRoute }}
+      
+      <v-icon small @click="viewRoute(studentRouteId)"> mdi-eye </v-icon>
+      
+    </v-card-subtitle>
+
+    <v-card-subtitle> Parent: {{ studentParent }}
+      
+      <v-icon small @click="viewParent(studentParentId)"> mdi-eye </v-icon>
+      
+    </v-card-subtitle>
+
   </v-card>
 </template>
 
@@ -103,6 +117,7 @@ import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
     return {
+      studentName: "",
       dialog: false,
       dialog2: false,
       name: "Old Name",
@@ -112,15 +127,23 @@ export default {
       parentValue: "Old Parent",
       parentRules: [(v) => !!v || "Parent is required"],
       schoolValue: "Old School",
-      schoolRules: [(v) => !!v || "School is required"],
+      // schoolRules: [(v) => !!v || "School is required"],
       busRouteValue: "Old Bus Route",
-      busRouteRules: [(v) => !!v || "Bus Route is required"],
-      parentItems: ["Old Parent", "bar", "fizz", "buzz"],
-      parentValues: ["foo", "bar"],
-      schoolItems: ["Old School", "bar", "fizz", "buzz"],
-      schoolValues: ["foo", "bar"],
-      busRouteItems: ["Old Bus Route", "bar", "fizz", "buzz"],
-      busRouteValues: ["foo", "bar"],
+      // busRouteRules: [(v) => !!v || "Bus Route is required"],
+
+      headers: [
+        {
+          text: "Name",
+          align: "start",
+          value: "schoolName",
+        },
+        { text: "Address", value: "address" },
+        { text: "Actions", value: "actions", sortable: false },
+      ],
+      schoolItems: [],
+      parentItems: [],
+      school: null,
+      parent: this.studentParent,
     };
   },
   methods: {
@@ -130,12 +153,92 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-          this.schoolName = response.data.name;
-          this.schoolAddress = response.data.address;
+          this.studentName = response.data.full_name;
+          this.studentId = response.data.sid;
+          this.studentSchool = response.data.school;
+          this.studentRoute = response.data.route;
+          this.studentParent = response.data.parent;
+          this.studentSchoolId = response.data.school_id;
+          this.studentRouteId = response.data.route_id;
+          this.studentParentId = response.data.parent_id;
         })
         .catch((err) => {
           console.log(err);
         });
+    },
+
+    getDisplaySchools(item) {
+      return {
+        name: item.name,
+        address: item.address,
+        id: item.id,
+      };
+    },
+    getSchools() {
+      base_endpoint
+        .get("/api/school/getall", {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.schoolItems = response.data.map(this.getDisplaySchools);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+
+    getDisplayParents(item) {
+      return {
+        full_name: item.full_name,
+        id: item.id,
+      };
+    },
+    getParents() {
+      base_endpoint
+        .get("/api/profile/getall", {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.parentItems = response.data.map(this.getDisplayParents);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    updateStudent() {
+        console.log(this.school.id)
+        console.log(this.parent.id)
+        base_endpoint.patch('/api/student/update/' + this.$route.query.id, {
+          
+            full_name: this.studentName,
+            sid: this.studentId,
+            school: this.school.id,
+            route: this.studentRoute,
+            parent: this.parent.id,
+
+          },{ headers: { 
+            Authorization: `Token ${this.$store.state.accessToken}` 
+          } 
+        })
+          
+          .catch((err) => {
+            console.log(err);
+          });
+    },
+
+
+
+
+    viewSchool(item) {
+      this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
+    },
+    viewRoute(item) {
+      this.$router.push({ name: "AdminRouteDetail", query: { id: item } });
+    },
+    viewParent(item) {
+      this.$router.push({ name: "AdminUserDetail", query: { id: item } });
     },
     validate() {
       this.$refs.form.validate();
@@ -146,6 +249,11 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
+  },
+  created() {
+    this.getStudentInfo();
+    this.getSchools();
+    this.getParents();
   },
 };
 </script>

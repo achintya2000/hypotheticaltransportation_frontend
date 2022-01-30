@@ -22,7 +22,7 @@
                 required
               ></v-text-field>
 
-              <v-text-field
+              <v-text-field 
                 v-model="address"
                 :rules="addressRules"
                 label="Address"
