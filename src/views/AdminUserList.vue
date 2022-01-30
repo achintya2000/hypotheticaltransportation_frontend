@@ -4,9 +4,7 @@
       Your Users
       <v-spacer></v-spacer>
 
-      <create-new-user
-        @usercreated="getRequestAllUsers"
-      ></create-new-user>
+      <create-new-user @usercreated="getRequestAllUsers"></create-new-user>
 
       <v-btn href="/#/parentdetails">Add User/Students</v-btn>
       <v-spacer></v-spacer>
@@ -31,8 +29,10 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
+import CreateNewUser from "../components/CreateNewUser.vue";
 
 export default {
+  components: { CreateNewUser },
   data() {
     return {
       search: "",
@@ -58,7 +58,7 @@ export default {
         email: item.email,
         address: item.address,
         student_count: item.student_count,
-        administrator: item.administrator
+        administrator: item.administrator,
       };
     },
     getRequestAllUsers() {

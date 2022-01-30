@@ -109,18 +109,14 @@ const routes = [
     }
   },
   {
-    path: '/adminusercreate',
-    name: 'AdminUserCreate',
-    component: () => import('../views/AdminUserCreate.vue'),
-    meta: {
-      requiresLogin: true,
-      adminLocked: true
-    }
-  },
-  {
     path: '/maptest',
     name: 'MapTest',
     component: () => import('../views/MapTest.vue')
+  },
+  {
+    path: '/adminrouteplanner',
+    name: 'AdminRoutePlanner',
+    component: () => import('../views/AdminRoutePlanner.vue')
   }
 ]
 
