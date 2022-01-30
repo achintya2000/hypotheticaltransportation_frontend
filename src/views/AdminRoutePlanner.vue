@@ -128,7 +128,10 @@ export default {
             Authorization: `Token ${this.$store.state.accessToken}`,
           },
         }
-      );
+      ).then(response => {
+          console.log(response)
+          this.getRequestAllRoutes()
+      });
     },
     getDisplayRoute(item) {
       return {
@@ -143,7 +146,6 @@ export default {
         })
         .then((response) => {
           this.schools = response.data.map(this.getDisplayRoute);
-          //this.$store.state.addresses = response.data;
         })
         .catch((err) => {
           console.log(err);
