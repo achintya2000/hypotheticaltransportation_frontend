@@ -91,15 +91,6 @@ const routes = [
     }
   },
   {
-    path: '/adminroutecreate',
-    name: 'AdminRouteCreate',
-    component: () => import('../views/AdminRouteCreate.vue'),
-    meta: {
-      requiresLogin: true,
-      adminLocked: true
-    }
-  },
-  {
     path: '/adminroutedetail',
     name: 'AdminRouteDetail',
     component: () => import('../views/AdminRouteDetail.vue'),
@@ -116,7 +107,11 @@ const routes = [
   {
     path: '/adminrouteplanner',
     name: 'AdminRoutePlanner',
-    component: () => import('../views/AdminRoutePlanner.vue')
+    component: () => import('../views/AdminRoutePlanner.vue'),
+    meta: {
+      requiresLogin: true,
+      adminLocked: true
+    }
   }
 ]
 

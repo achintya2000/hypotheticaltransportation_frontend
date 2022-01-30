@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      John Doe
+      {{ full_name }}
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog3" width="500">
         <template v-slot:activator="{ on, attrs }">
@@ -183,33 +183,43 @@
       <v-spacer></v-spacer>
     </v-card-title>
     <v-card-subtitle>
-    11 Duke Street, Durham NC, 27705
+    {{ currentAddress }}
     </v-card-subtitle>
     <v-card-subtitle>
-    johndoe@gmail.com
+    {{ email }}
     </v-card-subtitle>
     <v-card-subtitle>
-    Admin: No
+    Admin: {{ administrator }}
     </v-card-subtitle>
     <v-card-title>
         Students
     </v-card-title>
     <v-data-table
       :headers="headers"
-      :items="addresses"
+      :items="students"
       :search="search"
       :sort-by="['name']"
       :sort-desc="[true]"
       multi-sort
-    ></v-data-table>
+    >
+    <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small @click="viewStudent(item)"> mdi-eye </v-icon>
+      </template>
+    </v-data-table>
   </v-card>
 </template>
 
 <script>
+import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
     return {
       search: "",
+      email: "",
+      full_name: "",
+      currentAddress: "",
+      administrator: "",
+      students: [],
       dialog: false,
         dialog2: false,
         dialog3: false,
@@ -237,35 +247,58 @@ export default {
         {
           text: "Name",
           align: "start",
-          value: "name",
+          value: "studentName",
         },
-        { text: "Address", value: "address" },
-      ],
-      addresses: [
-        {
-          name: "Frozen Yogurt",
-          address: 159,
-        },
-        {
-          name: "Ice cream sandwich",
-          address: 237,
-        },
-        {
-          name: "Eclair",
-          address: 262,
-        },
-        {
-          name: "Cupcake",
-          address: 305,
-        },
-        {
-          name: "Gingerbread",
-          address: 356,
-        },
+        { text: "Route", value: "studentRoute" },
+        { text: "Parent", value: "studentParent" },
+        { text: "Actions", value: "actions", sortable: false },
       ],
     };
   },
   methods: {
+      viewStudent(item) {
+      this.$router.push({
+        name: "AdminStudentDetail",
+        query: { id: item.studentId },
+      });
+    },
+      getUserInfo() {
+      base_endpoint
+        .get("/api/profile/get/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.email = response.data.email;
+          this.full_name = response.data.full_name;
+          this.currentAddress = response.data.address;
+          this.administrator = response.data.administrator;
+          
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getDisplayStudents(item) {
+      return {
+        studentId: item.id,
+        studentName: item.name,
+        studentRoute: item.route,
+        studentParent: item.parent,
+      };
+    },
+    getStudents() {
+      base_endpoint
+        .get("/api/student/getallfromprofile/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.students = response.data.map(this.getDisplayStudents);
+          console.log(this.students)
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
       validate () {
         this.$refs.form.validate()
       },
@@ -275,6 +308,10 @@ export default {
       resetValidation () {
         this.$refs.form.resetValidation()
       },
+    },
+    created() {
+        this.getUserInfo();
+        this.getStudents();
     },
 };
 </script>

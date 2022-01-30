@@ -25,7 +25,12 @@
       :sort-by="['sid']"
       :sort-desc="[false, true]"
       multi-sort
-    ></v-data-table>
+    >
+    
+    <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
+      </template>
+    </v-data-table>
   </v-card>
 </template>
 
@@ -47,17 +52,22 @@ export default {
         { text: "Student ID", value: "sid" },
         { text: "School", value: "school" },
         { text: "Route", value: "route" },
+        { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],
     };
   },
   methods: {
+    viewItem(item) {
+      this.$router.push({ name: "AdminStudentDetail", query: { id: item.id } });
+    },
     getDisplayStudent(item) {
       return {
         name: item.name,
         sid: item.sid,
         school: item.school,
         route: item.route,
+        id: item.id,
       };
     },
     getRequestAllStudents() {

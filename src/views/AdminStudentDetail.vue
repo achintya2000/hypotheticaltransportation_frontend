@@ -71,7 +71,7 @@
             <v-form ref="form">
               <v-spacer></v-spacer>
 
-              <v-btn color="error" class="mr-4" @click="validate">
+              <v-btn color="error" class="mr-4" @click="validateDelete">
                 Yes, Delete
               </v-btn>
 
@@ -252,6 +252,27 @@ export default {
     },
     validate() {
       this.$refs.form.validate();
+    },
+    submitDataForDelete() {
+      base_endpoint
+        .delete("/api/student/delete/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log(response)
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    validateDelete() {
+      this.$refs.form.validate();
+      this.submitDataForDelete();
+      this.dialog = false;
+      this.$emit(
+        "schoolmodified",
+        "A school has been modified and sent to database"
+      );
     },
     reset() {
       this.$refs.form.reset();
