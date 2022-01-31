@@ -100,8 +100,7 @@
               <template v-slot:input="slotProps">
                 <v-text-field
                   v-model="userAddress"
-                  label="Address"
-                  placeholder="Start Typing"
+                  placeholder="Address"
                   ref="input"
                   v-on:listeners="slotProps.listeners"
                   v-on:attrs="slotProps.attrs"
@@ -117,12 +116,7 @@
               ></v-checkbox>
               
 
-              <v-btn
-                :disabled="!valid"
-                color="success"
-                class="mr-4"
-                @click="validate"
-              >
+              <v-btn color="success" class="mr-4" @click="updateUser">
                 Save
               </v-btn>
 
@@ -263,6 +257,8 @@ export default {
       this.latitude = place.geometry.location.lat();
       this.longitude = place.geometry.location.lng();
     },
+
+    
       viewStudent(item) {
       this.$router.push({
         name: "AdminStudentDetail",
@@ -293,6 +289,7 @@ export default {
         studentParent: item.parent,
       };
     },
+    
     getStudents() {
       base_endpoint
         .get("/api/student/getallfromprofile/" + this.$route.query.id, {
@@ -306,6 +303,37 @@ export default {
           console.log(err);
         });
     },
+
+      updateUser() {
+      console.log(this.school.id);
+      console.log(this.parent.id);
+      this.dialog2 = false;
+      base_endpoint
+        .patch(
+          "/api/profile/update/" + this.$route.query.id,
+          {
+            full_name: this.newStudentName,
+            sid: this.newStudentId,
+            school: this.school.id,
+            route: this.studentRoute,
+            parent: this.parent.id,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        ).then((response) => {
+          console.log(response);
+          this.getStudentInfo();
+        })
+
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+
       validate () {
         this.$refs.form.validate()
       },
