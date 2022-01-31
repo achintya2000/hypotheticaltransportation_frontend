@@ -22,10 +22,9 @@
       :sort-desc="[true]"
       multi-sort
     >
-    <template v-slot:[`item.actions`]="{ item }">
+      <template v-slot:[`item.actions`]="{ item }">
         <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
       </template>
-    
     </v-data-table>
   </v-card>
 </template>
@@ -56,7 +55,7 @@ export default {
   },
 
   methods: {
-      viewItem(item) {
+    viewItem(item) {
       this.$router.push({ name: "AdminUserDetail", query: { id: item.id } });
     },
     getDisplayUser(item) {
@@ -70,14 +69,14 @@ export default {
       };
     },
     getRequestAllUsers() {
-      console.log("GOT HERE!!!");
       base_endpoint
         .get("/api/profile/getall", {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
+          console.log("GOT HERE");
           this.profiles = response.data.map(this.getDisplayUser);
-          //this.$store.state.addresses = response.data;
+          console.log(this.profiles);
         })
         .catch((err) => {
           console.log(err);
