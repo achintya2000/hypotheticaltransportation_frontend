@@ -20,29 +20,38 @@
 
           <v-text-field
             v-if="checkbox"
-            label="Parent Name"
+            v-model="parentName"
+            label="User Name"
             required
           ></v-text-field>
           <v-text-field
             v-if="checkbox"
-            label="Parent Email"
+            v-model="parentEmail"
+            label="User Email"
             required
           ></v-text-field>
           <v-text-field
             v-if="checkbox"
-            label="Parent Password"
+            v-model="parentPassword"
+            label="User Password"
             required
           ></v-text-field>
           <v-text-field
             v-if="checkbox"
-            label="Parent Address"
+            v-model="parentAddress"
+            label="User Address"
             required
           ></v-text-field>
+          <v-checkbox
+            v-if="checkbox"
+            v-model="userAdminCheckbox"
+            :label="'Make User Admin?'"
+          ></v-checkbox>
 
           <v-text-field
-            v-model="name"
+            v-model="studentName"
             :rules="nameRules"
-            label="Name"
+            label="Student Name"
             required
           ></v-text-field>
 
@@ -52,17 +61,33 @@
             label="Student ID"
             required
           ></v-text-field>
+          <v-autocomplete
+            v-model="parentSelected"
+            v-if="!checkbox"
+            item-text="name"
+            label="Student's Parent"
+            :items="parents"
+            required
+            return-object
+          ></v-autocomplete>
 
           <v-autocomplete
             v-model="schoolSelected"
             item-text="name"
-            label="School"
+            label="Student School"
             :items="schools"
             @change="getRoutesForSchool()"
+            required
             return-object
           ></v-autocomplete>
 
-          <v-autocomplete item-text="name" label="Bus Route" :items="routes">
+          <v-autocomplete 
+            v-model="routeSelected"
+            item-text="name" 
+            label="Student Bus Route" 
+            :items="routes"
+            return-object
+            >
           </v-autocomplete>
 
           <v-btn
@@ -91,12 +116,21 @@ export default {
       schoolItems: [],
       dialog: false,
       valid: true,
-      name: "",
+      parentName: "",
+      parentEmail: "",
+      parentPassword: "",
+      parentAddress: "",
+      userAdminCheckbox: "",
+      parentSelected: null,
+      routeSelected: null,
+      newParentID: "",
+      studentName: "",
       nameRules: [(v) => !!v || "Name is required"],
       sid: "",
       sidRules: [(v) => !!v || "Student ID is required"],
       schools: [],
       routes: [],
+      parents: [],
       schoolSelected: null,
     };
   },
@@ -139,14 +173,53 @@ export default {
           console.log(err);
         });
     },
+    getDisplayParent(item) {
+      return {
+        id: item.id,
+        name: item.full_name,
+      };
+    },
+    getRequestAllParents() {
+      base_endpoint
+        .get("/api/profile/getall", {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.parents = response.data.map(this.getDisplayParent);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     submitData() {
-      base_endpoint.post(
+      if (this.checkbox==true) {
+        base_endpoint.post(
+          "/api/profile/create",
+          {
+          full_name: this.parentName,
+          address: this.parentAddress,
+          longitude: 35.5,
+          latitude: 35.5,
+          email: this.parentEmail,
+          password: this.parentPassword,
+          is_superuser: this.userAdminCheckbox,
+        },
+        {
+          headers: {
+            Authorization: `Token ${this.$store.state.accessToken}`,
+          },
+        }
+      ).then((response) => {
+          this.newParentID = response.data.id;
+        });
+
+        base_endpoint.post(
         "/api/student/create",
         {
-          full_name: this.name,
+          full_name: this.studentName,
           sid: this.sid,
-          school: this.school,
-          route: this.route,
+          school: this.schoolSelected.id,
+          parent: this.newParentID,
         },
         {
           headers: {
@@ -154,6 +227,24 @@ export default {
           },
         }
       );
+        
+      } else {
+        base_endpoint.post(
+        "/api/student/create",
+        {
+          full_name: this.studentName,
+          sid: this.sid,
+          school: this.schoolSelected.id,
+          parent: this.parentSelected.id,
+        },
+        {
+          headers: {
+            Authorization: `Token ${this.$store.state.accessToken}`,
+          },
+        }
+      );
+      }
+      
     },
     validate() {
       this.$refs.form.validate();
@@ -173,6 +264,7 @@ export default {
   },
   created() {
     this.getRequestAllSchools();
+    this.getRequestAllParents();
   },
 };
 </script>
