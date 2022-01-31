@@ -16,31 +16,33 @@
           <v-card-text>
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
-                v-model="routeName"
+                v-model="newRouteName"
                 :rules="routeNameRules"
                 label="Route Name"
                 required
               ></v-text-field>
 
               <v-text-field
-                v-model="routeDescription"
+                v-model="newRouteDescription"
                 :rules="routeDesRules"
                 label="Route Description"
                 required
               ></v-text-field>
 
               <v-autocomplete
-                v-model="routeSchool"
+                v-model="newRouteSchool"
                 :items="schoolItems"
                 label="School"
                 required
+                item-text="name"
+                return-object
               ></v-autocomplete>
 
               <v-btn
                 :disabled="!valid"
                 color="success"
                 class="mr-4"
-                @click="validate"
+                @click="validateForModify"
               >
                 Save
               </v-btn>
@@ -69,7 +71,7 @@
             <v-form ref="form">
               <v-spacer></v-spacer>
 
-              <v-btn color="error" class="mr-4" @click="validate">
+              <v-btn color="error" class="mr-4" @click="submitDataForDelete">
                 Yes, Delete
               </v-btn>
 
@@ -104,13 +106,16 @@ export default {
   data() {
     return {
       routeName: "",
+      newRouteName: "",
       routeSchool: "",
+      newRouteSchool: null,
       routeDescription: "",
+      newRouteDescription: "",
       search: "",
       valid: true,
       dialog: false,
       dialog2: false,
-      schoolItems: ["Old School", "bar", "fizz", "buzz"],
+      oldSchoolID: "",
       schoolValues: ["foo", "bar"],
       routeNameRules: [(v) => !!v || "Name is required"],
       routeDesRules: [(v) => !!v || "Address is required"],
@@ -124,29 +129,102 @@ export default {
         { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],
+      schoolItems: [],
     };
   },
   methods: {
-    getSchoolInfo() {
+    getRouteInfo() {
       base_endpoint
         .get("/api/route/get/" + this.$route.query.id, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
           this.routeName = response.data.name;
+          this.newRouteName = response.data.name;
           this.routeSchool = response.data.school;
+          this.newRouteSchool = response.data.school;
           this.routeDescription = response.data.description;
+          this.newRouteDescription = response.data.description;
+          this.oldSchoolID = response.data.school.id;
+          this.getSchools();
         })
         .catch((err) => {
           console.log(err);
         });
     },
+    submitDataForModify() {
+      base_endpoint
+        .patch(
+          "/api/route/update/" + this.$route.query.id,
+          {
+            name: this.newRouteName,
+            description: this.newRouteDescription,
+            school: this.newRouteSchool.id,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          this.getRouteInfo();
+          this.getStudentsInRoute();
+        });
+    },
+    validateForModify() {
+      this.$refs.form.validate();
+      this.submitDataForModify();
+      this.dialog2 = false;
+      this.$emit(
+        "schoolmodified",
+        "A school has been modified and sent to database"
+      );
+    },
+    getSchools() {
+      base_endpoint
+        .get("/api/school/getall", {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.schoolItems = response.data.map(this.getDisplaySchools);
+
+          this.schoolItems.forEach((item) => {
+            if (this.oldSchoolID == item.id) {
+              this.newRouteSchool = item;
+            }
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getDisplaySchools(item) {
+      return {
+        name: item.name,
+        id: item.id,
+      };
+    },
     getDisplayStudents(item) {
       return {
         name: item.name,
-        address: item.address,
         id: item.id,
       };
+    },
+    submitDataForDelete() {
+    this.dialog=false;
+      base_endpoint
+        .delete("/api/route/delete/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log(response)
+          this.$router.push({ name: "AdminRouteList"});
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     getStudentsInRoute() {
       base_endpoint
@@ -174,8 +252,9 @@ export default {
     },
   },
   created() {
-    this.getSchoolInfo();
+    this.getRouteInfo();
     this.getStudentsInRoute();
+    //this.getSchools();
   },
 };
 </script>

@@ -120,7 +120,7 @@ export default {
       parentEmail: "",
       parentPassword: "",
       parentAddress: "",
-      userAdminCheckbox: "",
+      userAdminCheckbox: false,
       parentSelected: null,
       routeSelected: null,
       newParentID: "",
@@ -193,6 +193,7 @@ export default {
     },
     submitData() {
       if (this.checkbox==true) {
+        console.log("GOT INTO THE IF STATMENT");
         base_endpoint.post(
           "/api/profile/create",
           {
@@ -210,9 +211,10 @@ export default {
           },
         }
       ).then((response) => {
+        console.log("PRINTING PARENT ID CREATED");
+        console.log(response.data.id);
           this.newParentID = response.data.id;
-        });
-
+          console.log("CREATING STUDENT");
         base_endpoint.post(
         "/api/student/create",
         {
@@ -225,10 +227,13 @@ export default {
           headers: {
             Authorization: `Token ${this.$store.state.accessToken}`,
           },
+        });
+        
         }
       );
         
       } else {
+        console.log("GOT INTO THE ELSE STATMENT");
         base_endpoint.post(
         "/api/student/create",
         {

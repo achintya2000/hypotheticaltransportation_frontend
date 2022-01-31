@@ -160,7 +160,7 @@
               <v-btn
                 color="error"
                 class="mr-4"
-                @click="validate"
+                @click="submitDataForDelete"
               >
                 Yes, Delete
               </v-btn>
@@ -330,6 +330,21 @@ export default {
           this.getStudentInfo();
         })
 
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    submitDataForDelete() {
+    this.dialog=false;
+      base_endpoint
+        .delete("/api/profile/delete/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log(response)
+          this.$router.push({ name: "AdminUserList"});
+        })
         .catch((err) => {
           console.log(err);
         });

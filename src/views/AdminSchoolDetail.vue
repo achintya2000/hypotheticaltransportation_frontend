@@ -66,13 +66,13 @@
           <v-card-text>
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
-                v-model="name"
+                v-model="deleteName"
                 :rules="nameRules"
                 label="School Name"
                 required
               ></v-text-field>
 
-              <v-btn :disabled="!valid" color="success" class="mr-4">
+              <v-btn :disabled="!valid" color="success" class="mr-4" @click="validateForDelete">
                 Submit
               </v-btn>
 
@@ -125,7 +125,7 @@
 import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
-    var theSchoolsName = "Staples High School";
+    
     return {
       schoolName: "",
       schoolAddress: "",
@@ -137,13 +137,7 @@ export default {
       name2Rules: [(v) => !!v || "Name is required"],
       newAddress: "201 Rock Haven Rd",
       addressRules: [(v) => !!v || "Address is required"],
-      name: "",
-      nameRules: [
-        (v) => !!v || "Name is required",
-        (v) =>
-          (v.toLowerCase() && v == theSchoolsName.toLowerCase()) ||
-          "You must retype the name exactly",
-      ],
+      deleteName: "",
       routeHeaders: [
         {
           text: "Name",
@@ -239,6 +233,28 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    submitDataForDelete() {
+      base_endpoint
+        .delete("/api/school/delete/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log(response)
+          this.$router.push({ name: "AdminSchoolList"});
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    validateForDelete() {
+      this.$refs.form.validate();
+      this.submitDataForDelete();
+      this.dialog = false;
+      this.$emit(
+        "schoolmodified",
+        "A school has been modified and sent to database"
+      );
     },
     submitDataForModify() {
       base_endpoint
