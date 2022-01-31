@@ -111,7 +111,7 @@
 
 
               <v-checkbox
-                v-model="checkbox"
+                v-model="adminCheckbox"
                 :label="'Admin Status'"
               ></v-checkbox>
               
@@ -239,6 +239,8 @@ export default {
         ],
         latitude: 0,
         longitude: 0,
+        formatted_address: "",
+        adminCheckbox: false,
       headers: [
         {
           text: "Name",
@@ -305,18 +307,18 @@ export default {
     },
 
       updateUser() {
-      console.log(this.school.id);
-      console.log(this.parent.id);
+      
       this.dialog2 = false;
       base_endpoint
         .patch(
           "/api/profile/update/" + this.$route.query.id,
           {
-            full_name: this.newStudentName,
-            sid: this.newStudentId,
-            school: this.school.id,
-            route: this.studentRoute,
-            parent: this.parent.id,
+            full_name: this.userName,
+            email: this.userEmail,
+            address: this.formatted_address,
+            latitude: this.latitude,
+            longitude: this.longitude,
+            is_superuser: this.adminCheckbox,
           },
           {
             headers: {
