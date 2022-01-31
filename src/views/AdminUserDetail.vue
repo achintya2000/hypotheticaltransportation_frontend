@@ -181,7 +181,7 @@
     {{ currentAddress }}
     </v-card-subtitle>
     <v-card-subtitle>
-    {{ email }}
+    Email: {{ email }}
     </v-card-subtitle>
     <v-card-subtitle>
     Admin: {{ administrator }}
@@ -276,7 +276,7 @@ export default {
           this.email = response.data.email;
           this.full_name = response.data.full_name;
           this.currentAddress = response.data.address;
-          this.administrator = response.data.administrator;
+          this.administrator = response.data.is_superuser;
           
         })
         .catch((err) => {
