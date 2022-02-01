@@ -36,12 +36,21 @@
             label="User Password"
             required
           ></v-text-field>
+          
+          <gmap-autocomplete v-if="checkbox" @place_changed="setPlace">
+            <template v-slot:input="slotProps">
           <v-text-field
-            v-if="checkbox"
+            
             v-model="parentAddress"
             label="User Address"
             required
+            ref="input"
+                v-on:listeners="slotProps.listeners"
+                v-on:attrs="slotProps.attrs"
           ></v-text-field>
+          </template>
+          </gmap-autocomplete>
+
           <v-checkbox
             v-if="checkbox"
             v-model="userAdminCheckbox"
@@ -120,7 +129,7 @@ export default {
       parentEmail: "",
       parentPassword: "",
       parentAddress: "",
-      userAdminCheckbox: "",
+      userAdminCheckbox: false,
       parentSelected: null,
       routeSelected: null,
       newParentID: "",
@@ -132,9 +141,17 @@ export default {
       routes: [],
       parents: [],
       schoolSelected: null,
+      latitude: 0,
+      longitude: 0,
+      formatted_address: "",
     };
   },
   methods: {
+    setPlace(place) {
+      this.formatted_address = place.formatted_address;
+      this.latitude = place.geometry.location.lat();
+      this.longitude = place.geometry.location.lng();
+    },
     getDisplayRoute(item) {
       return {
         name: item.name,
@@ -193,13 +210,14 @@ export default {
     },
     submitData() {
       if (this.checkbox==true) {
+        console.log("GOT INTO THE IF STATMENT");
         base_endpoint.post(
           "/api/profile/create",
           {
           full_name: this.parentName,
-          address: this.parentAddress,
-          longitude: 35.5,
-          latitude: 35.5,
+          address: this.formatted_address,
+          longitude: this.longitude,
+          latitude: this.latitude,
           email: this.parentEmail,
           password: this.parentPassword,
           is_superuser: this.userAdminCheckbox,
@@ -210,9 +228,10 @@ export default {
           },
         }
       ).then((response) => {
+        console.log("PRINTING PARENT ID CREATED");
+        console.log(response.data.id);
           this.newParentID = response.data.id;
-        });
-
+          console.log("CREATING STUDENT");
         base_endpoint.post(
         "/api/student/create",
         {
@@ -225,10 +244,13 @@ export default {
           headers: {
             Authorization: `Token ${this.$store.state.accessToken}`,
           },
+        });
+        
         }
       );
         
       } else {
+        console.log("GOT INTO THE ELSE STATMENT");
         base_endpoint.post(
         "/api/student/create",
         {

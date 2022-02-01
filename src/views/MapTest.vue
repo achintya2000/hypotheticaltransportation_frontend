@@ -23,7 +23,11 @@
         :key="index"
         v-for="(m, index) in markers"
         :position="m.position"
-        @click="center = m.position"
+        @click="
+          center = m.position;
+          toggleInfo(m, index);
+        "
+        :icon="getMarkers(index)"
       />
     </GmapMap>
   </div>
@@ -33,7 +37,16 @@
 export default {
   name: "GoogleMap",
   data() {
+    let mapMarker =
+      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjMiIGhlaWdodD0iMjkiIHZpZXdCb3g9IjAgMCAyMyAyOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGQ9Ik0yMyAxMS41QzIzIDIxLjUgMTEuNSAyOC41IDExLjUgMjguNUMxMS41IDI4LjUgMCAyMS41IDAgMTEuNUMwIDUuMTQ4NzMgNS4xNDg3MyAwIDExLjUgMEMxNy44NTEzIDAgMjMgNS4xNDg3MyAyMyAxMS41WiIgZmlsbD0iI0M3MDYyOSIvPg0KPGNpcmNsZSBjeD0iMTEuNSIgY3k9IjExLjUiIHI9IjUuNSIgZmlsbD0iIzgxMDAxNyIvPg0KPC9zdmc+DQo=";
+    let mapMarkerActive =
+      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjMiIGhlaWdodD0iMjkiIHZpZXdCb3g9IjAgMCAyMyAyOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGQ9Ik0yMyAxMS41QzIzIDIxLjUgMTEuNSAyOC41IDExLjUgMjguNUMxMS41IDI4LjUgMCAyMS41IDAgMTEuNUMwIDUuMTQ4NzMgNS4xNDg3MyAwIDExLjUgMEMxNy44NTEzIDAgMjMgNS4xNDg3MyAyMyAxMS41WiIgZmlsbD0iIzMzMzMzMyIvPg0KPGNpcmNsZSBjeD0iMTEuNSIgY3k9IjExLjUiIHI9IjUuNSIgZmlsbD0iYmxhY2siLz4NCjwvc3ZnPg0K";
+
     return {
+      mapMarker,
+      mapMarkerActive,
+      selectedIndex: null,
+      selectedMarker: null,
       address: "",
       center: { lat: 45.508, lng: -73.587 },
       currentPlace: null,
@@ -58,6 +71,8 @@ export default {
         this.places.push(this.currentPlace);
         this.center = marker;
         this.currentPlace = null;
+
+        console.log(JSON.stringify(this.markers));
       }
     },
     geolocate: function () {
@@ -67,6 +82,14 @@ export default {
           lng: position.coords.longitude,
         };
       });
+    },
+    toggleInfo(m, index) {
+      this.selectedMarker = m;
+      this.selectedIndex = index;
+    },
+    getMarkers(index) {
+      if (this.selectedIndex === index) return this.mapMarkerActive;
+      return this.mapMarker;
     },
   },
 };

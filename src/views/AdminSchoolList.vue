@@ -72,8 +72,9 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
+          console.log("GOT HERE");
           this.addresses = response.data.map(this.getDisplayAddress);
-          //this.$store.state.addresses = response.data;
+          console.log(this.addresses);
         })
         .catch((err) => {
           console.log(err);

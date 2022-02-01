@@ -75,29 +75,35 @@ export default {
       this.longitude = place.geometry.location.lng();
     },
     submitData() {
-      base_endpoint.post(
-        "/api/school/create",
-        {
-          name: this.name,
-          address: this.formatted_address,
-          latitude: this.latitude,
-          longitude: this.longitude,
-        },
-        {
-          headers: {
-            Authorization: `Token ${this.$store.state.accessToken}`,
+      base_endpoint
+        .post(
+          "/api/school/create",
+          {
+            name: this.name,
+            address: this.formatted_address,
+            latitude: this.latitude,
+            longitude: this.longitude,
           },
-        }
-      );
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then(() => {
+          this.$emit(
+            "schoolcreated",
+            "A new school has been created and sent to database"
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     validate() {
       this.$refs.form.validate();
       this.submitData();
       this.dialog = false;
-      this.$emit(
-        "schoolcreated",
-        "A new school has been created and sent to database"
-      );
       this.reset();
     },
     reset() {

@@ -39,7 +39,7 @@
                 :disabled="!valid3"
                 color="success"
                 class="mr-4"
-                @click="validate"
+                @click="validateForResetPassword"
               >
                 Save
               </v-btn>
@@ -82,14 +82,14 @@
               lazy-validation
             >
               <v-text-field
-                v-model="userName"
+                v-model="newFull_name"
                 :rules="name2Rules"
                 label="Name"
                 required
               ></v-text-field>
 
               <v-text-field
-                v-model="userEmail"
+                v-model="newEmail"
                 :rules="emailRules"
                 label="Email"
                 required
@@ -99,7 +99,7 @@
               <gmap-autocomplete @place_changed="setPlace">
               <template v-slot:input="slotProps">
                 <v-text-field
-                  v-model="userAddress"
+                  v-model="newCurrentAddress"
                   placeholder="Address"
                   ref="input"
                   v-on:listeners="slotProps.listeners"
@@ -111,7 +111,7 @@
 
 
               <v-checkbox
-                v-model="adminCheckbox"
+                v-model="newAdministrator"
                 :label="'Admin Status'"
               ></v-checkbox>
               
@@ -160,7 +160,7 @@
               <v-btn
                 color="error"
                 class="mr-4"
-                @click="validate"
+                @click="submitDataForDelete"
               >
                 Yes, Delete
               </v-btn>
@@ -214,10 +214,17 @@ export default {
       userName: "",
       userAddress: "",
       administrator: "",
+      newEmail: "",
+      newFull_name: "",
+      newCurrentAddress: "",
+      newAdministrator: "",
       students: [],
       dialog: false,
         dialog2: false,
         dialog3: false,
+        newPassword: "",
+        newPassword2: "",
+
               name2: 'Old Name',
       name2Rules: [
         v => !!v || 'Name is required',
@@ -274,9 +281,13 @@ export default {
         })
         .then((response) => {
           this.email = response.data.email;
+          this.newEmail = response.data.email;
           this.full_name = response.data.full_name;
+          this.newFull_name = response.data.full_name;
           this.currentAddress = response.data.address;
+          this.newCurrentAddress = response.data.address;
           this.administrator = response.data.is_superuser;
+          this.newAdministrator = response.data.is_superuser;
           
         })
         .catch((err) => {
@@ -313,12 +324,12 @@ export default {
         .patch(
           "/api/profile/update/" + this.$route.query.id,
           {
-            full_name: this.userName,
-            email: this.userEmail,
+            full_name: this.newFull_name,
+            email: this.newEmail,
             address: this.formatted_address,
             latitude: this.latitude,
             longitude: this.longitude,
-            is_superuser: this.adminCheckbox,
+            is_superuser: this.newAdministrator,
           },
           {
             headers: {
@@ -333,6 +344,47 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+
+    submitDataForDelete() {
+    this.dialog=false;
+      base_endpoint
+        .delete("/api/profile/delete/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log(response)
+          this.$router.push({ name: "AdminUserList"});
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    submitDataForResetPassword() {
+      base_endpoint
+        .patch(
+          "/api/profile/changepassword/" + this.$route.query.id,
+          {
+            new_password: this.newPassword2,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+        });
+    },
+    validateForResetPassword() {
+      this.$refs.form.validate();
+      this.submitDataForResetPassword();
+      this.dialog3 = false;
+      this.$emit(
+        "schoolmodified",
+        "A school has been modified and sent to database"
+      );
     },
 
 

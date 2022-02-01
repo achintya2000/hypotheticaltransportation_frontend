@@ -22,21 +22,18 @@
                 required
               ></v-text-field>
 
-
-              <gmap-autocomplete @place_changed="setPlace">
-              <template v-slot:input="slotProps">
+             <gmap-autocomplete @place_changed="setPlace">
+            <template v-slot:input="slotProps"> 
               <v-text-field
                 v-model="newAddress"
                 label="Address"
-                placeholder="Start Typing"
-                :rules="addressRules"
                 ref="input"
                 v-on:listeners="slotProps.listeners"
                 v-on:attrs="slotProps.attrs"
-              >
-              </v-text-field>
-            </template>
-            </gmap-autocomplete>
+                required
+              ></v-text-field>
+               </template>
+          </gmap-autocomplete>
 
               <v-btn
                 :disabled="!valid"
@@ -75,13 +72,13 @@
           <v-card-text>
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
-                v-model="name"
+                v-model="deleteName"
                 :rules="nameRules"
                 label="School Name"
                 required
               ></v-text-field>
 
-              <v-btn :disabled="!valid" color="success" class="mr-4">
+              <v-btn :disabled="!valid" color="success" class="mr-4" @click="validateForDelete">
                 Submit
               </v-btn>
 
@@ -134,7 +131,7 @@
 import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
-    var theSchoolsName = "Staples High School";
+    
     return {
       schoolName: "",
       schoolAddress: "",
@@ -142,17 +139,14 @@ export default {
       valid: true,
       dialog: false,
       dialog2: false,
+      latitude: 0,
+      longitude: 0,
+      formatted_address: "",
       newSchoolName: "",
       name2Rules: [(v) => !!v || "Name is required"],
       newAddress: "201 Rock Haven Rd",
       addressRules: [(v) => !!v || "Address is required"],
-      name: "",
-      nameRules: [
-        (v) => !!v || "Name is required",
-        (v) =>
-          (v.toLowerCase() && v == theSchoolsName.toLowerCase()) ||
-          "You must retype the name exactly",
-      ],
+      deleteName: "",
       routeHeaders: [
         {
           text: "Name",
@@ -177,8 +171,13 @@ export default {
     };
   },
   methods: {
+<<<<<<< HEAD
     setPlace(place) {
       this.newAddress = place.formatted_address;
+=======
+      setPlace(place) {
+      this.formatted_address = place.formatted_address;
+>>>>>>> a5f0c9a1f6f9f71cc35e3fcc75369d304f853914
       this.latitude = place.geometry.location.lat();
       this.longitude = place.geometry.location.lng();
     },
@@ -254,13 +253,37 @@ export default {
           console.log(err);
         });
     },
+    submitDataForDelete() {
+      base_endpoint
+        .delete("/api/school/delete/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log(response)
+          this.$router.push({ name: "AdminSchoolList"});
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    validateForDelete() {
+      this.$refs.form.validate();
+      this.submitDataForDelete();
+      this.dialog = false;
+      this.$emit(
+        "schoolmodified",
+        "A school has been modified and sent to database"
+      );
+    },
     submitDataForModify() {
       base_endpoint
         .patch(
           "/api/school/update/" + this.$route.query.id,
           {
             name: this.newSchoolName,
-            address: this.newAddress,
+            address: this.formatted_address,
+            latitude: this.latitude,
+            longitude: this.longitude,
           },
           {
             headers: {
