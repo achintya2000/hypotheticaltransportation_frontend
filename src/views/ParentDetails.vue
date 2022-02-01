@@ -53,7 +53,7 @@
     <v-card-subtitle> Name: {{ userName }} </v-card-subtitle>
     <v-card-subtitle> Email: {{ userEmail }} </v-card-subtitle>
     <v-card-subtitle> Address: {{ userAddress }} </v-card-subtitle>
-    
+
     <v-data-table
       :headers="headers"
       :items="students"
@@ -62,12 +62,10 @@
       :sort-desc="[false, true]"
       multi-sort
     >
-    
-    <template v-slot:[`item.actions`]="{ item }">
+      <template v-slot:[`item.actions`]="{ item }">
         <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
       </template>
     </v-data-table>
-
   </v-card>
 </template>
 
@@ -103,7 +101,10 @@ export default {
   },
   methods: {
     viewItem(item) {
-      this.$router.push({ name: "ParentStudentDetail", query: { id: item.id } });
+      this.$router.push({
+        name: "ParentStudentDetail",
+        query: { id: item.id },
+      });
     },
     getUserInfo() {
       base_endpoint
@@ -122,7 +123,7 @@ export default {
         });
     },
 
-      getDisplayStudent(item) {
+    getDisplayStudent(item) {
       return {
         name: item.name,
         sid: item.sid,
@@ -133,9 +134,14 @@ export default {
     },
     getRequestAllStudents() {
       base_endpoint
-        .get("/api/student/getallfromprofile/"+ window.localStorage.getItem("userID"), {
-          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
-        })
+        .get(
+          "/api/student/getallfromprofile/" + this.$store.state.loggedInUserID,
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
         .then((response) => {
           this.students = response.data.map(this.getDisplayStudent);
           //this.$store.state.addresses = response.data;

@@ -93,13 +93,13 @@ export default {
           password: this.password,
         })
         .then(() => {
-          this.$router.push({ name: "AdminSchoolList" });
-
           this.$store
             .dispatch("getLoggedInUserInfo", {
               token: localStorage.getItem("token"),
             })
-            .then(() => {})
+            .then(() => {
+              this.$router.push({ name: "ParentDetails" });
+            })
             .catch((err) => {
               console.log(err);
             });
