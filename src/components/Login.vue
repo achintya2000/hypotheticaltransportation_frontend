@@ -49,7 +49,6 @@
               text
               :disabled="!valid"
               color="blue darken-1"
-              @click="dialog = false"
             >
               Login
             </v-btn>

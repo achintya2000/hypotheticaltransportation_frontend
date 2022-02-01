@@ -1,49 +1,56 @@
 <template>
-  <v-dialog v-model="dialog" width="500">
+  <v-dialog v-model="dialog" width="50%">
     <template v-slot:activator="{ on, attrs }">
       <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
-        Create New Student
+        Create New Student/User
       </v-btn>
     </template>
 
     <v-card>
       <v-card-title class="text-h5 grey lighten-2">
-        Create a New Student
+        Create a New Student/User
       </v-card-title>
 
       <v-card-text>
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-checkbox
-            v-model="checkbox"
-            :label="'Add students to current user'"
+            v-model="userCheckbox"
+            :label="'Create a New User'"
+          ></v-checkbox>
+          <v-checkbox
+            v-model="studentCheckbox"
+            :label="'Create a New Student'"
           ></v-checkbox>
 
           <v-text-field
-            v-if="checkbox"
+            v-if="userCheckbox"
             v-model="parentName"
+            :rules="userNameValidateArray"
             label="User Name"
             required
           ></v-text-field>
           <v-text-field
-            v-if="checkbox"
+            v-if="userCheckbox"
             v-model="parentEmail"
+            :rules="userEmailValidateArray"
             label="User Email"
             required
           ></v-text-field>
           <v-text-field
-            v-if="checkbox"
+            v-if="userCheckbox"
+            :rules="userPasswordValidateArray"
             v-model="parentPassword"
             label="User Password"
             required
           ></v-text-field>
           
-          <gmap-autocomplete v-if="checkbox" @place_changed="setPlace">
+          <gmap-autocomplete v-if="userCheckbox" @place_changed="setPlace">
             <template v-slot:input="slotProps">
           <v-text-field
             
             v-model="parentAddress"
             label="User Address"
-            required
+            :rules="userAddressValidateArray"
             ref="input"
                 v-on:listeners="slotProps.listeners"
                 v-on:attrs="slotProps.attrs"
@@ -52,52 +59,43 @@
           </gmap-autocomplete>
 
           <v-checkbox
-            v-if="checkbox"
+            v-if="userCheckbox"
             v-model="userAdminCheckbox"
             :label="'Make User Admin?'"
           ></v-checkbox>
 
           <v-text-field
             v-model="studentName"
-            :rules="nameRules"
+            :rules="studentNameValidateArray"
+            v-if="studentCheckbox"
             label="Student Name"
-            required
           ></v-text-field>
 
           <v-text-field
             v-model="sid"
-            :rules="sidRules"
+            v-if="studentCheckbox"
+            :rules="studentIDValidateArray"
             label="Student ID"
-            required
           ></v-text-field>
           <v-autocomplete
             v-model="parentSelected"
-            v-if="!checkbox"
+            v-if="userAndStudentCheckbox"
+            :rules="studentParentValidateArray"
             item-text="name"
             label="Student's Parent"
             :items="parents"
-            required
             return-object
           ></v-autocomplete>
 
           <v-autocomplete
             v-model="schoolSelected"
             item-text="name"
+            :rules="studentSchoolValidateArray"
+            v-if="studentCheckbox"
             label="Student School"
             :items="schools"
-            @change="getRoutesForSchool()"
-            required
             return-object
           ></v-autocomplete>
-
-          <v-autocomplete 
-            v-model="routeSelected"
-            item-text="name" 
-            label="Student Bus Route" 
-            :items="routes"
-            return-object
-            >
-          </v-autocomplete>
 
           <v-btn
             :disabled="!valid"
@@ -121,7 +119,8 @@ import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
     return {
-      checkbox: false,
+      userCheckbox: false,
+      studentCheckbox: false,
       schoolItems: [],
       dialog: false,
       valid: true,
@@ -131,19 +130,25 @@ export default {
       parentAddress: "",
       userAdminCheckbox: false,
       parentSelected: null,
-      routeSelected: null,
       newParentID: "",
       studentName: "",
       nameRules: [(v) => !!v || "Name is required"],
       sid: "",
       sidRules: [(v) => !!v || "Student ID is required"],
       schools: [],
-      routes: [],
       parents: [],
       schoolSelected: null,
       latitude: 0,
       longitude: 0,
       formatted_address: "",
+      userNameValidateArray: [this.userNameValidate],
+      userEmailValidateArray: [this.userEmailValidate],
+      userPasswordValidateArray: [this.userPasswordValidate],
+      userdAddressValidateArray: [this.userdAddressValidate],
+      studentNameValidateArray: [this.studentNameValidate],
+      studentIDValidateArray: [this.studentIDValidate],
+      studentSchoolValidateArray: [this.studentSchoolValidate],
+      studentParentValidateArray: [this.studentParentValidate],
     };
   },
   methods: {
@@ -151,25 +156,6 @@ export default {
       this.formatted_address = place.formatted_address;
       this.latitude = place.geometry.location.lat();
       this.longitude = place.geometry.location.lng();
-    },
-    getDisplayRoute(item) {
-      return {
-        name: item.name,
-        school: item.school,
-        description: item.description,
-      };
-    },
-    getRoutesForSchool() {
-      base_endpoint
-        .get("/api/route/getallfromschool/" + this.schoolSelected.id, {
-          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
-        })
-        .then((response) => {
-          this.routes = response.data.map(this.getDisplayRoute);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
     },
     getDisplaySchool(item) {
       return {
@@ -198,7 +184,7 @@ export default {
     },
     getRequestAllParents() {
       base_endpoint
-        .get("/api/profile/getall", {
+        .get("/api/profile/getallwithaddress", {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -209,7 +195,7 @@ export default {
         });
     },
     submitData() {
-      if (this.checkbox==true) {
+      if (this.userCheckbox==true) {
         console.log("GOT INTO THE IF STATMENT");
         base_endpoint.post(
           "/api/profile/create",
@@ -230,6 +216,7 @@ export default {
       ).then((response) => {
         console.log("PRINTING PARENT ID CREATED");
         console.log(response.data.id);
+        if ((this.studentName != null && this.studentName != "") && (this.sid != null && this.sid != "") && (this.schoolSelected.id != null && this.schoolSelected.id != "") && (this.newParentID != null && this.newParentID != "")) {
           this.newParentID = response.data.id;
           console.log("CREATING STUDENT");
         base_endpoint.post(
@@ -245,7 +232,7 @@ export default {
             Authorization: `Token ${this.$store.state.accessToken}`,
           },
         });
-        
+        }
         }
       );
         
@@ -283,11 +270,75 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
+    userNameValidate() {
+      if (this.userCheckbox == true && (this.parentName == null || this.parentName == "")) {
+        return "Parent name is required";
+      } else {
+        return true;
+      }
+    },
+    userEmailValidate() {
+      if (this.userCheckbox == true && (this.parentEmail == null || this.parentEmail == "")) {
+        return "Parent email is required";
+      } else {
+        return true;
+      }
+    },
+    userPasswordValidate() {
+      if (this.userCheckbox == true && (this.parentPassword == null || this.parentPassword == "")) {
+        return "Parent password is required";
+      } else {
+        return true;
+      }
+    },
+    userdAddressValidate() {
+      if (this.userCheckbox == true && this.studentCheckbox == true && (this.parentAddress == null || this.parentAddress == "")) {
+        return "Parent address is required";
+      } else {
+        return true;
+      }
+    },
+    studentNameValidate() {
+      if (this.studentCheckbox == true && (this.studentName == null || this.studentName == "")) {
+        return "Student Name is required";
+      } else {
+        return true;
+      }
+    },
+    studentIDValidate() {
+      if (this.studentCheckbox == true && (this.sid == null || this.sid == "")) {
+        return "Student ID is required";
+      } else if (isNaN(this.sid) == true) {
+        return "Student ID must be a number";
+        
+      } else {
+        return true;
+      }
+    },
+    studentSchoolValidate() {
+      if (this.studentCheckbox == true && (this.schoolSelected == null || this.schoolSelected == "")) {
+        return "Student school is required";
+      } else {
+        return true;
+      }
+    },
+    studentParentValidate() {
+      if (this.studentCheckbox == true && this.userCheckbox == false && (this.parentSelected == null || this.parentSelected == "")) {
+        return "Student's parent is required";
+      } else {
+        return true;
+      }
+    },
   },
   created() {
     this.getRequestAllSchools();
     this.getRequestAllParents();
   },
+  computed: {
+    userAndStudentCheckbox() {
+      return ((!this.userCheckbox) && this.studentCheckbox);
+    }
+  }
 };
 </script>
 
