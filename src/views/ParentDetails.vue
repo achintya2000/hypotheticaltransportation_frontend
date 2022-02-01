@@ -50,7 +50,7 @@
       <v-spacer></v-spacer>
     </v-card-title>
     <v-card-subtitle> Email: {{ userEmail }} </v-card-subtitle>
-    <v-card-subtitle> Name: {{ userName}} </v-card-subtitle>
+    <v-card-subtitle> Name: {{ userName }} </v-card-subtitle>
     <v-card-subtitle> Address: {{ userAddress }} </v-card-subtitle>
     <v-card class="mx-auto" max-width="344">
       <v-card-text>
@@ -107,24 +107,22 @@ export default {
     };
   },
   methods: {
-
     getUserInfo() {
       base_endpoint
-        .get("/api/profile/get/" + this.$route.query.id, {
+        .get("/api/profile/get/" + window.localStorage.getItem("userID"), {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
+          console.log(response);
           this.email = response.data.email;
           this.full_name = response.data.full_name;
           this.currentAddress = response.data.address;
           this.administrator = response.data.is_superuser;
-          
         })
         .catch((err) => {
           console.log(err);
         });
     },
-
 
     validate() {
       this.$refs.form.validate();
@@ -135,6 +133,9 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
+  },
+  created() {
+    this.getUserInfo();
   },
 };
 </script>
