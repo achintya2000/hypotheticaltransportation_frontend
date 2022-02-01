@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const base_endpoint = axios.create({
-    baseURL: 'http://connectwise.colab.duke.edu:8000',
+    baseURL: 'https://vcm-25137.vm.duke.edu',
     timeout: 5000,
 })
 
