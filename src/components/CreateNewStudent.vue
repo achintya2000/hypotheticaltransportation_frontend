@@ -36,12 +36,21 @@
             label="User Password"
             required
           ></v-text-field>
+          
+          <gmap-autocomplete v-if="checkbox" @place_changed="setPlace">
+            <template v-slot:input="slotProps">
           <v-text-field
-            v-if="checkbox"
+            
             v-model="parentAddress"
             label="User Address"
             required
+            ref="input"
+                v-on:listeners="slotProps.listeners"
+                v-on:attrs="slotProps.attrs"
           ></v-text-field>
+          </template>
+          </gmap-autocomplete>
+
           <v-checkbox
             v-if="checkbox"
             v-model="userAdminCheckbox"
@@ -132,9 +141,17 @@ export default {
       routes: [],
       parents: [],
       schoolSelected: null,
+      latitude: 0,
+      longitude: 0,
+      formatted_address: "",
     };
   },
   methods: {
+    setPlace(place) {
+      this.formatted_address = place.formatted_address;
+      this.latitude = place.geometry.location.lat();
+      this.longitude = place.geometry.location.lng();
+    },
     getDisplayRoute(item) {
       return {
         name: item.name,
@@ -198,9 +215,9 @@ export default {
           "/api/profile/create",
           {
           full_name: this.parentName,
-          address: this.parentAddress,
-          longitude: 35.5,
-          latitude: 35.5,
+          address: this.formatted_address,
+          longitude: this.longitude,
+          latitude: this.latitude,
           email: this.parentEmail,
           password: this.parentPassword,
           is_superuser: this.userAdminCheckbox,

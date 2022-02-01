@@ -22,12 +22,19 @@
                 required
               ></v-text-field>
 
+             <gmap-autocomplete @place_changed="setPlace">
+            <template v-slot:input="slotProps"> 
               <v-text-field
                 v-model="newAddress"
                 :rules="addressRules"
                 label="Address"
+                ref="input"
+                v-on:listeners="slotProps.listeners"
+                v-on:attrs="slotProps.attrs"
                 required
               ></v-text-field>
+               </template>
+          </gmap-autocomplete>
 
               <v-btn
                 :disabled="!valid"
@@ -133,6 +140,9 @@ export default {
       valid: true,
       dialog: false,
       dialog2: false,
+      latitude: 0,
+      longitude: 0,
+      formatted_address: "",
       newSchoolName: "",
       name2Rules: [(v) => !!v || "Name is required"],
       newAddress: "201 Rock Haven Rd",
@@ -162,6 +172,11 @@ export default {
     };
   },
   methods: {
+      setPlace(place) {
+      this.formatted_address = place.formatted_address;
+      this.latitude = place.geometry.location.lat();
+      this.longitude = place.geometry.location.lng();
+    },
     planNewRoute() {
       this.$router.push({
         name: "AdminRoutePlanner",
@@ -262,7 +277,9 @@ export default {
           "/api/school/update/" + this.$route.query.id,
           {
             name: this.newSchoolName,
-            address: this.newAddress,
+            address: this.formatted_address,
+            latitude: this.latitude,
+            longitude: this.longitude,
           },
           {
             headers: {
