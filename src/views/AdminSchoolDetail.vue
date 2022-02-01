@@ -171,13 +171,8 @@ export default {
     };
   },
   methods: {
-<<<<<<< HEAD
-    setPlace(place) {
-      this.newAddress = place.formatted_address;
-=======
       setPlace(place) {
       this.formatted_address = place.formatted_address;
->>>>>>> a5f0c9a1f6f9f71cc35e3fcc75369d304f853914
       this.latitude = place.geometry.location.lat();
       this.longitude = place.geometry.location.lng();
     },
