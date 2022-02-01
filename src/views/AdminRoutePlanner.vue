@@ -215,6 +215,24 @@ export default {
       this.submitData();
       this.dialog = false;
     },
+    submitData() {
+      base_endpoint.post(
+        "/api/route/create",
+        {
+          name: this.name,
+          school: this.$route.query.id,
+          description: this.description,
+        },
+        {
+          headers: {
+            Authorization: `Token ${this.$store.state.accessToken}`,
+          },
+        }
+      ).then(response => {
+          console.log(response)
+          this.getRequestAllRoutes()
+      });
+    },
     reset() {
       this.$refs.form.reset();
     },

@@ -16,10 +16,12 @@
           <v-checkbox
             v-model="userCheckbox"
             :label="'Create a New User'"
+            dense
           ></v-checkbox>
           <v-checkbox
             v-model="studentCheckbox"
             :label="'Create a New Student'"
+            dense
           ></v-checkbox>
 
           <v-text-field
@@ -27,6 +29,7 @@
             v-model="parentName"
             :rules="userNameValidateArray"
             label="User Name"
+            dense
             required
           ></v-text-field>
           <v-text-field
@@ -34,6 +37,7 @@
             v-model="parentEmail"
             :rules="userEmailValidateArray"
             label="User Email"
+            dense
             required
           ></v-text-field>
           <v-text-field
@@ -41,6 +45,7 @@
             :rules="userPasswordValidateArray"
             v-model="parentPassword"
             label="User Password"
+            dense
             required
           ></v-text-field>
           
@@ -51,6 +56,7 @@
             v-model="parentAddress"
             label="User Address"
             :rules="userAddressValidateArray"
+            dense
             ref="input"
                 v-on:listeners="slotProps.listeners"
                 v-on:attrs="slotProps.attrs"
@@ -62,12 +68,15 @@
             v-if="userCheckbox"
             v-model="userAdminCheckbox"
             :label="'Make User Admin?'"
+            dense
           ></v-checkbox>
+          <v-divider></v-divider>
 
           <v-text-field
             v-model="studentName"
             :rules="studentNameValidateArray"
             v-if="studentCheckbox"
+            dense
             label="Student Name"
           ></v-text-field>
 
@@ -75,22 +84,28 @@
             v-model="sid"
             v-if="studentCheckbox"
             :rules="studentIDValidateArray"
+            dense
             label="Student ID"
           ></v-text-field>
           <v-autocomplete
             v-model="parentSelected"
             v-if="userAndStudentCheckbox"
             :rules="studentParentValidateArray"
+            dense
             item-text="name"
             label="Student's Parent"
             :items="parents"
+            hint="If you can not find the user account you are looking for, please make sure it has been assigned an address"
+            persistent-hint
             return-object
           ></v-autocomplete>
+          
 
           <v-autocomplete
             v-model="schoolSelected"
             item-text="name"
             :rules="studentSchoolValidateArray"
+            dense
             v-if="studentCheckbox"
             label="Student School"
             :items="schools"

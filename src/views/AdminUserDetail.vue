@@ -341,7 +341,11 @@ export default {
           }
         ).then((response) => {
           console.log(response);
-          this.getStudentInfo();
+          this.getUserInfo();
+          this.full_name = this.newFull_name;
+          this.address = this.newCurrentAddress;
+          this.administrator = this.newAdministrator;
+          this.email = this.newEmail;
         })
 
         .catch((err) => {
