@@ -109,11 +109,10 @@ export default {
   methods: {
     getUserInfo() {
       base_endpoint
-        .get("/api/profile/get/" + window.localStorage.getItem("userID"), {
+        .get("/api/profile/get/" + this.$store.state.loggedInUserID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-          console.log(response);
           this.email = response.data.email;
           this.full_name = response.data.full_name;
           this.currentAddress = response.data.address;

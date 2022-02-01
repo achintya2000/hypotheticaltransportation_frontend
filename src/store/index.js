@@ -33,9 +33,6 @@ export default new Vuex.Store({
     loggedIn(state) {
       return state.accessToken != null
     },
-    userIsAdmin(state) {
-      return state.isAdmin == true
-    }
   },
   actions: {
     userLogout(context) {
