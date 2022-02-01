@@ -22,12 +22,21 @@
                 required
               ></v-text-field>
 
+
+              <gmap-autocomplete @place_changed="setPlace">
+              <template v-slot:input="slotProps">
               <v-text-field
                 v-model="newAddress"
-                :rules="addressRules"
                 label="Address"
-                required
-              ></v-text-field>
+                placeholder="Start Typing"
+                :rules="addressRules"
+                ref="input"
+                v-on:listeners="slotProps.listeners"
+                v-on:attrs="slotProps.attrs"
+              >
+              </v-text-field>
+            </template>
+            </gmap-autocomplete>
 
               <v-btn
                 :disabled="!valid"
@@ -168,6 +177,11 @@ export default {
     };
   },
   methods: {
+    setPlace(place) {
+      this.newAddress = place.formatted_address;
+      this.latitude = place.geometry.location.lat();
+      this.longitude = place.geometry.location.lng();
+    },
     planNewRoute() {
       this.$router.push({
         name: "AdminRoutePlanner",

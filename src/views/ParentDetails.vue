@@ -49,9 +49,9 @@
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle> Email: FIX THIS </v-card-subtitle>
-    <v-card-subtitle> Name: FIX THIS </v-card-subtitle>
-    <v-card-subtitle> Address: FIX THIS </v-card-subtitle>
+    <v-card-subtitle> Email: {{ userEmail }} </v-card-subtitle>
+    <v-card-subtitle> Name: {{ userName}} </v-card-subtitle>
+    <v-card-subtitle> Address: {{ userAddress }} </v-card-subtitle>
     <v-card class="mx-auto" max-width="344">
       <v-card-text>
         <p class="text-h4 text--primary">Student #1 Name</p>
@@ -92,6 +92,8 @@
 </template>
 
 <script>
+import { base_endpoint } from "../services/axios-api";
+
 export default {
   data() {
     return {
@@ -105,6 +107,25 @@ export default {
     };
   },
   methods: {
+
+    getUserInfo() {
+      base_endpoint
+        .get("/api/profile/get/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.email = response.data.email;
+          this.full_name = response.data.full_name;
+          this.currentAddress = response.data.address;
+          this.administrator = response.data.is_superuser;
+          
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+
     validate() {
       this.$refs.form.validate();
     },

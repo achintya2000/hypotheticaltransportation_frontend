@@ -26,6 +26,7 @@
                 v-model="address"
                 label="Address"
                 placeholder="Start Typing"
+                :rules="addressRules"
                 ref="input"
                 v-on:listeners="slotProps.listeners"
                 v-on:attrs="slotProps.attrs"
