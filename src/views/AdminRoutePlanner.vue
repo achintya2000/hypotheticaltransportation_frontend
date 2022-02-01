@@ -10,6 +10,7 @@
           single-line
           hide-details
         ></v-text-field>
+
         <v-data-table
           v-model="selected"
           :headers="headers"
@@ -21,8 +22,8 @@
           multi-sort
           show-select
           :single-select="true"
-          @item-selected="toggleRoute(selected)"
         ></v-data-table>
+
         <v-dialog v-model="dialog" width="500">
           <template v-slot:activator="{ on, attrs }">
             <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
@@ -81,7 +82,9 @@
         />
       </GmapMap>
 
-      <v-btn color="green lighten-2" dark> Save </v-btn>
+      <v-btn color="green lighten-2" dark @click="submitChanges()">
+        Save
+      </v-btn>
       <v-btn color="green lighten-2" dark> Cancel </v-btn>
     </v-layout>
   </v-card>
@@ -113,7 +116,7 @@ export default {
 
       schoolName: "",
       search: "",
-      selected: "",
+      selected: [],
       dialog: false,
       valid: true,
       name: "",
@@ -129,30 +132,33 @@ export default {
         { text: "Description", value: "description" },
       ],
       routes: [],
+      markerChanges: [],
     };
   },
   methods: {
-    submitData() {
-      base_endpoint
-        .post(
-          "/api/route/create",
-          {
-            name: this.name,
-            school: this.$route.query.id,
-            description: this.description,
-          },
-          {
-            headers: {
-              Authorization: `Token ${this.$store.state.accessToken}`,
+    submitChanges() {
+      // Giving you a UserID and RouteID
+      this.markerChanges.forEach((routeUpdate) => {
+        base_endpoint
+          .patch(
+            "/api/route/addstudentsfromparent",
+            {
+              parent_id: routeUpdate.id,
+              route_id: routeUpdate.newRoute,
             },
-          }
-        )
-        .then(() => {
-          this.getRequestAllRoutes();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+            {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
+              },
+            }
+          )
+          .then(() => {
+            this.getMarkerData();
+          });
+      });
+    },
+    clearChanges() {
+      this.markerChanges = [];
     },
     getDisplayRoute(item) {
       return {
@@ -165,6 +171,7 @@ export default {
       return {
         position: { lat: item.latitude, lng: item.longitude },
         routeID: item.route,
+        parentID: item.parent_id,
       };
     },
     getRequestAllRoutes() {
@@ -242,8 +249,10 @@ export default {
       console.log(m);
       if (m.routeID == this.activeRouteID) {
         m.routeID = null;
+        this.trackChange(m.parentID, null);
       } else if (m.routeID == null) {
         m.routeID = this.activeRouteID;
+        this.trackChange(m.parentID, this.activeRouteID);
       }
     },
     getMarkers(m) {
@@ -252,7 +261,24 @@ export default {
       return this.mapMarker;
     },
     toggleRoute(selected) {
-      this.activeRouteID = selected[0].id;
+      if (selected.length == 0) {
+        this.activeRouteID = null;
+      } else {
+        this.activeRouteID = selected[0].id;
+      }
+    },
+    trackChange(parentID, newVal) {
+      this.markerChanges.forEach((element) => {
+        if (element.id == parentID) {
+          element.newRoute = newVal;
+          return;
+        }
+      });
+      var change = {
+        id: parentID,
+        newRoute: newVal,
+      };
+      this.markerChanges.push(change);
     },
   },
   created() {
@@ -262,6 +288,11 @@ export default {
   },
   mounted() {
     this.geolocate();
+  },
+  watch: {
+    selected: function () {
+      this.toggleRoute(this.selected);
+    },
   },
 };
 </script>
