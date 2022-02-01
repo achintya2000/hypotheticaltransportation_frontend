@@ -6,12 +6,12 @@
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
           <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
-            Modify
+            Modify Name and Description
           </v-btn>
         </template>
 
         <v-card>
-          <v-card-title class="text-h5 grey lighten-2"> Modify </v-card-title>
+          <v-card-title class="text-h5 grey lighten-2"> Modify Name and Description </v-card-title>
 
           <v-card-text>
             <v-form ref="form" v-model="valid" lazy-validation>
@@ -28,15 +28,6 @@
                 label="Route Description"
                 required
               ></v-text-field>
-
-              <v-autocomplete
-                v-model="newRouteSchool"
-                :items="schoolItems"
-                label="School"
-                required
-                item-text="name"
-                return-object
-              ></v-autocomplete>
 
               <v-btn
                 :disabled="!valid"
@@ -159,7 +150,6 @@ export default {
           {
             name: this.newRouteName,
             description: this.newRouteDescription,
-            school: this.newRouteSchool.id,
           },
           {
             headers: {

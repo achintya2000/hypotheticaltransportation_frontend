@@ -13,7 +13,6 @@
         <span class="text-h5">Login</span>
       </v-card-title>
       <v-card-text>
-        <p v-if="incorrectAuth">Incorrect User Credentials</p>
         <v-form
           ref="loginForm"
           v-model="valid"
@@ -42,6 +41,14 @@
                 @click:append="show = !show"
               ></v-text-field>
             </v-col>
+            <v-alert cols="12"
+      dense
+      outlined
+      v-if="incorrectAuth"
+      type="error"
+    >
+      The email or password you entered is incorrect
+    </v-alert>
             <v-col class="d-flex" cols="12" sm="6" xsm="12"> </v-col>
             <v-spacer></v-spacer>
             <v-btn
