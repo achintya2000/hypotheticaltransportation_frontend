@@ -14,7 +14,7 @@
           <v-card-title class="text-h5 grey lighten-2"> Modify </v-card-title>
 
           <v-card-text>
-            <v-form ref="form" v-model="valid" lazy-validation>
+            <v-form ref="form" v-model="valid2" lazy-validation>
               <v-text-field
                 v-model="newSchoolName"
                 :rules="name2Rules"
@@ -36,7 +36,7 @@
           </gmap-autocomplete>
 
               <v-btn
-                :disabled="!valid"
+                :disabled="!valid2"
                 color="success"
                 class="mr-4"
                 @click="validateForModify"
@@ -73,12 +73,17 @@
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="deleteName"
-                :rules="nameRules"
+                :rules="deleteValidationArray"
                 label="School Name"
                 required
               ></v-text-field>
 
-              <v-btn :disabled="!valid" color="success" class="mr-4" @click="validateForDelete">
+              <v-btn 
+                :disabled="!valid" 
+                color="success" 
+                class="mr-4" 
+                @click="validateForDelete"
+              >
                 Submit
               </v-btn>
 
@@ -137,6 +142,7 @@ export default {
       schoolAddress: "",
       search: "",
       valid: true,
+      valid2: true,
       dialog: false,
       dialog2: false,
       latitude: 0,
@@ -168,6 +174,7 @@ export default {
         { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],
+      deleteValidationArray: [this.deleteValidation],
     };
   },
   methods: {
@@ -262,7 +269,7 @@ export default {
         });
     },
     validateForDelete() {
-      this.$refs.form.validate();
+      //this.$refs.form.validate();
       this.submitDataForDelete();
       this.dialog = false;
       this.$emit(
@@ -306,7 +313,18 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
+    deleteValidation() {
+      console.log("GOT INTO deleteValidation");
+      if (this.deleteName == "" || this.deleteName == null) {
+        return "Name is required";
+      } else if (this.deleteName != this.schoolName)  {
+        return "The name typed must match the school name";
+      } else {
+        return true;
+      }
+    },
   },
+  
   created() {
     this.getSchoolInfo();
     this.getSchoolRoutes();

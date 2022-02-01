@@ -15,7 +15,7 @@
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-text-field
             v-model="name"
-            :rules="nameRules"
+            :rules="nameValidateArray"
             label="Name"
             required
           ></v-text-field>
@@ -25,8 +25,7 @@
               <v-text-field
                 v-model="address"
                 label="Address"
-                placeholder="Start Typing"
-                :rules="addressRules"
+                :rules="addressValidateArray"
                 ref="input"
                 v-on:listeners="slotProps.listeners"
                 v-on:attrs="slotProps.attrs"
@@ -55,17 +54,16 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 export default {
+
   data() {
     return {
       dialog: false,
       valid: true,
-      name: "",
-      nameRules: [(v) => !!v || "Name is required"],
-      address: "",
-      addressRules: [(v) => !!v || "Address is required"],
       latitude: 0,
       longitude: 0,
       formatted_address: "",
+      nameValidateArray: [this.nameValidate],
+      addressValidateArray: [this.addressValidate],
     };
   },
   methods: {
@@ -101,16 +99,32 @@ export default {
         });
     },
     validate() {
-      this.$refs.form.validate();
       this.submitData();
       this.dialog = false;
       this.reset();
+      
     },
     reset() {
       this.$refs.form.reset();
     },
     resetValidation() {
       this.$refs.form.resetValidation();
+    },
+    nameValidate() {
+      console.log(this.name)
+      if (this.name == "" || this.name == null) {
+        return "Name is required";
+      } else {
+        return true;
+      }
+    },
+    addressValidate() {
+      console.log(this.name)
+      if (this.address == "" || this.address == null) {
+        return "Address is required";
+      } else {
+        return true;
+      }
     },
   },
 };
