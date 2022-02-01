@@ -74,9 +74,7 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-          console.log("GOT HERE");
           this.profiles = response.data.map(this.getDisplayUser);
-          console.log(this.profiles);
         })
         .catch((err) => {
           console.log(err);

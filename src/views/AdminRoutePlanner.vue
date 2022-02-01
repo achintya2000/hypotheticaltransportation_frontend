@@ -75,9 +75,9 @@
           :position="m.position"
           @click="
             center = m.position;
-            toggleInfo(m, index);
+            toggleInfo(m);
           "
-          :icon="getMarkers(m, index)"
+          :icon="getMarkers(m)"
         />
       </GmapMap>
 
@@ -237,9 +237,14 @@ export default {
         };
       });
     },
-    toggleInfo(m, index) {
-      this.selectedMarker = m;
-      this.selectedIndex = index;
+    toggleInfo(m) {
+      console.log("Currently selected route id: " + this.activeRouteID);
+      console.log(m);
+      if (m.routeID == this.activeRouteID) {
+        m.routeID = null;
+      } else if (m.routeID == null) {
+        m.routeID = this.activeRouteID;
+      }
     },
     getMarkers(m) {
       if (m.routeID == null) return this.mapMarkerUnassigned;
