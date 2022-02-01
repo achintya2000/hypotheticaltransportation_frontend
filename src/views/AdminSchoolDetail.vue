@@ -317,7 +317,7 @@ export default {
       console.log("GOT INTO deleteValidation");
       if (this.deleteName == "" || this.deleteName == null) {
         return "Name is required";
-      } else if (this.deleteName != this.schoolName)  {
+      } else if (this.deleteName.toLowerCase != this.schoolName.toLowerCase)  {
         return "The name typed must match the school name";
       } else {
         return true;
