@@ -18,25 +18,25 @@
           <v-card-text>
             <v-form
               ref="form"
-              v-model="valid3"
+              v-model="valid"
               lazy-validation
             >
               <v-text-field
                 v-model="newPassword"
-                :rules="newPasswordRules"
+                :rules="resetPassword1ValidationArray"
                 label="New Password"
                 required
               ></v-text-field>
 
               <v-text-field
                 v-model="newPassword2"
-                :rules="newPassword2Rules"
+                :rules="resetPassword2ValidationArray"
                 label="Confirm New Password"
                 required
               ></v-text-field>
 
               <v-btn
-                :disabled="!valid3"
+                :disabled="!valid"
                 color="success"
                 class="mr-4"
                 @click="validateForResetPassword"
@@ -210,6 +210,7 @@ export default {
   data() {
     return {
       search: "",
+      valid: true,
       userEmail: "",
       userName: "",
       userAddress: "",
@@ -218,6 +219,8 @@ export default {
       newFull_name: "",
       newCurrentAddress: "",
       newAdministrator: "",
+      resetPassword1ValidationArray: [this.resetPassword1Validation],
+      resetPassword2ValidationArray: [this.resetPassword2Validation],
       students: [],
       dialog: false,
         dialog2: false,
@@ -397,11 +400,28 @@ export default {
       resetValidation () {
         this.$refs.form.resetValidation()
       },
+      resetPassword1Validation() {
+        if (this.newPassword == "" || this.newPassword == null) {
+          return "This field is required";
+        } else {
+          return true;
+        }
+      },
+      resetPassword2Validation() {
+        if (this.newPassword2 == "" || this.newPassword2 == null) {
+          return "This field is required";
+        } else if (this.newPassword2 != this.newPassword)  {
+          return "The passwords must match";
+        } else {
+          return true;
+        }
+      },
     },
     created() {
         this.getUserInfo();
         this.getStudents();
     },
+    
 };
 </script>
 
