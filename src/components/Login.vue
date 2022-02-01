@@ -96,8 +96,7 @@ export default {
           this.$router.push({ name: "AdminSchoolList" });
 
           this.$store
-            .dispatch("userAdminSet", {
-              username: this.username,
+            .dispatch("getLoggedInUserInfo", {
               token: localStorage.getItem("token"),
             })
             .then(() => {})

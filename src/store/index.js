@@ -8,22 +8,25 @@ export default new Vuex.Store({
   state: {
     accessToken: window.localStorage.getItem('token'),
     refreshToken: null,
-    isAdmin: window.localStorage.getItem('isAdmin')
+    isAdmin: window.localStorage.getItem('isAdmin'),
+    loggedInUserID: window.localStorage.getItem('userID')
   },
   mutations: {
-    updateStorage(state, { access, refresh }) {
+    updateStorage(state, { access }) {
       state.accessToken = access
-      state.refreshToken = refresh
       window.localStorage.setItem('token', access)
     },
-    updateAdminStatus(state, { isAdmin }) {
+    updateAdminStatus(state, { isAdmin, userID }) {
       state.isAdmin = isAdmin
+      state.loggedInUserID = userID
       window.localStorage.setItem('isAdmin', isAdmin)
+      window.localStorage.setItem('userID', userID)
     },
     destroyToken(state) {
       state.accessToken = null
       state.refreshToken = null
       state.isAdmin = false
+      state.loggedInUserID = null
     }
   },
   getters: {
@@ -40,6 +43,7 @@ export default new Vuex.Store({
         context.commit('destroyToken')
         window.localStorage.removeItem('token')
         window.localStorage.removeItem('isAdmin')
+        window.localStorage.removeItem('userID')
       }
     },
     userLogin(context, usercredentials) {
@@ -49,6 +53,7 @@ export default new Vuex.Store({
           password: usercredentials.password
         })
           .then(response => {
+            console.log(response)
             context.commit('updateStorage', { access: response.data.token, refresh: null })
             resolve()
           })
@@ -58,14 +63,13 @@ export default new Vuex.Store({
           });
       })
     },
-    userAdminSet(context, usercredentials) {
+    getLoggedInUserInfo(context, credentials) {
       return new Promise((resolve, reject) => {
-        base_endpoint.get('/api/profile/get/' + usercredentials.username, {
-          headers: { Authorization: `Token ${usercredentials.token}` },
+        base_endpoint.get('/api/profile/getfromtoken/' + credentials.token, {
+          headers: { Authorization: `Token ${credentials.token}` },
         })
           .then(response => {
-            console.log(response.data.is_superuser)
-            context.commit('updateAdminStatus', { isAdmin: response.data.is_superuser })
+            context.commit('updateAdminStatus', { isAdmin: response.data.is_superuser, userID: response.data.id })
             resolve()
           })
           .catch((err) => {
