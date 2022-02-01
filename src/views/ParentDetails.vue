@@ -107,7 +107,7 @@ export default {
     },
     getUserInfo() {
       base_endpoint
-        .get("/api/profile/get/" + window.localStorage.getItem("userID"), {
+        .get("/api/profile/get/" + this.$store.state.loggedInUserID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
