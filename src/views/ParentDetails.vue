@@ -16,7 +16,7 @@
           </v-card-title>
 
           <v-card-text>
-            <v-form ref="form" v-model="valid" lazy-validation>
+            <v-form ref="form" v-model="valid3" lazy-validation>
               <v-text-field
                 v-model="newPassword"
                 :rules="newPasswordRules"
@@ -32,10 +32,10 @@
               ></v-text-field>
 
               <v-btn
-                :disabled="!valid"
+                :disabled="!valid3"
                 color="success"
                 class="mr-4"
-                @click="validate"
+                @click="validateForResetPassword"
               >
                 Save
               </v-btn>
@@ -49,45 +49,25 @@
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle> Email: {{ userEmail }} </v-card-subtitle>
+    <v-spacer></v-spacer>
     <v-card-subtitle> Name: {{ userName }} </v-card-subtitle>
+    <v-card-subtitle> Email: {{ userEmail }} </v-card-subtitle>
     <v-card-subtitle> Address: {{ userAddress }} </v-card-subtitle>
-    <v-card class="mx-auto" max-width="344">
-      <v-card-text>
-        <p class="text-h4 text--primary">Student #1 Name</p>
-        <p></p>
-        <p></p>
-        <p></p>
-        <p></p>
-        <p></p>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn text color="teal accent-4" @click="reveal = true">
-          Learn More
-        </v-btn>
-      </v-card-actions>
+    
+    <v-data-table
+      :headers="headers"
+      :items="students"
+      :search="search"
+      :sort-by="['sid']"
+      :sort-desc="[false, true]"
+      multi-sort
+    >
+    
+    <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
+      </template>
+    </v-data-table>
 
-      <v-expand-transition>
-        <v-card
-          v-if="reveal"
-          class="transition-fast-in-fast-out v-card--reveal"
-          style="height: 100%"
-        >
-          <v-card-text class="pb-0">
-            <p class="text-h4 text--primary">Student Name</p>
-            <p>Student ID #</p>
-            <p>School</p>
-            <p>Route Name</p>
-            <p>Route Desctritypion</p>
-          </v-card-text>
-          <v-card-actions class="pt-0">
-            <v-btn text color="teal accent-4" @click="reveal = false">
-              Close
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-expand-transition>
-    </v-card>
   </v-card>
 </template>
 
@@ -104,9 +84,27 @@ export default {
       newPasswordRules: [(v) => !!v || "Name is required"],
       newPassword2: "",
       newPassword2Rules: [(v) => !!v || "Address is required"],
+      userEmail: "",
+      userName: "",
+      userAddress: "",
+      headers: [
+        {
+          text: "Name",
+          align: "start",
+          value: "name",
+        },
+        { text: "Student ID", value: "sid" },
+        { text: "School", value: "school" },
+        { text: "Route", value: "route", sortable: false },
+        { text: "Actions", value: "actions", sortable: false },
+      ],
+      students: [],
     };
   },
   methods: {
+    viewItem(item) {
+      this.$router.push({ name: "ParentStudentDetail", query: { id: item.id } });
+    },
     getUserInfo() {
       base_endpoint
         .get("/api/profile/get/" + window.localStorage.getItem("userID"), {
@@ -114,13 +112,63 @@ export default {
         })
         .then((response) => {
           console.log(response);
-          this.email = response.data.email;
-          this.full_name = response.data.full_name;
-          this.currentAddress = response.data.address;
+          this.userEmail = response.data.email;
+          this.userName = response.data.full_name;
+          this.userAddress = response.data.address;
           this.administrator = response.data.is_superuser;
         })
         .catch((err) => {
           console.log(err);
+        });
+    },
+
+      getDisplayStudent(item) {
+      return {
+        name: item.name,
+        sid: item.sid,
+        school: item.school,
+        route: item.route,
+        id: item.id,
+      };
+    },
+    getRequestAllStudents() {
+      base_endpoint
+        .get("/api/student/getallfromprofile/"+ window.localStorage.getItem("userID"), {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.students = response.data.map(this.getDisplayStudent);
+          //this.$store.state.addresses = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    validateForResetPassword() {
+      this.$refs.form.validate();
+      this.submitDataForResetPassword();
+      this.dialog3 = false;
+      this.$emit(
+        "schoolmodified",
+        "A school has been modified and sent to database"
+      );
+    },
+    submitDataForResetPassword() {
+      base_endpoint
+        .patch(
+          "/api/profile/changepassword/" + this.$route.query.id,
+          {
+            new_password: this.newPassword2,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
         });
     },
 
@@ -136,6 +184,7 @@ export default {
   },
   created() {
     this.getUserInfo();
+    this.getRequestAllStudents();
   },
 };
 </script>
