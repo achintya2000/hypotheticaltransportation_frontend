@@ -100,6 +100,14 @@ const routes = [
     }
   },
   {
+    path: '/parentstudentdetail',
+    name: 'ParentStudentDetail',
+    component: () => import('../views/ParentStudentDetail.vue'),
+    meta: {
+      requiresLogin: true,
+    }
+  },
+  {
     path: '/maptest',
     name: 'MapTest',
     component: () => import('../views/MapTest.vue')
