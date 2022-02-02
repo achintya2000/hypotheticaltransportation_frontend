@@ -29,6 +29,7 @@
             v-model="parentName"
             :rules="userNameValidateArray"
             label="User Name"
+            append-icon="mdi-account"
             dense
             required
           ></v-text-field>
@@ -37,6 +38,7 @@
             v-model="parentEmail"
             :rules="userEmailValidateArray"
             label="User Email"
+            append-icon="mdi-email"
             dense
             required
           ></v-text-field>
@@ -44,6 +46,7 @@
             v-if="userCheckbox"
             :rules="userPasswordValidateArray"
             v-model="parentPassword"
+            append-icon="mdi-lock"
             label="User Password"
             dense
             required
@@ -51,12 +54,14 @@
 
           <gmap-autocomplete v-if="userCheckbox" @place_changed="setPlace">
             <template v-slot:input="slotProps">
-              <v-text-field
-                v-model="parentAddress"
-                label="User Address"
-                :rules="userAddressValidateArray"
-                dense
-                ref="input"
+          <v-text-field
+            
+            v-model="parentAddress"
+            label="Enter a location address"
+            :rules="userAddressValidateArray"
+            dense
+            append-icon="mdi-map-marker"
+            ref="input"
                 v-on:listeners="slotProps.listeners"
                 v-on:attrs="slotProps.attrs"
               ></v-text-field>
@@ -75,6 +80,7 @@
             v-model="studentName"
             :rules="studentNameValidateArray"
             v-if="studentCheckbox"
+            append-icon="mdi-account"
             dense
             label="Student Name"
           ></v-text-field>
@@ -84,6 +90,7 @@
             v-if="studentCheckbox"
             :rules="studentIDValidateArray"
             dense
+            append-icon="mdi-numeric-0-box"
             label="Student ID"
           ></v-text-field>
           <v-autocomplete
@@ -120,7 +127,7 @@
           </v-btn>
 
           <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
-          <v-btn color="warning" @click="dialog = false"> Cancel </v-btn>
+          <v-btn color="warning" @click="dialog = false; reset(); userCheckbox = false; studentCheckbox = false;"> Cancel </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -302,6 +309,7 @@ export default {
     },
     reset() {
       this.$refs.form.reset();
+      this.userAdminCheckbox = false;
     },
     resetValidation() {
       this.$refs.form.resetValidation();

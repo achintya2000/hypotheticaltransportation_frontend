@@ -21,6 +21,7 @@
                 v-model="newPassword"
                 :rules="resetPassword1ValidationArray"
                 label="New Password"
+                :type="'password'"
                 required
               ></v-text-field>
 
@@ -28,6 +29,7 @@
                 v-model="newPassword2"
                 :rules="resetPassword2ValidationArray"
                 label="Confirm New Password"
+                :type="'password'"
                 required
               ></v-text-field>
 
@@ -42,7 +44,12 @@
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn color="warning" @click="dialog3 = false"> Cancel </v-btn>
+              <v-btn
+                color="warning"
+                @click="dialog3 = false; reset()"
+              >
+                Cancel
+              </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -62,30 +69,32 @@
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="newFull_name"
-                :rules="name2Rules"
+                :rules="userNameValidateArray"
                 label="Name"
                 required
               ></v-text-field>
 
               <v-text-field
                 v-model="newEmail"
-                :rules="emailRules"
+                :rules="userEmailValidateArray"
                 label="Email"
                 required
               ></v-text-field>
 
               <gmap-autocomplete @place_changed="setPlace">
-                <template v-slot:input="slotProps">
-                  <v-text-field
-                    v-model="newCurrentAddress"
-                    placeholder="Address"
-                    ref="input"
-                    v-on:listeners="slotProps.listeners"
-                    v-on:attrs="slotProps.attrs"
-                  >
-                  </v-text-field>
-                </template>
-              </gmap-autocomplete>
+              
+              <template v-slot:input="slotProps">
+                <v-text-field
+                  v-model="newCurrentAddress"
+                  placeholder="Address"
+                  :rules="userAddressValidateArray"
+                  ref="input"
+                  v-on:listeners="slotProps.listeners"
+                  v-on:attrs="slotProps.attrs"
+                >
+                </v-text-field>
+              </template>
+            </gmap-autocomplete>
 
               <v-checkbox
                 v-model="newAdministrator"
@@ -98,7 +107,13 @@
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn color="warning" @click="dialog2 = false"> Cancel </v-btn>
+              <v-btn
+                color="warning"
+                @click="dialog2 = false; newFull_name = full_name; newEmail = email; newCurrentAddress = currentAddress; newAdministrator = administrator"
+              >
+                Cancel
+              </v-btn>
+
             </v-form>
           </v-card-text>
         </v-card>
@@ -143,10 +158,12 @@
       :search="search"
       :sort-by="['name']"
       :sort-desc="[true]"
-      multi-sort
     >
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small @click="viewStudent(item)"> mdi-eye </v-icon>
+
+    <template v-slot:[`item.actions`]="{ item }">
+        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewStudent(item)">
+        Details
+      </v-btn>
       </template>
     </v-data-table>
   </v-card>
@@ -169,6 +186,9 @@ export default {
       newAdministrator: "",
       resetPassword1ValidationArray: [this.resetPassword1Validation],
       resetPassword2ValidationArray: [this.resetPassword2Validation],
+      userNameValidateArray: [this.userNameValidate],
+      userEmailValidateArray: [this.userEmailValidate],
+      userAddressValidateArray: [this.userAddressValidate],
       students: [],
       dialog: false,
       dialog2: false,
@@ -330,8 +350,52 @@ export default {
       );
     },
 
-    validate() {
-      this.$refs.form.validate();
+      validate () {
+        this.$refs.form.validate()
+      },
+      reset () {
+        this.$refs.form.reset()
+      },
+      resetValidation () {
+        this.$refs.form.resetValidation()
+      },
+      resetPassword1Validation() {
+        if (this.newPassword == "" || this.newPassword == null) {
+          return "This field is required";
+        } else {
+          return true;
+        }
+      },
+      resetPassword2Validation() {
+        if (this.newPassword2 == "" || this.newPassword2 == null) {
+          return "This field is required";
+        } else if (this.newPassword2 != this.newPassword)  {
+          return "The passwords must match";
+        } else {
+          return true;
+        }
+      },
+          userNameValidate() {
+      if (this.newFull_name == null || this.newFull_name == "") {
+        return "Parent name is required";
+      } else {
+        return true;
+      }
+    },
+    userEmailValidate() {
+      if (this.newEmail == null || this.newEmail == "") {
+        return "Parent email is required";
+      } else {
+        return true;
+      }
+    },
+    userAddressValidate() {
+      if ((this.newCurrentAddress == null || this.newCurrentAddress == "") && this.students.length != 0) {
+        return "Parent address is required";
+      } else {
+        return true;
+      }
+    },
     },
     reset() {
       this.$refs.form.reset();
