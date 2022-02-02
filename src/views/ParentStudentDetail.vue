@@ -79,125 +79,17 @@ export default {
           this.studentRouteId = response.data.route_id;
           this.studentParentId = response.data.parent_id;
 
-          this.getSchools();
-          this.getParents();
         })
         .catch((err) => {
           console.log(err);
         });
     },
 
-    getDisplaySchools(item) {
-      return {
-        name: item.name,
-        address: item.address,
-        id: item.id,
-      };
-    },
-    getSchools() {
-      base_endpoint
-        .get("/api/school/getall", {
-          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
-        })
-        .then((response) => {
-          this.schoolItems = response.data.map(this.getDisplaySchools);
-
-          this.schoolItems.forEach((item) => {
-            if (this.studentSchoolId == item.id) {
-              this.school = item;
-            }
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-
-    getDisplayParents(item) {
-      return {
-        full_name: item.full_name,
-        id: item.id,
-      };
-    },
-    getParents() {
-      base_endpoint
-        .get("/api/profile/getall", {
-          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
-        })
-        .then((response) => {
-          this.parentItems = response.data.map(this.getDisplayParents);
-
-          this.parentItems.forEach((item) => {
-            if (this.studentParentId == item.id) {
-              this.parent = item;
-            }
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-
-    updateStudent() {
-      console.log(this.school.id);
-      console.log(this.parent.id);
-      this.dialog2 = false;
-      base_endpoint
-        .patch(
-          "/api/student/update/" + this.$route.query.id,
-          {
-            full_name: this.newStudentName,
-            sid: this.newStudentId,
-            school: this.school.id,
-            route: this.studentRoute,
-            parent: this.parent.id,
-          },
-          {
-            headers: {
-              Authorization: `Token ${this.$store.state.accessToken}`,
-            },
-          }
-        )
-        .then((response) => {
-          console.log(response);
-          this.getStudentInfo();
-        })
-
-        .catch((err) => {
-          console.log(err);
-        });
-    },
+  
     validate() {
       this.$refs.form.validate();
     },
-    submitDataForDelete() {
-      base_endpoint
-        .delete("/api/student/delete/" + this.$route.query.id, {
-          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
-        })
-        .then((response) => {
-          console.log(response);
-          this.$router.push({ name: "AdminStudentList" });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    validateDelete() {
-      this.$refs.form.validate();
-      this.submitDataForDelete();
-      this.dialog = false;
-      this.$emit(
-        "schoolmodified",
-        "A school has been modified and sent to database"
-      );
-    },
-    reset() {
-      this.$refs.form.reset();
-    },
-    resetValidation() {
-      this.$refs.form.resetValidation();
-    },
+    
   },
   created() {
     this.getStudentInfo();
