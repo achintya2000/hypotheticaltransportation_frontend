@@ -44,6 +44,8 @@ export default new Vuex.Store({
       }
     },
     userLogin(context, usercredentials) {
+      console.log(usercredentials.username)
+      console.log(usercredentials.password)
       return new Promise((resolve, reject) => {
         base_endpoint.post('/api/login', {
           username: usercredentials.username,
