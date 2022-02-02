@@ -14,16 +14,18 @@
           <v-card-title class="text-h5 grey lighten-2"> Modify </v-card-title>
 
           <v-card-text>
-            <v-form ref="form">
+            <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="newStudentName"
                 label="Student Name"
+                :rules="studentNameValidateArray"
                 required
               ></v-text-field>
 
               <v-text-field
                 v-model="newStudentId"
                 label="Student ID"
+                :rules="studentIDValidateArray"
                 required
               ></v-text-field>
 
@@ -32,6 +34,7 @@
                 :items="parentItems"
                 item-text="full_name"
                 label="Parent"
+                :rules="studentParentValidateArray"
                 return-object
               ></v-autocomplete>
 
@@ -40,16 +43,17 @@
                 :items="schoolItems"
                 item-text="name"
                 label="School Name"
+                :rules="studentSchoolValidateArray"
                 return-object
               ></v-autocomplete>
 
-              <v-btn color="success" class="mr-4" @click="updateStudent">
+              <v-btn color="success" class="mr-4" @click="updateStudent" :disabled="!valid">
                 Save
               </v-btn>
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn color="warning" @click="dialog2 = false"> Cancel </v-btn>
+              <v-btn color="warning" @click="dialog2 = false; newStudentName = studentName; newStudentId = studentId; parent = studentParent; school = studentSchool"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -112,6 +116,7 @@ export default {
       studentName: "",
       dialog: false,
       dialog2: false,
+      valid: false,
       name: "Old Name",
       nameRules: [(v) => !!v || "Name is required"],
       studentId: "",
@@ -143,6 +148,10 @@ export default {
       newStudentId: "",
       newStudentSchool: "",
       newStudentParent: "",
+      studentNameValidateArray: [this.studentNameValidate],
+      studentIDValidateArray: [this.studentIDValidate],
+      studentSchoolValidateArray: [this.studentSchoolValidate],
+      studentParentValidateArray: [this.studentParentValidate],
     };
   },
   methods: {
@@ -286,6 +295,37 @@ export default {
         "schoolmodified",
         "A school has been modified and sent to database"
       );
+    },
+    studentNameValidate() {
+      if (this.newStudentName == null || this.newStudentName == "") {
+        return "Student Name is required";
+      } else {
+        return true;
+      }
+    },
+    studentIDValidate() {
+      if (this.newStudentId == null || this.newStudentId == "") {
+        return "Student ID is required";
+      } else if (isNaN(this.newStudentId) == true) {
+        return "Student ID must be a number";
+        
+      } else {
+        return true;
+      }
+    },
+    studentSchoolValidate() {
+      if (this.school == null || this.school == "") {
+        return "Student school is required";
+      } else {
+        return true;
+      }
+    },
+    studentParentValidate() {
+      if (this.parent == null || this.parent == "") {
+        return "Student's parent is required";
+      } else {
+        return true;
+      }
     },
     reset() {
       this.$refs.form.reset();

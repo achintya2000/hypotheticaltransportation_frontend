@@ -3,6 +3,8 @@
     <v-card-title>
       {{ routeName }}
       <v-spacer></v-spacer>
+      <v-btn @click="planNewRoute" outlined>Modify Route</v-btn>
+      <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
           <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
@@ -17,14 +19,14 @@
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="newRouteName"
-                :rules="routeNameRules"
+                :rules="nameValidateArray"
                 label="Route Name"
                 required
               ></v-text-field>
 
               <v-text-field
                 v-model="newRouteDescription"
-                :rules="routeDesRules"
+                :rules="desValidateArray"
                 label="Route Description"
                 required
               ></v-text-field>
@@ -40,7 +42,7 @@
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn color="warning" @click="dialog2 = false"> Cancel </v-btn>
+              <v-btn color="warning" @click="dialog2 = false; newRouteName = routeName; newRouteDescription = routeDescription"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -84,7 +86,9 @@
       :sort-desc="[true]"
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
+        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewItem(item)">
+        Details
+      </v-btn>
       </template>
     </v-data-table>
   </v-card>
@@ -99,6 +103,7 @@ export default {
       routeName: "",
       newRouteName: "",
       routeSchool: "",
+      routeSchoolID: "",
       newRouteSchool: null,
       routeDescription: "",
       newRouteDescription: "",
@@ -107,10 +112,6 @@ export default {
       dialog: false,
       dialog2: false,
       oldSchoolID: "",
-      schoolValues: ["foo", "bar"],
-      routeNameRules: [(v) => !!v || "Name is required"],
-      routeDesRules: [(v) => !!v || "Address is required"],
-      schoolRules: [(v) => !!v || "Address is required"],
       headers: [
         {
           text: "Name",
@@ -121,9 +122,17 @@ export default {
       ],
       students: [],
       schoolItems: [],
+      nameValidateArray: [this.nameValidate],
+      desValidateArray: [this.desValidate],
     };
   },
   methods: {
+    planNewRoute() {
+      this.$router.push({
+        name: "AdminRoutePlanner",
+        query: { id: this.routeSchoolID },
+      });
+    },
     getRouteInfo() {
       base_endpoint
         .get("/api/route/get/" + this.$route.query.id, {
@@ -133,6 +142,7 @@ export default {
           this.routeName = response.data.name;
           this.newRouteName = response.data.name;
           this.routeSchool = response.data.school;
+          this.routeSchoolID = response.data.school_id;
           this.newRouteSchool = response.data.school;
           this.routeDescription = response.data.description;
           this.newRouteDescription = response.data.description;
@@ -227,6 +237,22 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    nameValidate() {
+      console.log(this.name)
+      if (this.newRouteName == "" || this.newRouteName == null) {
+        return "Name is required";
+      } else {
+        return true;
+      }
+    },
+    desValidate() {
+      console.log(this.name)
+      if (this.newRouteDescription == "" || this.newRouteDescription == null) {
+        return "Description is required";
+      } else {
+        return true;
+      }
     },
     viewItem(item) {
       this.$router.push({ name: "AdminStudentDetail", query: { id: item.id } });

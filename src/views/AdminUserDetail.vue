@@ -25,6 +25,7 @@
                 v-model="newPassword"
                 :rules="resetPassword1ValidationArray"
                 label="New Password"
+                :type="'password'"
                 required
               ></v-text-field>
 
@@ -32,6 +33,7 @@
                 v-model="newPassword2"
                 :rules="resetPassword2ValidationArray"
                 label="Confirm New Password"
+                :type="'password'"
                 required
               ></v-text-field>
 
@@ -54,7 +56,7 @@
 
               <v-btn
                 color="warning"
-                @click="dialog3 = false"
+                @click="dialog3 = false; reset()"
               >
                 Cancel
               </v-btn>
@@ -83,14 +85,14 @@
             >
               <v-text-field
                 v-model="newFull_name"
-                :rules="name2Rules"
+                :rules="userNameValidateArray"
                 label="Name"
                 required
               ></v-text-field>
 
               <v-text-field
                 v-model="newEmail"
-                :rules="emailRules"
+                :rules="userEmailValidateArray"
                 label="Email"
                 required
               ></v-text-field>
@@ -101,6 +103,7 @@
                 <v-text-field
                   v-model="newCurrentAddress"
                   placeholder="Address"
+                  :rules="userAddressValidateArray"
                   ref="input"
                   v-on:listeners="slotProps.listeners"
                   v-on:attrs="slotProps.attrs"
@@ -130,7 +133,7 @@
 
               <v-btn
                 color="warning"
-                @click="dialog2 = false"
+                @click="dialog2 = false; newFull_name = full_name; newEmail = email; newCurrentAddress = currentAddress; newAdministrator = administrator"
               >
                 Cancel
               </v-btn>
@@ -195,10 +198,11 @@
       :search="search"
       :sort-by="['name']"
       :sort-desc="[true]"
-      multi-sort
     >
     <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small @click="viewStudent(item)"> mdi-eye </v-icon>
+        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewStudent(item)">
+        Details
+      </v-btn>
       </template>
     </v-data-table>
   </v-card>
@@ -221,6 +225,9 @@ export default {
       newAdministrator: "",
       resetPassword1ValidationArray: [this.resetPassword1Validation],
       resetPassword2ValidationArray: [this.resetPassword2Validation],
+      userNameValidateArray: [this.userNameValidate],
+      userEmailValidateArray: [this.userEmailValidate],
+      userAddressValidateArray: [this.userAddressValidate],
       students: [],
       dialog: false,
         dialog2: false,
@@ -420,6 +427,27 @@ export default {
           return true;
         }
       },
+          userNameValidate() {
+      if (this.newFull_name == null || this.newFull_name == "") {
+        return "Parent name is required";
+      } else {
+        return true;
+      }
+    },
+    userEmailValidate() {
+      if (this.newEmail == null || this.newEmail == "") {
+        return "Parent email is required";
+      } else {
+        return true;
+      }
+    },
+    userAddressValidate() {
+      if ((this.newCurrentAddress == null || this.newCurrentAddress == "") && this.students.length != 0) {
+        return "Parent address is required";
+      } else {
+        return true;
+      }
+    },
     },
     created() {
         this.getUserInfo();

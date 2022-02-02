@@ -17,7 +17,7 @@
             <v-form ref="form" v-model="valid2" lazy-validation>
               <v-text-field
                 v-model="newSchoolName"
-                :rules="name2Rules"
+                :rules="nameValidateArray"
                 label="Name"
                 required
               ></v-text-field>
@@ -27,6 +27,7 @@
               <v-text-field
                 v-model="newAddress"
                 label="Address"
+                :rules="addressValidateArray"
                 ref="input"
                 v-on:listeners="slotProps.listeners"
                 v-on:attrs="slotProps.attrs"
@@ -46,7 +47,7 @@
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn color="warning" @click="dialog2 = false"> Cancel </v-btn>
+              <v-btn color="warning" @click="dialog2 = false; newSchoolName = schoolName; newAddress = schoolAddress"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -89,7 +90,7 @@
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn color="warning" @click="dialog = false"> Cancel </v-btn>
+              <v-btn color="warning" @click="dialog = false; reset()"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -108,10 +109,11 @@
       :search="search"
       :sort-by="['name']"
       :sort-desc="[true]"
-      multi-sort
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small @click="viewRoute(item)"> mdi-eye </v-icon>
+        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewRoute(item)">
+        Details
+      </v-btn>
       </template>
     </v-data-table>
 
@@ -123,10 +125,11 @@
       :search="search"
       :sort-by="['name']"
       :sort-desc="[true]"
-      multi-sort
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small @click="viewStudent(item)"> mdi-eye </v-icon>
+        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewStudent(item)">
+        Details
+      </v-btn>
       </template>
     </v-data-table>
   </v-card>
@@ -149,9 +152,7 @@ export default {
       longitude: 0,
       formatted_address: "",
       newSchoolName: "",
-      name2Rules: [(v) => !!v || "Name is required"],
-      newAddress: "201 Rock Haven Rd",
-      addressRules: [(v) => !!v || "Address is required"],
+      newAddress: "",
       deleteName: "",
       routeHeaders: [
         {
@@ -175,6 +176,8 @@ export default {
       ],
       students: [],
       deleteValidationArray: [this.deleteValidation],
+      nameValidateArray: [this.nameValidate],
+      addressValidateArray: [this.addressValidate],
     };
   },
   methods: {
@@ -270,12 +273,14 @@ export default {
     },
     validateForDelete() {
       //this.$refs.form.validate();
-      this.submitDataForDelete();
-      this.dialog = false;
-      this.$emit(
-        "schoolmodified",
-        "A school has been modified and sent to database"
-      );
+      if (this.deleteName != "" && this.deleteName != null) {
+        this.submitDataForDelete();
+        this.dialog = false;
+        this.$emit(
+          "schoolmodified",
+          "A school has been modified and sent to database"
+        );
+      }
     },
     submitDataForModify() {
       base_endpoint
@@ -314,11 +319,26 @@ export default {
       this.$refs.form.resetValidation();
     },
     deleteValidation() {
-      console.log("GOT INTO deleteValidation");
       if (this.deleteName == "" || this.deleteName == null) {
         return "Name is required";
-      } else if (this.deleteName.toLowerCase != this.schoolName.toLowerCase)  {
+      } else if (this.deleteName.toLowerCase() != this.schoolName.toLowerCase())  {
         return "The name typed must match the school name";
+      } else {
+        return true;
+      }
+    },
+    nameValidate() {
+      console.log(this.name)
+      if (this.newSchoolName == "" || this.newSchoolName == null) {
+        return "Name is required";
+      } else {
+        return true;
+      }
+    },
+    addressValidate() {
+      console.log(this.name)
+      if (this.newAddress == "" || this.newAddress == null) {
+        return "Address is required";
       } else {
         return true;
       }

@@ -24,11 +24,12 @@
       :search="search"
       :sort-by="['sid']"
       :sort-desc="[false, true]"
-      multi-sort
     >
     
     <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
+        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewItem(item)">
+        Details
+      </v-btn>
       </template>
     </v-data-table>
   </v-card>
@@ -51,7 +52,7 @@ export default {
         },
         { text: "Student ID", value: "sid" },
         { text: "School", value: "school" },
-        { text: "Route", value: "route", sortable: false },
+        { text: "Route", value: "route"},
         { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],

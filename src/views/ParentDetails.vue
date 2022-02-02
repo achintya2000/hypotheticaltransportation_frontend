@@ -21,12 +21,14 @@
                 v-model="newPassword"
                 :rules="newPasswordRules"
                 label="New Password"
+                :type="'password'"
                 required
               ></v-text-field>
 
               <v-text-field
                 v-model="newPassword2"
                 :rules="newPassword2Rules"
+                :type="'password'"
                 label="Confirm New Password"
                 required
               ></v-text-field>
@@ -60,10 +62,11 @@
       :search="search"
       :sort-by="['sid']"
       :sort-desc="[false, true]"
-      multi-sort
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
+        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewItem(item)">
+        Details
+      </v-btn>
       </template>
     </v-data-table>
   </v-card>

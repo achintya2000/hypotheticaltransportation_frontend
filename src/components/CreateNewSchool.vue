@@ -15,6 +15,7 @@
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-text-field
             v-model="name"
+            append-icon="mdi-school"
             :rules="nameValidateArray"
             label="Name"
             required
@@ -24,9 +25,10 @@
             <template v-slot:input="slotProps">
               <v-text-field
                 v-model="address"
-                label="Address"
+                label="Enter a location address"
                 :rules="addressValidateArray"
                 ref="input"
+                append-icon="mdi-map-marker"
                 v-on:listeners="slotProps.listeners"
                 v-on:attrs="slotProps.attrs"
               >
@@ -44,7 +46,7 @@
           </v-btn>
 
           <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
-          <v-btn color="warning" @click="dialog = false"> Cancel </v-btn>
+          <v-btn color="warning" @click="dialog = false; reset()"> Cancel </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -99,9 +101,11 @@ export default {
         });
     },
     validate() {
-      this.submitData();
-      this.dialog = false;
-      this.reset();
+      if (this.name != "" && this.name!= null) {
+        this.submitData();
+        this.dialog = false;
+        this.reset();
+      }
       
     },
     reset() {
