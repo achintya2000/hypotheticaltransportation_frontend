@@ -46,7 +46,15 @@
           </v-btn>
 
           <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
-          <v-btn color="warning" @click="dialog = false; reset()"> Cancel </v-btn>
+          <v-btn
+            color="warning"
+            @click="
+              dialog = false;
+              reset();
+            "
+          >
+            Cancel
+          </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -56,7 +64,6 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 export default {
-
   data() {
     return {
       dialog: false,
@@ -101,12 +108,11 @@ export default {
         });
     },
     validate() {
-      if (this.name != "" && this.name!= null) {
+      if (this.name != "" && this.name != null) {
         this.submitData();
         this.dialog = false;
         this.reset();
       }
-      
     },
     reset() {
       this.$refs.form.reset();
@@ -115,7 +121,7 @@ export default {
       this.$refs.form.resetValidation();
     },
     nameValidate() {
-      console.log(this.name)
+      console.log(this.name);
       if (this.name == "" || this.name == null) {
         return "Name is required";
       } else {
@@ -123,7 +129,7 @@ export default {
       }
     },
     addressValidate() {
-      console.log(this.name)
+      console.log(this.name);
       if (this.address == "" || this.address == null) {
         return "Address is required";
       } else {

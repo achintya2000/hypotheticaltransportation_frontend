@@ -18,11 +18,18 @@
       :sort-by="['name']"
       :sort-desc="[true]"
     >
-    
-     <template v-slot:[`item.actions`]="{ item }">
-        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewItem(item)">
-        Details
-      </v-btn>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-btn
+          dense
+          small
+          color="blue lighten-2"
+          dark
+          v-bind="attrs"
+          v-on="on"
+          @click="viewItem(item)"
+        >
+          Details
+        </v-btn>
       </template>
     </v-data-table>
   </v-card>
@@ -43,15 +50,15 @@ export default {
         },
         { text: "School", value: "school" },
         { text: "Description", value: "description", sortable: false },
-        { text: "# of Students", value: "student_count"},
+        { text: "# of Students", value: "student_count" },
         { text: "Actions", value: "actions", sortable: false },
       ],
       schools: [],
     };
   },
   methods: {
-      viewItem(item) {
-          console.log(item.id);
+    viewItem(item) {
+      console.log(item.id);
       this.$router.push({ name: "AdminRouteDetail", query: { id: item.id } });
     },
     getDisplayRoute(item) {

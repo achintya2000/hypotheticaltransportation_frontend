@@ -13,7 +13,9 @@
         </template>
 
         <v-card>
-          <v-card-title class="text-h5 grey lighten-2"> Modify Name and Description </v-card-title>
+          <v-card-title class="text-h5 grey lighten-2">
+            Modify Name and Description
+          </v-card-title>
 
           <v-card-text>
             <v-form ref="form" v-model="valid" lazy-validation>
@@ -42,7 +44,16 @@
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn color="warning" @click="dialog2 = false; newRouteName = routeName; newRouteDescription = routeDescription"> Cancel </v-btn>
+              <v-btn
+                color="warning"
+                @click="
+                  dialog2 = false;
+                  newRouteName = routeName;
+                  newRouteDescription = routeDescription;
+                "
+              >
+                Cancel
+              </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -86,9 +97,17 @@
       :sort-desc="[true]"
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewItem(item)">
-        Details
-      </v-btn>
+        <v-btn
+          dense
+          small
+          color="blue lighten-2"
+          dark
+          v-bind="attrs"
+          v-on="on"
+          @click="viewItem(item)"
+        >
+          Details
+        </v-btn>
       </template>
     </v-data-table>
   </v-card>
@@ -213,14 +232,14 @@ export default {
       };
     },
     submitDataForDelete() {
-    this.dialog=false;
+      this.dialog = false;
       base_endpoint
         .delete("/api/route/delete/" + this.$route.query.id, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-          console.log(response)
-          this.$router.push({ name: "AdminRouteList"});
+          console.log(response);
+          this.$router.push({ name: "AdminRouteList" });
         })
         .catch((err) => {
           console.log(err);
@@ -239,7 +258,7 @@ export default {
         });
     },
     nameValidate() {
-      console.log(this.name)
+      console.log(this.name);
       if (this.newRouteName == "" || this.newRouteName == null) {
         return "Name is required";
       } else {
@@ -247,7 +266,7 @@ export default {
       }
     },
     desValidate() {
-      console.log(this.name)
+      console.log(this.name);
       if (this.newRouteDescription == "" || this.newRouteDescription == null) {
         return "Description is required";
       } else {

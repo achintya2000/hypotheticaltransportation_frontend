@@ -22,19 +22,19 @@
                 required
               ></v-text-field>
 
-             <gmap-autocomplete @place_changed="setPlace">
-            <template v-slot:input="slotProps"> 
-              <v-text-field
-                v-model="newAddress"
-                label="Address"
-                :rules="addressValidateArray"
-                ref="input"
-                v-on:listeners="slotProps.listeners"
-                v-on:attrs="slotProps.attrs"
-                required
-              ></v-text-field>
-               </template>
-          </gmap-autocomplete>
+              <gmap-autocomplete @place_changed="setPlace">
+                <template v-slot:input="slotProps">
+                  <v-text-field
+                    v-model="newAddress"
+                    label="Address"
+                    :rules="addressValidateArray"
+                    ref="input"
+                    v-on:listeners="slotProps.listeners"
+                    v-on:attrs="slotProps.attrs"
+                    required
+                  ></v-text-field>
+                </template>
+              </gmap-autocomplete>
 
               <v-btn
                 :disabled="!valid2"
@@ -47,7 +47,16 @@
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn color="warning" @click="dialog2 = false; newSchoolName = schoolName; newAddress = schoolAddress"> Cancel </v-btn>
+              <v-btn
+                color="warning"
+                @click="
+                  dialog2 = false;
+                  newSchoolName = schoolName;
+                  newAddress = schoolAddress;
+                "
+              >
+                Cancel
+              </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -79,10 +88,10 @@
                 required
               ></v-text-field>
 
-              <v-btn 
-                :disabled="!valid" 
-                color="success" 
-                class="mr-4" 
+              <v-btn
+                :disabled="!valid"
+                color="success"
+                class="mr-4"
                 @click="validateForDelete"
               >
                 Submit
@@ -90,7 +99,15 @@
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn color="warning" @click="dialog = false; reset()"> Cancel </v-btn>
+              <v-btn
+                color="warning"
+                @click="
+                  dialog = false;
+                  reset();
+                "
+              >
+                Cancel
+              </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -111,9 +128,17 @@
       :sort-desc="[true]"
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewRoute(item)">
-        Details
-      </v-btn>
+        <v-btn
+          dense
+          small
+          color="blue lighten-2"
+          dark
+          v-bind="attrs"
+          v-on="on"
+          @click="viewRoute(item)"
+        >
+          Details
+        </v-btn>
       </template>
     </v-data-table>
 
@@ -127,9 +152,17 @@
       :sort-desc="[true]"
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewStudent(item)">
-        Details
-      </v-btn>
+        <v-btn
+          dense
+          small
+          color="blue lighten-2"
+          dark
+          v-bind="attrs"
+          v-on="on"
+          @click="viewStudent(item)"
+        >
+          Details
+        </v-btn>
       </template>
     </v-data-table>
   </v-card>
@@ -139,7 +172,6 @@
 import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
-    
     return {
       schoolName: "",
       schoolAddress: "",
@@ -181,7 +213,7 @@ export default {
     };
   },
   methods: {
-      setPlace(place) {
+    setPlace(place) {
       this.formatted_address = place.formatted_address;
       this.latitude = place.geometry.location.lat();
       this.longitude = place.geometry.location.lng();
@@ -264,8 +296,8 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-          console.log(response)
-          this.$router.push({ name: "AdminSchoolList"});
+          console.log(response);
+          this.$router.push({ name: "AdminSchoolList" });
         })
         .catch((err) => {
           console.log(err);
@@ -321,14 +353,16 @@ export default {
     deleteValidation() {
       if (this.deleteName == "" || this.deleteName == null) {
         return "Name is required";
-      } else if (this.deleteName.toLowerCase() != this.schoolName.toLowerCase())  {
+      } else if (
+        this.deleteName.toLowerCase() != this.schoolName.toLowerCase()
+      ) {
         return "The name typed must match the school name";
       } else {
         return true;
       }
     },
     nameValidate() {
-      console.log(this.name)
+      console.log(this.name);
       if (this.newSchoolName == "" || this.newSchoolName == null) {
         return "Name is required";
       } else {
@@ -336,7 +370,7 @@ export default {
       }
     },
     addressValidate() {
-      console.log(this.name)
+      console.log(this.name);
       if (this.newAddress == "" || this.newAddress == null) {
         return "Address is required";
       } else {
@@ -344,7 +378,7 @@ export default {
       }
     },
   },
-  
+
   created() {
     this.getSchoolInfo();
     this.getSchoolRoutes();

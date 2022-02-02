@@ -46,7 +46,10 @@
 
               <v-btn
                 color="warning"
-                @click="dialog3 = false; reset()"
+                @click="
+                  dialog3 = false;
+                  reset();
+                "
               >
                 Cancel
               </v-btn>
@@ -82,19 +85,18 @@
               ></v-text-field>
 
               <gmap-autocomplete @place_changed="setPlace">
-              
-              <template v-slot:input="slotProps">
-                <v-text-field
-                  v-model="newCurrentAddress"
-                  placeholder="Address"
-                  :rules="userAddressValidateArray"
-                  ref="input"
-                  v-on:listeners="slotProps.listeners"
-                  v-on:attrs="slotProps.attrs"
-                >
-                </v-text-field>
-              </template>
-            </gmap-autocomplete>
+                <template v-slot:input="slotProps">
+                  <v-text-field
+                    v-model="newCurrentAddress"
+                    placeholder="Address"
+                    :rules="userAddressValidateArray"
+                    ref="input"
+                    v-on:listeners="slotProps.listeners"
+                    v-on:attrs="slotProps.attrs"
+                  >
+                  </v-text-field>
+                </template>
+              </gmap-autocomplete>
 
               <v-checkbox
                 v-model="newAdministrator"
@@ -109,11 +111,16 @@
 
               <v-btn
                 color="warning"
-                @click="dialog2 = false; newFull_name = full_name; newEmail = email; newCurrentAddress = currentAddress; newAdministrator = administrator"
+                @click="
+                  dialog2 = false;
+                  newFull_name = full_name;
+                  newEmail = email;
+                  newCurrentAddress = currentAddress;
+                  newAdministrator = administrator;
+                "
               >
                 Cancel
               </v-btn>
-
             </v-form>
           </v-card-text>
         </v-card>
@@ -159,11 +166,18 @@
       :sort-by="['name']"
       :sort-desc="[true]"
     >
-
-    <template v-slot:[`item.actions`]="{ item }">
-        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewStudent(item)">
-        Details
-      </v-btn>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-btn
+          dense
+          small
+          color="blue lighten-2"
+          dark
+          v-bind="attrs"
+          v-on="on"
+          @click="viewStudent(item)"
+        >
+          Details
+        </v-btn>
       </template>
     </v-data-table>
   </v-card>
@@ -350,52 +364,8 @@ export default {
       );
     },
 
-      validate () {
-        this.$refs.form.validate()
-      },
-      reset () {
-        this.$refs.form.reset()
-      },
-      resetValidation () {
-        this.$refs.form.resetValidation()
-      },
-      resetPassword1Validation() {
-        if (this.newPassword == "" || this.newPassword == null) {
-          return "This field is required";
-        } else {
-          return true;
-        }
-      },
-      resetPassword2Validation() {
-        if (this.newPassword2 == "" || this.newPassword2 == null) {
-          return "This field is required";
-        } else if (this.newPassword2 != this.newPassword)  {
-          return "The passwords must match";
-        } else {
-          return true;
-        }
-      },
-          userNameValidate() {
-      if (this.newFull_name == null || this.newFull_name == "") {
-        return "Parent name is required";
-      } else {
-        return true;
-      }
-    },
-    userEmailValidate() {
-      if (this.newEmail == null || this.newEmail == "") {
-        return "Parent email is required";
-      } else {
-        return true;
-      }
-    },
-    userAddressValidate() {
-      if ((this.newCurrentAddress == null || this.newCurrentAddress == "") && this.students.length != 0) {
-        return "Parent address is required";
-      } else {
-        return true;
-      }
-    },
+    validate() {
+      this.$refs.form.validate();
     },
     reset() {
       this.$refs.form.reset();
@@ -415,6 +385,30 @@ export default {
         return "This field is required";
       } else if (this.newPassword2 != this.newPassword) {
         return "The passwords must match";
+      } else {
+        return true;
+      }
+    },
+    userNameValidate() {
+      if (this.newFull_name == null || this.newFull_name == "") {
+        return "Parent name is required";
+      } else {
+        return true;
+      }
+    },
+    userEmailValidate() {
+      if (this.newEmail == null || this.newEmail == "") {
+        return "Parent email is required";
+      } else {
+        return true;
+      }
+    },
+    userAddressValidate() {
+      if (
+        (this.newCurrentAddress == null || this.newCurrentAddress == "") &&
+        this.students.length != 0
+      ) {
+        return "Parent address is required";
       } else {
         return true;
       }

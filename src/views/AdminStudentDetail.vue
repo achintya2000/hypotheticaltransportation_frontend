@@ -47,13 +47,29 @@
                 return-object
               ></v-autocomplete>
 
-              <v-btn color="success" class="mr-4" @click="updateStudent" :disabled="!valid">
+              <v-btn
+                color="success"
+                class="mr-4"
+                @click="updateStudent"
+                :disabled="!valid"
+              >
                 Save
               </v-btn>
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn color="warning" @click="dialog2 = false; newStudentName = studentName; newStudentId = studentId; parent = studentParent; school = studentSchool"> Cancel </v-btn>
+              <v-btn
+                color="warning"
+                @click="
+                  dialog2 = false;
+                  newStudentName = studentName;
+                  newStudentId = studentId;
+                  parent = studentParent;
+                  school = studentSchool;
+                "
+              >
+                Cancel
+              </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -252,7 +268,8 @@ export default {
               Authorization: `Token ${this.$store.state.accessToken}`,
             },
           }
-        ).then((response) => {
+        )
+        .then((response) => {
           console.log(response);
           this.getStudentInfo();
         })
@@ -280,8 +297,8 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-          console.log(response)
-          this.$router.push({ name: "AdminStudentList"});
+          console.log(response);
+          this.$router.push({ name: "AdminStudentList" });
         })
         .catch((err) => {
           console.log(err);
@@ -308,7 +325,6 @@ export default {
         return "Student ID is required";
       } else if (isNaN(this.newStudentId) == true) {
         return "Student ID must be a number";
-        
       } else {
         return true;
       }

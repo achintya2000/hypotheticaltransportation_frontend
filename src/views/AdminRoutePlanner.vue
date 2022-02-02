@@ -56,7 +56,6 @@
                 <v-btn
                   :disabled="!valid"
                   color="success"
-                  
                   class="mr-4"
                   @click="validate"
                 >
@@ -64,7 +63,15 @@
                 </v-btn>
 
                 <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
-                <v-btn color="warning" @click="dialog = false; reset()"> Cancel </v-btn>
+                <v-btn
+                  color="warning"
+                  @click="
+                    dialog = false;
+                    reset();
+                  "
+                >
+                  Cancel
+                </v-btn>
               </v-form>
             </v-card-text>
           </v-card>
@@ -312,8 +319,8 @@ export default {
       };
       this.markerChanges.push(change);
     },
-        nameValidate() {
-      console.log(this.name)
+    nameValidate() {
+      console.log(this.name);
       if (this.newRouteName == "" || this.newRouteName == null) {
         return "Name is required";
       } else {
@@ -321,7 +328,7 @@ export default {
       }
     },
     desValidate() {
-      console.log(this.name)
+      console.log(this.name);
       if (this.newRouteDescription == "" || this.newRouteDescription == null) {
         return "Description is required";
       } else {

@@ -54,14 +54,13 @@
 
           <gmap-autocomplete v-if="userCheckbox" @place_changed="setPlace">
             <template v-slot:input="slotProps">
-          <v-text-field
-            
-            v-model="parentAddress"
-            label="Enter a location address"
-            :rules="userAddressValidateArray"
-            dense
-            append-icon="mdi-map-marker"
-            ref="input"
+              <v-text-field
+                v-model="parentAddress"
+                label="Enter a location address"
+                :rules="userAddressValidateArray"
+                dense
+                append-icon="mdi-map-marker"
+                ref="input"
                 v-on:listeners="slotProps.listeners"
                 v-on:attrs="slotProps.attrs"
               ></v-text-field>
@@ -127,7 +126,17 @@
           </v-btn>
 
           <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
-          <v-btn color="warning" @click="dialog = false; reset(); userCheckbox = false; studentCheckbox = false;"> Cancel </v-btn>
+          <v-btn
+            color="warning"
+            @click="
+              dialog = false;
+              reset();
+              userCheckbox = false;
+              studentCheckbox = false;
+            "
+          >
+            Cancel
+          </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
