@@ -223,7 +223,7 @@ export default {
         });
     },
     validate() {
-      if (this.newRouteName != "" && this.newRouteName != null) {
+      if (this.name != "" && this.name != null) {
         this.$refs.form.validate();
         this.submitData();
         this.dialog = false;
@@ -321,7 +321,7 @@ export default {
     },
     nameValidate() {
       console.log(this.name);
-      if (this.newRouteName == "" || this.newRouteName == null) {
+      if (this.name == "" || this.name == null) {
         return "Name is required";
       } else {
         return true;
@@ -329,7 +329,7 @@ export default {
     },
     desValidate() {
       console.log(this.name);
-      if (this.newRouteDescription == "" || this.newRouteDescription == null) {
+      if (this.description == "" || this.description == null) {
         return "Description is required";
       } else {
         return true;

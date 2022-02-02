@@ -26,15 +26,7 @@
       :sort-desc="[true]"
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-btn
-          dense
-          small
-          color="blue lighten-2"
-          dark
-          v-bind="attrs"
-          v-on="on"
-          @click="viewItem(item)"
-        >
+        <v-btn dense small color="blue lighten-2" dark @click="viewItem(item)">
           Details
         </v-btn>
       </template>

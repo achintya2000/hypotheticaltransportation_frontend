@@ -66,6 +66,7 @@ import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
     return {
+      name: "",
       dialog: false,
       valid: true,
       latitude: 0,
