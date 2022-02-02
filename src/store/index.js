@@ -7,7 +7,6 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     accessToken: window.localStorage.getItem('token'),
-    refreshToken: null,
     isAdmin: window.localStorage.getItem('isAdmin'),
     loggedInUserID: window.localStorage.getItem('userID')
   },
@@ -24,8 +23,7 @@ export default new Vuex.Store({
     },
     destroyToken(state) {
       state.accessToken = null
-      state.refreshToken = null
-      state.isAdmin = false
+      state.isAdmin = "false"
       state.loggedInUserID = null
     }
   },
@@ -33,6 +31,9 @@ export default new Vuex.Store({
     loggedIn(state) {
       return state.accessToken != null
     },
+    isAdmin(state) {
+      return state.isAdmin == "true";
+    }
   },
   actions: {
     userLogout(context) {
@@ -44,15 +45,12 @@ export default new Vuex.Store({
       }
     },
     userLogin(context, usercredentials) {
-      console.log(usercredentials.username)
-      console.log(usercredentials.password)
       return new Promise((resolve, reject) => {
         base_endpoint.post('/api/login', {
           username: usercredentials.username,
           password: usercredentials.password
         })
           .then(response => {
-            console.log(response)
             context.commit('updateStorage', { access: response.data.token, refresh: null })
             resolve()
           })
@@ -68,7 +66,7 @@ export default new Vuex.Store({
           headers: { Authorization: `Token ${credentials.token}` },
         })
           .then(response => {
-            context.commit('updateAdminStatus', { isAdmin: response.data.is_superuser, userID: response.data.id })
+            context.commit('updateAdminStatus', { isAdmin: response.data.is_superuser.toString(), userID: response.data.id })
             resolve()
           })
           .catch((err) => {

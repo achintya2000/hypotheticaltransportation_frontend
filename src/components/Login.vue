@@ -41,22 +41,12 @@
                 @click:append="show = !show"
               ></v-text-field>
             </v-col>
-            <v-alert cols="12"
-      dense
-      outlined
-      v-if="incorrectAuth"
-      type="error"
-    >
-      The email or password you entered is incorrect
-    </v-alert>
+            <v-alert cols="12" dense outlined v-if="incorrectAuth" type="error">
+              The email or password you entered is incorrect
+            </v-alert>
             <v-col class="d-flex" cols="12" sm="6" xsm="12"> </v-col>
             <v-spacer></v-spacer>
-            <v-btn
-              type="submit"
-              text
-              :disabled="!valid"
-              color="blue darken-1"
-            >
+            <v-btn type="submit" text :disabled="!valid" color="blue darken-1">
               Login
             </v-btn>
           </v-row>
