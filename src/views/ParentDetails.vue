@@ -16,23 +16,25 @@
           </v-card-title>
 
           <v-card-text>
-            <v-form ref="form" v-model="valid3" lazy-validation>
+            <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="newPassword"
                 :rules="newPasswordRules"
                 label="New Password"
+                :type="'password'"
                 required
               ></v-text-field>
 
               <v-text-field
                 v-model="newPassword2"
                 :rules="newPassword2Rules"
+                :type="'password'"
                 label="Confirm New Password"
                 required
               ></v-text-field>
 
               <v-btn
-                :disabled="!valid3"
+                :disabled="!valid"
                 color="success"
                 class="mr-4"
                 @click="validateForResetPassword"
@@ -60,10 +62,11 @@
       :search="search"
       :sort-by="['sid']"
       :sort-desc="[false, true]"
-      multi-sort
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
+        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewItem(item)">
+        Details
+      </v-btn>
       </template>
     </v-data-table>
   </v-card>
@@ -78,6 +81,7 @@ export default {
       dialog3: false,
       valid: true,
       reveal: false,
+      search: "",
       newPassword: "",
       newPasswordRules: [(v) => !!v || "Name is required"],
       newPassword2: "",

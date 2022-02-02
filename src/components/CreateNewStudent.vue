@@ -29,6 +29,7 @@
             v-model="parentName"
             :rules="userNameValidateArray"
             label="User Name"
+            append-icon="mdi-account"
             dense
             required
           ></v-text-field>
@@ -37,6 +38,7 @@
             v-model="parentEmail"
             :rules="userEmailValidateArray"
             label="User Email"
+            append-icon="mdi-email"
             dense
             required
           ></v-text-field>
@@ -44,24 +46,26 @@
             v-if="userCheckbox"
             :rules="userPasswordValidateArray"
             v-model="parentPassword"
+            append-icon="mdi-lock"
             label="User Password"
             dense
             required
           ></v-text-field>
-          
+
           <gmap-autocomplete v-if="userCheckbox" @place_changed="setPlace">
             <template v-slot:input="slotProps">
           <v-text-field
             
             v-model="parentAddress"
-            label="User Address"
+            label="Enter a location address"
             :rules="userAddressValidateArray"
             dense
+            append-icon="mdi-map-marker"
             ref="input"
                 v-on:listeners="slotProps.listeners"
                 v-on:attrs="slotProps.attrs"
-          ></v-text-field>
-          </template>
+              ></v-text-field>
+            </template>
           </gmap-autocomplete>
 
           <v-checkbox
@@ -76,6 +80,7 @@
             v-model="studentName"
             :rules="studentNameValidateArray"
             v-if="studentCheckbox"
+            append-icon="mdi-account"
             dense
             label="Student Name"
           ></v-text-field>
@@ -85,6 +90,7 @@
             v-if="studentCheckbox"
             :rules="studentIDValidateArray"
             dense
+            append-icon="mdi-numeric-0-box"
             label="Student ID"
           ></v-text-field>
           <v-autocomplete
@@ -99,7 +105,6 @@
             persistent-hint
             return-object
           ></v-autocomplete>
-          
 
           <v-autocomplete
             v-model="schoolSelected"
@@ -122,7 +127,7 @@
           </v-btn>
 
           <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
-          <v-btn color="warning" @click="dialog = false"> Cancel </v-btn>
+          <v-btn color="warning" @click="dialog = false; reset(); userCheckbox = false; studentCheckbox = false;"> Cancel </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -159,7 +164,7 @@ export default {
       userNameValidateArray: [this.userNameValidate],
       userEmailValidateArray: [this.userEmailValidate],
       userPasswordValidateArray: [this.userPasswordValidate],
-      userdAddressValidateArray: [this.userdAddressValidate],
+      userAddressValidateArray: [this.userAddressValidate],
       studentNameValidateArray: [this.studentNameValidate],
       studentIDValidateArray: [this.studentIDValidate],
       studentSchoolValidateArray: [this.studentSchoolValidate],
@@ -210,135 +215,184 @@ export default {
         });
     },
     submitData() {
-      if (this.userCheckbox==true) {
+      if (this.userCheckbox == true) {
         console.log("GOT INTO THE IF STATMENT");
-        base_endpoint.post(
-          "/api/profile/create",
-          {
-          full_name: this.parentName,
-          address: this.formatted_address,
-          longitude: this.longitude,
-          latitude: this.latitude,
-          email: this.parentEmail,
-          password: this.parentPassword,
-          is_superuser: this.userAdminCheckbox,
-        },
-        {
-          headers: {
-            Authorization: `Token ${this.$store.state.accessToken}`,
-          },
-        }
-      ).then((response) => {
-        console.log("PRINTING PARENT ID CREATED");
-        console.log(response.data.id);
-        if ((this.studentName != null && this.studentName != "") && (this.sid != null && this.sid != "") && (this.schoolSelected.id != null && this.schoolSelected.id != "") && (this.newParentID != null && this.newParentID != "")) {
-          this.newParentID = response.data.id;
-          console.log("CREATING STUDENT");
-        base_endpoint.post(
-        "/api/student/create",
-        {
-          full_name: this.studentName,
-          sid: this.sid,
-          school: this.schoolSelected.id,
-          parent: this.newParentID,
-        },
-        {
-          headers: {
-            Authorization: `Token ${this.$store.state.accessToken}`,
-          },
-        });
-        }
-        }
-      );
-        
+        base_endpoint
+          .post(
+            "/api/profile/create",
+            {
+              full_name: this.parentName,
+              address: this.formatted_address,
+              longitude: this.longitude,
+              latitude: this.latitude,
+              email: this.parentEmail,
+              password: this.parentPassword,
+              is_superuser: this.userAdminCheckbox,
+            },
+            {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
+              },
+            }
+          )
+          .then((response) => {
+            console.log("PRINTING PARENT ID CREATED");
+            console.log(response.data.id);
+            this.$emit(
+              "studentcreated",
+              "A new student has been created and sent to database"
+            );
+            if (
+              this.studentName != null &&
+              this.studentName != "" &&
+              this.sid != null &&
+              this.sid != "" &&
+              this.schoolSelected.id != null &&
+              this.schoolSelected.id != "" &&
+              this.newParentID != null &&
+              this.newParentID != ""
+            ) {
+              this.newParentID = response.data.id;
+              console.log("CREATING STUDENT");
+              base_endpoint
+                .post(
+                  "/api/student/create",
+                  {
+                    full_name: this.studentName,
+                    sid: this.sid,
+                    school: this.schoolSelected.id,
+                    parent: this.newParentID,
+                  },
+                  {
+                    headers: {
+                      Authorization: `Token ${this.$store.state.accessToken}`,
+                    },
+                  }
+                )
+                .then(() => {
+                  this.$emit(
+                    "studentcreated",
+                    "A new student has been created and sent to database"
+                  );
+                });
+            }
+          });
       } else {
         console.log("GOT INTO THE ELSE STATMENT");
-        base_endpoint.post(
-        "/api/student/create",
-        {
-          full_name: this.studentName,
-          sid: this.sid,
-          school: this.schoolSelected.id,
-          parent: this.parentSelected.id,
-        },
-        {
-          headers: {
-            Authorization: `Token ${this.$store.state.accessToken}`,
-          },
-        }
-      );
+        base_endpoint
+          .post(
+            "/api/student/create",
+            {
+              full_name: this.studentName,
+              sid: this.sid,
+              school: this.schoolSelected.id,
+              parent: this.parentSelected.id,
+            },
+            {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
+              },
+            }
+          )
+          .then(() => {
+            this.$emit(
+              "studentcreated",
+              "A new student has been created and sent to database"
+            );
+          });
       }
-      
     },
     validate() {
       this.$refs.form.validate();
       this.submitData();
       this.dialog = false;
-      this.$emit(
-        "studentcreated",
-        "A new student has been created and sent to database"
-      );
     },
     reset() {
       this.$refs.form.reset();
+      this.userAdminCheckbox = false;
     },
     resetValidation() {
       this.$refs.form.resetValidation();
     },
     userNameValidate() {
-      if (this.userCheckbox == true && (this.parentName == null || this.parentName == "")) {
+      if (
+        this.userCheckbox == true &&
+        (this.parentName == null || this.parentName == "")
+      ) {
         return "Parent name is required";
       } else {
         return true;
       }
     },
     userEmailValidate() {
-      if (this.userCheckbox == true && (this.parentEmail == null || this.parentEmail == "")) {
+      if (
+        this.userCheckbox == true &&
+        (this.parentEmail == null || this.parentEmail == "")
+      ) {
         return "Parent email is required";
       } else {
         return true;
       }
     },
     userPasswordValidate() {
-      if (this.userCheckbox == true && (this.parentPassword == null || this.parentPassword == "")) {
+      if (
+        this.userCheckbox == true &&
+        (this.parentPassword == null || this.parentPassword == "")
+      ) {
         return "Parent password is required";
       } else {
         return true;
       }
     },
-    userdAddressValidate() {
-      if (this.userCheckbox == true && this.studentCheckbox == true && (this.parentAddress == null || this.parentAddress == "")) {
+    userAddressValidate() {
+      if (
+        this.userCheckbox == true &&
+        this.studentCheckbox == true &&
+        (this.parentAddress == null || this.parentAddress == "")
+      ) {
         return "Parent address is required";
       } else {
         return true;
       }
     },
     studentNameValidate() {
-      if (this.studentCheckbox == true && (this.studentName == null || this.studentName == "")) {
+      if (
+        this.studentCheckbox == true &&
+        (this.studentName == null || this.studentName == "")
+      ) {
         return "Student Name is required";
       } else {
         return true;
       }
     },
     studentIDValidate() {
-      if (this.studentCheckbox == true && (this.sid == null || this.sid == "")) {
+      if (
+        this.studentCheckbox == true &&
+        (this.sid == null || this.sid == "")
+      ) {
         return "Student ID is required";
       } else if (isNaN(this.sid) == true) {
         return "Student ID must be a number";
-        
       } else {
         return true;
       }
     },
     studentSchoolValidate() {
-      if (this.studentCheckbox == true && (this.schoolSelected == null || this.schoolSelected == "")) {
+      if (
+        this.studentCheckbox == true &&
+        (this.schoolSelected == null || this.schoolSelected == "")
+      ) {
         return "Student school is required";
       } else {
         return true;
       }
     },
     studentParentValidate() {
-      if (this.studentCheckbox == true && this.userCheckbox == false && (this.parentSelected == null || this.parentSelected == "")) {
+      if (
+        this.studentCheckbox == true &&
+        this.userCheckbox == false &&
+        (this.parentSelected == null || this.parentSelected == "")
+      ) {
         return "Student's parent is required";
       } else {
         return true;
@@ -351,9 +405,9 @@ export default {
   },
   computed: {
     userAndStudentCheckbox() {
-      return ((!this.userCheckbox) && this.studentCheckbox);
-    }
-  }
+      return !this.userCheckbox && this.studentCheckbox;
+    },
+  },
 };
 </script>
 

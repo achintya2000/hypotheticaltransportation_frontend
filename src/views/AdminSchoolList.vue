@@ -24,10 +24,11 @@
       :search="search"
       :sort-by="['name']"
       :sort-desc="[true]"
-      multi-sort
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small @click="viewItem(item)"> mdi-eye </v-icon>
+        <v-btn dense small color="blue lighten-2" dark v-bind="attrs" v-on="on" @click="viewItem(item)">
+        Details
+      </v-btn>
       </template>
     </v-data-table>
   </v-card>

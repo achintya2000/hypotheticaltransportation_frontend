@@ -19,7 +19,6 @@
           :sort-by="['name']"
           :sort-desc="[true]"
           item-key="name"
-          multi-sort
           show-select
           :single-select="true"
         ></v-data-table>
@@ -40,21 +39,24 @@
               <v-form ref="form" v-model="valid" lazy-validation>
                 <v-text-field
                   v-model="name"
-                  :rules="nameRules"
+                  :rules="nameValidateArray"
                   label="Name"
+                  append-icon="mdi-bus"
                   required
                 ></v-text-field>
 
                 <v-text-field
                   v-model="description"
-                  :rules="descriptionRules"
+                  :rules="desValidateArray"
                   label="Route Description"
+                  append-icon="mdi-message-text"
                   required
                 ></v-text-field>
 
                 <v-btn
                   :disabled="!valid"
                   color="success"
+                  
                   class="mr-4"
                   @click="validate"
                 >
@@ -62,7 +64,7 @@
                 </v-btn>
 
                 <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
-                <v-btn color="warning" @click="dialog = false"> Cancel </v-btn>
+                <v-btn color="warning" @click="dialog = false; reset()"> Cancel </v-btn>
               </v-form>
             </v-card-text>
           </v-card>
@@ -116,16 +118,15 @@ export default {
       currentPlace: null,
       markers: [],
       places: [],
-
+      nameValidateArray: [this.nameValidate],
+      desValidateArray: [this.desValidate],
       schoolName: "",
       search: "",
       selected: [],
       dialog: false,
       valid: true,
       name: "",
-      nameRules: [(v) => !!v || "Name is required"],
       description: "",
-      descriptionRules: [(v) => !!v || "Description is required"],
       headers: [
         {
           text: "Name",
@@ -148,6 +149,7 @@ export default {
             {
               parent_id: routeUpdate.id,
               route_id: routeUpdate.newRoute,
+              school_id: this.$route.query.id,
             },
             {
               headers: {
@@ -214,9 +216,12 @@ export default {
         });
     },
     validate() {
-      this.$refs.form.validate();
-      this.submitData();
-      this.dialog = false;
+      if (this.newRouteName != "" && this.newRouteName != null) {
+        this.$refs.form.validate();
+        this.submitData();
+        this.dialog = false;
+        this.$refs.form.reset();
+      }
     },
     submitData() {
       base_endpoint
@@ -240,6 +245,10 @@ export default {
     },
     reset() {
       this.$refs.form.reset();
+    },
+    resetAndClose() {
+      this.$refs.form.reset();
+      this.dialog = false;
     },
     resetValidation() {
       this.$refs.form.resetValidation();
@@ -302,6 +311,22 @@ export default {
         newRoute: newVal,
       };
       this.markerChanges.push(change);
+    },
+        nameValidate() {
+      console.log(this.name)
+      if (this.newRouteName == "" || this.newRouteName == null) {
+        return "Name is required";
+      } else {
+        return true;
+      }
+    },
+    desValidate() {
+      console.log(this.name)
+      if (this.newRouteDescription == "" || this.newRouteDescription == null) {
+        return "Description is required";
+      } else {
+        return true;
+      }
     },
   },
   created() {
