@@ -25,7 +25,7 @@ router.beforeEach((to, from, next) => {
     } else {
       // User is logged in
       if (to.matched.some(record => record.meta.adminLocked)) {
-        if (!userIsAdmin) {
+        if (userIsAdmin == "false") {
           next({ name: 'ParentDetails' })
         } else {
           next()

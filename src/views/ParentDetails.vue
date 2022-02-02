@@ -16,7 +16,7 @@
           </v-card-title>
 
           <v-card-text>
-            <v-form ref="form" v-model="valid3" lazy-validation>
+            <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="newPassword"
                 :rules="newPasswordRules"
@@ -34,7 +34,7 @@
               ></v-text-field>
 
               <v-btn
-                :disabled="!valid3"
+                :disabled="!valid"
                 color="success"
                 class="mr-4"
                 @click="validateForResetPassword"
@@ -81,6 +81,7 @@ export default {
       dialog3: false,
       valid: true,
       reveal: false,
+      search: "",
       newPassword: "",
       newPasswordRules: [(v) => !!v || "Name is required"],
       newPassword2: "",

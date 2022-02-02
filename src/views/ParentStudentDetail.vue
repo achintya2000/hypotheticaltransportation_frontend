@@ -3,31 +3,17 @@
     <v-card-title>
       {{ studentName }}
       <v-spacer></v-spacer>
-      <v-dialog v-model="dialog2" width="500">
-        
-      </v-dialog>
+      <v-dialog v-model="dialog2" width="500"> </v-dialog>
       <v-spacer></v-spacer>
-        
+
       <v-spacer></v-spacer>
     </v-card-title>
     <v-card-subtitle> ID: {{ studentId }} </v-card-subtitle>
-    <v-card-subtitle>
-      School: {{ studentSchool }}
+    <v-card-subtitle> School: {{ studentSchool }} </v-card-subtitle>
 
-      <v-icon small @click="viewSchool(studentSchoolId)"> mdi-eye </v-icon>
-    </v-card-subtitle>
+    <v-card-subtitle> Route: {{ studentRoute }} </v-card-subtitle>
 
-    <v-card-subtitle>
-      Route: {{ studentRoute }}
-
-      <v-icon small @click="viewRoute(studentRouteId)"> mdi-eye </v-icon>
-    </v-card-subtitle>
-
-    <v-card-subtitle>
-      Parent: {{ studentParent }}
-
-      <v-icon small @click="viewParent(studentParentId)"> mdi-eye </v-icon>
-    </v-card-subtitle>
+    <v-card-subtitle> Parent: {{ studentParent }} </v-card-subtitle>
   </v-card>
 </template>
 
@@ -171,7 +157,8 @@ export default {
               Authorization: `Token ${this.$store.state.accessToken}`,
             },
           }
-        ).then((response) => {
+        )
+        .then((response) => {
           console.log(response);
           this.getStudentInfo();
         })
@@ -179,16 +166,6 @@ export default {
         .catch((err) => {
           console.log(err);
         });
-    },
-
-    viewSchool(item) {
-      this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
-    },
-    viewRoute(item) {
-      this.$router.push({ name: "AdminRouteDetail", query: { id: item } });
-    },
-    viewParent(item) {
-      this.$router.push({ name: "AdminUserDetail", query: { id: item } });
     },
     validate() {
       this.$refs.form.validate();
@@ -199,8 +176,8 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-          console.log(response)
-          this.$router.push({ name: "AdminStudentList"});
+          console.log(response);
+          this.$router.push({ name: "AdminStudentList" });
         })
         .catch((err) => {
           console.log(err);

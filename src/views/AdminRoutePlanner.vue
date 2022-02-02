@@ -102,11 +102,14 @@ export default {
       "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjMiIGhlaWdodD0iMjkiIHZpZXdCb3g9IjAgMCAyMyAyOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGQ9Ik0yMyAxMS41QzIzIDIxLjUgMTEuNSAyOC41IDExLjUgMjguNUMxMS41IDI4LjUgMCAyMS41IDAgMTEuNUMwIDUuMTQ4NzMgNS4xNDg3MyAwIDExLjUgMEMxNy44NTEzIDAgMjMgNS4xNDg3MyAyMyAxMS41WiIgZmlsbD0iIzMzMzMzMyIvPg0KPGNpcmNsZSBjeD0iMTEuNSIgY3k9IjExLjUiIHI9IjUuNSIgZmlsbD0iYmxhY2siLz4NCjwvc3ZnPg0K";
     let mapMarkerUnassigned =
       "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAANbY1E9YMgAABPNJREFUWMO1lwtMm1UUx29pWYUCC21nVhzvxyaP8iqUMh6jDygwSikC5SlvRFgmgmOgA1Y2trn5ntscTKZxGh9TMVt0WUQzpqjRqclMJJnJ3Ey2+VhMjBI24Hjut6RA+1XZnTb55cv9er9z//fcc8+5lwAA4cPS8ysp7r1OTF2XSFbtaZJS/DKJNQwJg+Nr1N6y0F6BQDBCCDlKn96ykG2BMaWp8ca9ohTLKNlQ8wExdf7IfU/tuBqDQv5NQGHXZaJv+oTEaPvjJT5+p0Qi91mZXzyEJtbDuvUdEKpqANkaFeD7OYmPYjwqs0etazjDCf9PBFiQqIyt9+NsZwKiLGBs+xasg/NQtRvslO+Yh7xN30GQ0ooWyey61Ida7d/fiYDS/hmSkPtEnUBAQG0Zhao9ABVDAFbbPJRtn13ANse9p/+nlr4Gbm5uoNQNttHvmQWYu6+QzOoTKhz8hqb4KFTvBRxsbunATsxBDfZLs75JPTGfZn0r3dx9lU1ATus54quIPeWPbq/es5zBF6h+HACDFXzkERPZLV+ImATEZu9Od3MTQm77N1CxE5Y9OKUc+xd0TIFQ6A7RWdtymARIFfGP+SqUnDHH2RuaP8VdUAseEhn3pG3HpaAxsSpATb1gYxKAv+EgZRkX5Y4zpIOKRCI7tO3YhwZkmKqeGhphFTAaltTIGXI0Tme+WABt8wm4F/MEtcMkAKP/UEC05Y48EBJfDQJCDjMJuDsoo2ulPByTzhy3z283BmjsSBWxILsn8VEmAaqNzydgnp8xNJ2ByqHb2wU0AI1tX4JA4DafYNyXxiRA33QWvZD+KgKVu3iynyvQW3TZ/CKMOHvVmB7rApOAIsxg6NpQobv4ulJnW3Yyov0wfWM6Fv2ha/gosqj7Gmst+I2UYS7XFL+kx0ieTsx/hndHOAae2nKERv7NJNPBgtKBG5wdZgGcCDSiNg8Xo1HYUHOCd1dQ6DIZmidw3QXUA3WlA7cKEXsx2nLFTkn/NIlIaR8QS+Rg6bmK5XepCCvmurKBv8BbGgrBsVX7qeiinl9I0dafOZgEFDx80Y6p8xIpfOQnoY987WRwXKWTF2g7WtsHYg/fH/I2nV9Z0HmRbOy4YIdJgPHBr5eQv3mKJJuHtXQpctvO2QuUdRDQK9dAtMITYrQD9XTAHOy/GCYB2vpxJwwtn2GJjjsZGLNQI+gzLnsXiD2lU/rGs2JD8yR3hFsMcx5wJKf1K5KY97RBKBJD4ZbLt2LBNgte0mAIS2rppJ7SN044wSQgo2LMmcr38Pmu+wqx94Vk82Go2YeR3zKJdV80nV45Fmho+dxp9sweWF/2Bi+ZVSfJ6hDtczTT1T4F9MABXr5BE9q6cTyOv88LkwB10Yu8aO47RtZqNud6eK3CGLiJhw4NrIk096ZXvENSS47xwiQAI54XddERkpD3pMJdLPlT1/AxeHqvhqjM3rTUklcIvZTwwSQgRrfdBTai1A8SD4n8+8iMbrhLIvtdlf+sLIV6yDzCC5sAbb9LYg07iY8s5EO5fzKuf8D55MIXSJLpEHKQFyYBYUnNLsG0THzk4a+vEEvw0Bl+WqnfQaKz+lzyvwjAO8MBmhW9pcHH8ehF8FrmEiYBSaYDLqGB5R9Z2EcFKMIM+/E65nLXUJgEuNpSlPTyt0l48gM1VADegNrTKo4TDe4CV/yTgL8Bg0AIlCA8gh8AAAAASUVORK5CYII=";
+    let schoolMapMarker =
+      "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIiBvdmVyZmxvdz0iaW5oZXJpdCI+PHBhdGggZD0iTTMwIDh2MzNoLTI0di0zM2gyNG00LTRoLTMydjQyaDMydi00MnptLTI1IDhoMTh2NGgtMTh6bTAgN2gxOHY0aC0xOHptMCA3aDE4djRoLTE4em0wIDdoMTh2NGgtMTh6bTMxLTIxaDh2MjhoLTh6bTQuMDA2LTExYy0yLjE5NCAwLTQuMDA2IDEuNzY1LTQuMDA2IDMuOTM3djQuMDYzaDh2LTQuMDYzYzAtMi4xNzItMS44MDktMy45MzctMy45OTQtMy45Mzd6bS00LjA2OCA0Mmw0LjA0MSA2LjM4NyA0LjAyMS02LjM4N3oiLz48L3N2Zz4='";
 
     return {
       mapMarker,
       mapMarkerActive,
       mapMarkerUnassigned,
+      schoolMapMarker,
       activeRouteID: null,
       selectedIndex: null,
       selectedMarker: null,
@@ -221,22 +224,24 @@ export default {
       }
     },
     submitData() {
-      base_endpoint.post(
-        "/api/route/create",
-        {
-          name: this.name,
-          school: this.$route.query.id,
-          description: this.description,
-        },
-        {
-          headers: {
-            Authorization: `Token ${this.$store.state.accessToken}`,
+      base_endpoint
+        .post(
+          "/api/route/create",
+          {
+            name: this.name,
+            school: this.$route.query.id,
+            description: this.description,
           },
-        }
-      ).then(response => {
-          console.log(response)
-          this.getRequestAllRoutes()
-      });
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          this.getRequestAllRoutes();
+        });
     },
     reset() {
       this.$refs.form.reset();

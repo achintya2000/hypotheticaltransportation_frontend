@@ -17,32 +17,19 @@
       <v-btn
         class="hidden-sm-and-down"
         text
-        v-for="name in names"
-        :key="name.title"
+        v-for="link in navBarLinks"
+        :key="link.title"
+        v-show="link.show"
       >
         <router-link
-          :to="name.to"
+          :to="link.to"
           style="text-decoration: none; color: inherit"
-          >{{ name.title }}</router-link
+          >{{ link.title }}</router-link
         >
       </v-btn>
-      
-      <v-container v-if="accessToken != null">
-        <v-btn
-          class="hidden-sm-and-down"
-          text
-          v-for="loggedInLink in loggedInLinks"
-          :key="loggedInLink.title"
-        >
-          <router-link
-            :to="loggedInLink.to"
-            style="text-decoration: none; color: inherit"
-            >{{ loggedInLink.title }}</router-link
-          >
-        </v-btn>
-      </v-container>
-      <login v-if="accessToken == null"></login>
-      <logout v-if="accessToken != null"></logout>
+
+      <login v-if="!loggedIn"></login>
+      <logout v-if="loggedIn"></logout>
     </v-app-bar>
   </nav>
 </template>
@@ -50,7 +37,7 @@
 <script>
 import Login from "./Login.vue";
 import Logout from "./Logout.vue";
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   components: { Login, Logout },
@@ -58,18 +45,42 @@ export default {
   data() {
     return {
       drawer: false,
-      names: [{ title: "About", to: "/about" }],
-      loggedInLinks: [
-        { title: "School", to: "/adminschoollist" },
-        { title: "User", to: "/adminuserlist" },
-        { title: "Student", to: "/adminstudentlist" },
-        { title: "Route", to: "/adminroutelist" },
-        { title: "Your Students", to: "/parentdetails" },
-      ],
+      parentLinks: [{ title: "Your Students", to: "/parentdetails" }],
       contactpoints: [],
     };
   },
-  computed: mapState(["accessToken"]),
+  computed: {
+    ...mapGetters(["loggedIn", "isAdmin"]),
+    navBarLinks() {
+      return [
+        {
+          title: "School",
+          to: "/adminschoollist",
+          show: this.isAdmin,
+        },
+        {
+          title: "User",
+          to: "/adminuserlist",
+          show: this.isAdmin,
+        },
+        {
+          title: "Student",
+          to: "/adminstudentlist",
+          show: this.isAdmin,
+        },
+        {
+          title: "Route",
+          to: "/adminroutelist",
+          show: this.isAdmin,
+        },
+        {
+          title: "Your Students",
+          to: "/parentdetails",
+          show: this.loggedIn,
+        },
+      ];
+    },
+  },
 };
 </script>
 
