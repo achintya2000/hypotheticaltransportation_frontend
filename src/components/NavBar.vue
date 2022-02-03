@@ -9,7 +9,7 @@
       <v-spacer class="hidden-md-and-up"></v-spacer>
 
       <router-link to="/" style="text-decoration: none; color: inherit">
-        <v-toolbar-title> Hypothetical Transportation </v-toolbar-title>
+        <v-toolbar-title> ConnectWise </v-toolbar-title>
       </router-link>
 
       <v-spacer></v-spacer>

@@ -305,11 +305,11 @@ export default {
         .then((response) => {
           console.log("Got here");
           console.log(response);
-          this.getUserInfo();
           this.full_name = this.newFull_name;
           this.address = this.newCurrentAddress;
           this.administrator = this.newAdministrator;
           this.email = this.newEmail;
+          this.$forceUpdate();
         })
 
         .catch((err) => {
