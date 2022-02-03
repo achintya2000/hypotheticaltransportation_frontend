@@ -89,36 +89,55 @@
     <v-card-subtitle> {{ routeSchool }} </v-card-subtitle>
     <v-card-subtitle> {{ routeDescription }} </v-card-subtitle>
 
-    <v-data-table
-      :headers="headers"
-      :items="students"
-      :search="search"
-      :sort-by="['name']"
-      :sort-desc="[true]"
-    >
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-btn
-          dense
-          small
-          color="blue lighten-2"
-          dark
-          v-bind="attrs"
-          v-on="on"
-          @click="viewItem(item)"
+    <v-row>
+      <v-col>
+        <v-data-table
+          :headers="headers"
+          :items="students"
+          :search="search"
+          :sort-by="['name']"
+          :sort-desc="[true]"
         >
-          Details
-        </v-btn>
-      </template>
-    </v-data-table>
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-btn
+              dense
+              small
+              color="blue lighten-2"
+              dark
+              v-bind="attrs"
+              v-on="on"
+              @click="viewItem(item)"
+            >
+              Details
+            </v-btn>
+          </template>
+        </v-data-table>
+      </v-col>
+      <v-col>
+        <GmapMap :center="center" :zoom="12" style="width: 90%; height: 400px">
+          <GmapMarker
+            :key="index"
+            v-for="(m, index) in markers"
+            :position="m.position"
+            @click="center = m.position"
+            :icon="getMarkers(m)"
+          />
+        </GmapMap>
+      </v-col>
+    </v-row>
   </v-card>
 </template>
 
 <script>
 import { base_endpoint } from "../services/axios-api";
+import { mapMarker, schoolMapMarker } from "../assets/markers";
 
 export default {
   data() {
     return {
+      mapMarker,
+      schoolMapMarker,
+      center: { lat: 36.001465, lng: -78.939133 },
       routeName: "",
       newRouteName: "",
       routeSchool: "",
@@ -140,9 +159,9 @@ export default {
         { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],
-      schoolItems: [],
       nameValidateArray: [this.nameValidate],
       desValidateArray: [this.desValidate],
+      markers: [],
     };
   },
   methods: {
@@ -166,7 +185,6 @@ export default {
           this.routeDescription = response.data.description;
           this.newRouteDescription = response.data.description;
           this.oldSchoolID = response.data.school.id;
-          this.getSchools();
         })
         .catch((err) => {
           console.log(err);
@@ -201,34 +219,16 @@ export default {
         "A school has been modified and sent to database"
       );
     },
-    getSchools() {
-      base_endpoint
-        .get("/api/school/getall", {
-          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
-        })
-        .then((response) => {
-          this.schoolItems = response.data.map(this.getDisplaySchools);
-
-          this.schoolItems.forEach((item) => {
-            if (this.oldSchoolID == item.id) {
-              this.newRouteSchool = item;
-            }
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    getDisplaySchools(item) {
+    getDisplayStudents(item) {
       return {
         name: item.name,
         id: item.id,
       };
     },
-    getDisplayStudents(item) {
+    getDisplayRouteMarkers(item) {
       return {
-        name: item.name,
-        id: item.id,
+        position: { lat: item.latitude, lng: item.longitude },
+        isSchool: item.is_school,
       };
     },
     submitDataForDelete() {
@@ -256,6 +256,23 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    getRouteMarkers() {
+      base_endpoint
+        .get("/api/route/getlocations/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.markers = response.data.map(this.getDisplayRouteMarkers);
+          console.log(this.markers);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getMarkers(m) {
+      if (m.isSchool == true) return this.schoolMapMarker;
+      return this.mapMarker;
     },
     nameValidate() {
       console.log(this.name);
@@ -289,7 +306,7 @@ export default {
   created() {
     this.getRouteInfo();
     this.getStudentsInRoute();
-    //this.getSchools();
+    this.getRouteMarkers();
   },
 };
 </script>
