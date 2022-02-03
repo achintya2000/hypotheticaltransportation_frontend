@@ -112,13 +112,7 @@
     <v-card-subtitle>
       Route: {{ studentRoute }}
 
-      <v-icon
-        small
-        v-if="studentRouteId != null"
-        @click="viewRoute(studentRouteId)"
-      >
-        mdi-eye
-      </v-icon>
+      <v-icon small @click="viewRoute(studentRouteId)"> mdi-eye </v-icon>
     </v-card-subtitle>
 
     <v-card-subtitle>
@@ -361,6 +355,5 @@ export default {
   },
 };
 </script>
-
 <style>
 </style>

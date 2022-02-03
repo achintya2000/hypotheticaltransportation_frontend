@@ -109,7 +109,7 @@ export default {
         });
     },
     validate() {
-      if (this.name != "" && this.name != null) {
+      if (this.name != "" && this.name != null && this.address != "" && this.address != null) {
         this.submitData();
         this.dialog = false;
         this.reset();

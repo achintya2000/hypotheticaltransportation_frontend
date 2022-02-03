@@ -153,8 +153,11 @@
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle>
+    <v-card-subtitle v-if="currentAddress != ''">
       {{ currentAddress }}
+    </v-card-subtitle>
+    <v-card-subtitle v-if="currentAddress == ''">
+      No address has been assigned
     </v-card-subtitle>
     <v-card-subtitle> Email: {{ email }} </v-card-subtitle>
     <v-card-subtitle> Admin: {{ administrator }} </v-card-subtitle>
@@ -262,6 +265,7 @@ export default {
           this.newCurrentAddress = response.data.address;
           this.administrator = response.data.is_superuser;
           this.newAdministrator = response.data.is_superuser;
+           this.formatted_address = response.data.address;
         })
         .catch((err) => {
           console.log(err);
