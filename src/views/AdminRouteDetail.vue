@@ -7,7 +7,7 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
+          <v-btn outlined v-bind="attrs" v-on="on">
             Modify Name and Description
           </v-btn>
         </template>
@@ -61,9 +61,7 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
-            Delete
-          </v-btn>
+          <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
         </template>
 
         <v-card>
@@ -102,7 +100,6 @@
             <v-btn
               dense
               small
-              color="blue lighten-2"
               dark
               v-bind="attrs"
               v-on="on"

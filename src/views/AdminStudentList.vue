@@ -29,7 +29,6 @@
         <v-btn
           dense
           small
-          color="blue lighten-2"
           dark
           v-bind="attrs"
           v-on="on"

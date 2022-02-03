@@ -5,9 +5,7 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog3" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
-            Reset Password
-          </v-btn>
+          <v-btn outlined v-bind="attrs" v-on="on"> Reset Password </v-btn>
         </template>
 
         <v-card>
@@ -44,7 +42,15 @@
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn color="warning" @click="dialog3 = false; reset()"> Cancel </v-btn>
+              <v-btn
+                color="warning"
+                @click="
+                  dialog3 = false;
+                  reset();
+                "
+              >
+                Cancel
+              </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -166,7 +172,12 @@ export default {
     },
 
     validateForResetPassword() {
-      if (this.newPassword != "" && this.newPassword != null && this.newPassword2 != "" && this.newPassword2 != null) {
+      if (
+        this.newPassword != "" &&
+        this.newPassword != null &&
+        this.newPassword2 != "" &&
+        this.newPassword2 != null
+      ) {
         this.$refs.form.validate();
         this.submitDataForResetPassword();
         this.dialog3 = false;

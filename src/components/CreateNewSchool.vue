@@ -1,9 +1,7 @@
 <template>
   <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
-        Create New School
-      </v-btn>
+      <v-btn outlined v-bind="attrs" v-on="on"> Create New School </v-btn>
     </template>
 
     <v-card>

@@ -22,7 +22,6 @@
         <v-btn
           dense
           small
-          color="blue lighten-2"
           dark
           v-bind="attrs"
           v-on="on"
@@ -58,7 +57,6 @@ export default {
   },
   methods: {
     viewItem(item) {
-      console.log(item.id);
       this.$router.push({ name: "AdminRouteDetail", query: { id: item.id } });
     },
     getDisplayRoute(item) {

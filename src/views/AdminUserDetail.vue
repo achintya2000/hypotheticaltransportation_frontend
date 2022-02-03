@@ -5,9 +5,7 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog3" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
-            Reset Password
-          </v-btn>
+          <v-btn outlined v-bind="attrs" v-on="on"> Reset Password </v-btn>
         </template>
 
         <v-card>
@@ -60,9 +58,7 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
-            Modify
-          </v-btn>
+          <v-btn outlined v-bind="attrs" v-on="on"> Modify </v-btn>
         </template>
 
         <v-card>
@@ -128,9 +124,7 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
-            Delete
-          </v-btn>
+          <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
         </template>
 
         <v-card>
@@ -170,7 +164,6 @@
         <v-btn
           dense
           small
-          color="blue lighten-2"
           dark
           v-bind="attrs"
           v-on="on"
@@ -310,6 +303,7 @@ export default {
           }
         )
         .then((response) => {
+          console.log("Got here");
           console.log(response);
           this.getUserInfo();
           this.full_name = this.newFull_name;
@@ -355,14 +349,19 @@ export default {
         });
     },
     validateForResetPassword() {
-      if (this.newPassword != "" && this.newPassword != null && this.newPassword2 != "" && this.newPassword2 != null) {
+      if (
+        this.newPassword != "" &&
+        this.newPassword != null &&
+        this.newPassword2 != "" &&
+        this.newPassword2 != null
+      ) {
         this.$refs.form.validate();
         this.submitDataForResetPassword();
         this.dialog3 = false;
         this.$emit(
           "schoolmodified",
           "A school has been modified and sent to database"
-      );
+        );
       }
     },
 
@@ -402,21 +401,19 @@ export default {
       if (this.newEmail == null || this.newEmail == "") {
         return "Parent email is required";
       } else {
-        const splitStringAt = this.newEmail.split('@');
-        console.log("HIIIII 1");
+        const splitStringAt = this.newEmail.split("@");
         if (splitStringAt.length != 2) {
-            console.log("HIIIII 2");
-            return 'Please enter a valid email address';
+          return "Please enter a valid email address";
         } else {
-            console.log("HIIIII 3");
-            const splitStringPeriod = splitStringAt[1].split('.');
-            if (splitStringPeriod.length != 2 || splitStringPeriod[1].length == 0) {
-              console.log("HIIIII 4");
-              return 'Please enter a valid email address';
-            } else {
-              console.log("HIIIII 5");
-              return true;
-            }
+          const splitStringPeriod = splitStringAt[1].split(".");
+          if (
+            splitStringPeriod.length != 2 ||
+            splitStringPeriod[1].length == 0
+          ) {
+            return "Please enter a valid email address";
+          } else {
+            return true;
+          }
         }
       }
     },

@@ -1,7 +1,7 @@
 <template>
   <v-card>
-    <v-layout row wrap>
-      <v-card width="50%">
+    <v-row>
+      <v-col width="50%">
         <v-card-title> {{ schoolName }} </v-card-title>
         <v-text-field
           v-model="search"
@@ -25,9 +25,7 @@
 
         <v-dialog v-model="dialog" width="500">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
-              Add New Route
-            </v-btn>
+            <v-btn outlined v-bind="attrs" v-on="on"> Add New Route </v-btn>
           </template>
 
           <v-card>
@@ -76,26 +74,25 @@
             </v-card-text>
           </v-card>
         </v-dialog>
-      </v-card>
+      </v-col>
 
-      <GmapMap :center="center" :zoom="12" style="width: 50%; height: 400px">
-        <GmapMarker
-          :key="index"
-          v-for="(m, index) in markers"
-          :position="m.position"
-          @click="
-            center = m.position;
-            toggleInfo(m);
-          "
-          :icon="getMarkers(m)"
-        />
-      </GmapMap>
-
-      <v-btn color="green lighten-2" dark @click="submitChanges()">
-        Save
-      </v-btn>
-      <v-btn color="green lighten-2" dark> Cancel </v-btn>
-    </v-layout>
+      <v-col width="50%">
+        <GmapMap :center="center" :zoom="12" style="width: 100%; height: 400px">
+          <GmapMarker
+            :key="index"
+            v-for="(m, index) in markers"
+            :position="m.position"
+            @click="
+              center = m.position;
+              toggleInfo(m);
+            "
+            :icon="getMarkers(m)"
+          />
+        </GmapMap>
+        <v-btn dark @click="submitChanges()"> Save </v-btn>
+        <v-btn outlined> Cancel </v-btn>
+      </v-col>
+    </v-row>
   </v-card>
 </template>
 

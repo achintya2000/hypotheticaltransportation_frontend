@@ -26,7 +26,6 @@
         <v-btn
           dense
           small
-          color="blue lighten-2"
           dark
           v-bind="attrs"
           v-on="on"
@@ -44,7 +43,7 @@ import { base_endpoint } from "../services/axios-api";
 import CreateNewStudent from "../components/CreateNewStudent.vue";
 
 export default {
-  components: {CreateNewStudent },
+  components: { CreateNewStudent },
   data() {
     return {
       search: "",

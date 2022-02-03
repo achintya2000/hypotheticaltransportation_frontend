@@ -1,9 +1,7 @@
 <template>
   <v-dialog v-model="dialog" width="50%">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
-        Create New Student/User
-      </v-btn>
+      <v-btn outlined v-bind="attrs" v-on="on"> Create New Student/User </v-btn>
     </template>
 
     <v-card>
@@ -341,21 +339,24 @@ export default {
       ) {
         return "Parent email is required";
       } else {
-        const splitStringAt = this.parentEmail.split('@');
+        const splitStringAt = this.parentEmail.split("@");
         console.log("HIIIII 1");
         if (splitStringAt.length != 2) {
-            console.log("HIIIII 2");
-            return 'Please enter a valid email address';
+          console.log("HIIIII 2");
+          return "Please enter a valid email address";
         } else {
-            console.log("HIIIII 3");
-            const splitStringPeriod = splitStringAt[1].split('.');
-            if (splitStringPeriod.length != 2 || splitStringPeriod[1].length == 0) {
-              console.log("HIIIII 4");
-              return 'Please enter a valid email address';
-            } else {
-              console.log("HIIIII 5");
-              return true;
-            }
+          console.log("HIIIII 3");
+          const splitStringPeriod = splitStringAt[1].split(".");
+          if (
+            splitStringPeriod.length != 2 ||
+            splitStringPeriod[1].length == 0
+          ) {
+            console.log("HIIIII 4");
+            return "Please enter a valid email address";
+          } else {
+            console.log("HIIIII 5");
+            return true;
+          }
         }
       }
     },
