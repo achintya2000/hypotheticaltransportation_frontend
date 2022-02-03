@@ -108,7 +108,7 @@
     <v-card-subtitle>
       Route: {{ studentRoute }}
 
-      <v-icon small @click="viewRoute(studentRouteId)"> mdi-eye </v-icon>
+      <v-icon small @click="viewRoute(studentRouteId)" v-if="studentRoute == null"> mdi-eye </v-icon>
     </v-card-subtitle>
 
     <v-card-subtitle>
