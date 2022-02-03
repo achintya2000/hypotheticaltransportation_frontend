@@ -324,14 +324,14 @@ export default {
     validate() {
       if (
         (this.userCheckbox == true &&
-          this.parentName != null &&
-          this.parentName != "" &&
-          this.parentEmail != null &&
-          this.parentEmail != "" &&
-          this.parentPassword != null &&
-          this.parentPassword != "" &&
-          this.parentAddress != null &&
-          this.parentAddress != "") ||
+          (this.parentName != null &&
+          this.parentName != "") &&
+          (this.parentEmail != null &&
+          this.parentEmail != "") &&
+          (this.parentPassword != null &&
+          this.parentPassword != "") &&
+          (this.parentAddress != null && 
+          this.parentAddress != "")) ||
         (this.studentCheckbox == true &&
           this.studentName != null &&
           this.studentName != "" &&
@@ -339,8 +339,7 @@ export default {
           this.sid != "" &&
           this.schoolSelected != null &&
           this.schoolSelected != "" &&
-          this.parentSelected != null &&
-          this.parentSelected != "")
+          ((this.parentSelected != null && this.parentSelected != "") ||  this.userCheckbox == true))
       ) {
         this.$refs.form.validate();
         this.submitData();
@@ -372,21 +371,16 @@ export default {
         return "Parent email is required";
       } else {
         const splitStringAt = this.parentEmail.split("@");
-        console.log("HIIIII 1");
         if (splitStringAt.length != 2) {
-          console.log("HIIIII 2");
           return "Please enter a valid email address";
         } else {
-          console.log("HIIIII 3");
           const splitStringPeriod = splitStringAt[1].split(".");
           if (
             splitStringPeriod.length != 2 ||
             splitStringPeriod[1].length == 0
           ) {
-            console.log("HIIIII 4");
             return "Please enter a valid email address";
           } else {
-            console.log("HIIIII 5");
             return true;
           }
         }
@@ -403,9 +397,9 @@ export default {
       }
     },
     userAddressValidate() {
+      console.log("HIIIIIII  GUYS");
       if (
         this.userCheckbox == true &&
-        this.studentCheckbox == true &&
         (this.parentAddress == null || this.parentAddress == "")
       ) {
         return "Parent address is required";

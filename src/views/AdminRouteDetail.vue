@@ -84,7 +84,9 @@
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle> {{ routeSchool }} </v-card-subtitle>
+    <v-card-subtitle> {{ routeSchool }} 
+      <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
+    </v-card-subtitle>
     <v-card-subtitle> {{ routeDescription }} </v-card-subtitle>
 
     <v-row>
@@ -167,6 +169,9 @@ export default {
     };
   },
   methods: {
+    viewSchool(item) {
+      this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
+    },
     planNewRoute() {
       this.$router.push({
         name: "AdminRoutePlanner",

@@ -336,6 +336,8 @@ export default {
         });
     },
     submitDataForResetPassword() {
+      console.log("THIS IS  THE ID");
+      console.log(this.$route.query.id);
       base_endpoint
         .patch(
           "/api/profile/changepassword/" + this.$route.query.id,
