@@ -311,16 +311,26 @@ export default {
       }
     },
     validate() {
-      if ((this.userCheckbox == true 
-          && this.parentName != null && this.parentName != ""
-          && this.parentEmail != null && this.parentEmail != ""
-          && this.parentPassword != null && this.parentPassword != ""
-          && this.parentAddress != null && this.parentAddress != "") ||
-          (this.studentCheckbox == true 
-          && this.studentName != null && this.studentName != ""
-          && this.sid != null && this.sid != ""
-          && this.schoolSelected != null && this.schoolSelected != ""
-          && this.parentSelected != null && this.parentSelected != "")) {
+      if (
+        (this.userCheckbox == true &&
+          this.parentName != null &&
+          this.parentName != "" &&
+          this.parentEmail != null &&
+          this.parentEmail != "" &&
+          this.parentPassword != null &&
+          this.parentPassword != "" &&
+          this.parentAddress != null &&
+          this.parentAddress != "") ||
+        (this.studentCheckbox == true &&
+          this.studentName != null &&
+          this.studentName != "" &&
+          this.sid != null &&
+          this.sid != "" &&
+          this.schoolSelected != null &&
+          this.schoolSelected != "" &&
+          this.parentSelected != null &&
+          this.parentSelected != "")
+      ) {
         this.$refs.form.validate();
         this.submitData();
         this.dialog = false;
