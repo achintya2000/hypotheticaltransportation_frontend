@@ -228,7 +228,7 @@ export default {
     },
     getParents() {
       base_endpoint
-        .get("/api/profile/getall", {
+        .get("/api/profile/getallwithaddress", {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {

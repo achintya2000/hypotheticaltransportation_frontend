@@ -244,8 +244,19 @@ export default {
             }
           )
           .then((response) => {
+            this.newParentID = response.data.id;
             console.log("PRINTING PARENT ID CREATED");
             console.log(response.data.id);
+            console.log(this.studentName != null);
+            console.log(this.studentName != "");
+            console.log(this.sid != null);
+            console.log(this.sid != "");
+            console.log(this.schoolSelected.id != null);
+            console.log(this.schoolSelected.id != "");
+            console.log(this.newParentID != null);
+            console.log(this.newParentID != "");
+            console.log(this.newParentID);
+            
             this.$emit(
               "usercreated",
               "A new student has been created and sent to database"
@@ -260,7 +271,7 @@ export default {
               this.newParentID != null &&
               this.newParentID != ""
             ) {
-              this.newParentID = response.data.id;
+              
               console.log("CREATING STUDENT");
               base_endpoint
                 .post(

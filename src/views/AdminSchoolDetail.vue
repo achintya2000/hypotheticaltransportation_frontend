@@ -333,13 +333,15 @@ export default {
         });
     },
     validateForModify() {
-      this.$refs.form.validate();
-      this.submitDataForModify();
-      this.dialog2 = false;
-      this.$emit(
-        "schoolmodified",
-        "A school has been modified and sent to database"
-      );
+      if (this.newSchoolName != "" && this.newSchoolName != null && this.newAddress != "" && this.newAddress != null) {
+        this.$refs.form.validate();
+        this.submitDataForModify();
+        this.dialog2 = false;
+        this.$emit(
+          "schoolmodified",
+          "A school has been modified and sent to database"
+        );
+      }
     },
     reset() {
       this.$refs.form.reset();
