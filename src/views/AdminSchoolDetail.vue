@@ -242,6 +242,7 @@ export default {
           this.newSchoolName = response.data.name;
           this.schoolAddress = response.data.address;
           this.newAddress = response.data.address;
+          this.formatted_address = response.data.address;
         })
         .catch((err) => {
           console.log(err);

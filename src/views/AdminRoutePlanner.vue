@@ -225,7 +225,7 @@ export default {
         });
     },
     validate() {
-      if (this.name != "" && this.name != null) {
+      if (this.name != "" && this.name != null && this.description != "" && this.description != null) {
         this.$refs.form.validate();
         this.submitData();
         this.dialog = false;
