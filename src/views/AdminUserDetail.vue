@@ -258,7 +258,7 @@ export default {
           this.newCurrentAddress = response.data.address;
           this.administrator = response.data.is_superuser;
           this.newAdministrator = response.data.is_superuser;
-           this.formatted_address = response.data.address;
+          this.formatted_address = response.data.address;
         })
         .catch((err) => {
           console.log(err);

@@ -78,18 +78,15 @@ export default {
           this.studentSchoolId = response.data.school_id;
           this.studentRouteId = response.data.route_id;
           this.studentParentId = response.data.parent_id;
-
         })
         .catch((err) => {
           console.log(err);
         });
     },
 
-  
     validate() {
       this.$refs.form.validate();
     },
-    
   },
   created() {
     this.getStudentInfo();
