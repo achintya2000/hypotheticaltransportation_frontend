@@ -60,7 +60,7 @@
                   Submit
                 </v-btn>
 
-                <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
+                <v-btn color="error" class="mr-4" @click="clear"> Clear </v-btn>
                 <v-btn
                   color="warning"
                   @click="
@@ -90,7 +90,6 @@
           />
         </GmapMap>
         <v-btn dark @click="submitChanges()"> Save </v-btn>
-        <v-btn outlined> Cancel </v-btn>
         <v-img
           src="../assets/marker_key.jpeg"
           max-height="200"
