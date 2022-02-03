@@ -73,7 +73,6 @@
         <v-btn
           dense
           small
-          color="blue lighten-2"
           dark
           v-bind="attrs"
           v-on="on"
@@ -188,9 +187,10 @@ export default {
       }
     },
     submitDataForResetPassword() {
+      console.log(this.$store.state.loggedInUserID);
       base_endpoint
         .patch(
-          "/api/profile/changepassword/" + this.$route.query.id,
+          "/api/profile/changepassword/" + this.$store.state.loggedInUserID,
           {
             new_password: this.newPassword2,
           },
