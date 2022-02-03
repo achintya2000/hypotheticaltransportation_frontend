@@ -19,7 +19,7 @@
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-text-field
                 v-model="newPassword"
-                :rules="newPasswordRules"
+                :rules="resetPassword1ValidationArray"
                 label="New Password"
                 :type="'password'"
                 required
@@ -27,7 +27,7 @@
 
               <v-text-field
                 v-model="newPassword2"
-                :rules="newPassword2Rules"
+                :rules="resetPassword2ValidationArray"
                 :type="'password'"
                 label="Confirm New Password"
                 required
@@ -44,7 +44,7 @@
 
               <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
 
-              <v-btn color="warning" @click="dialog3 = false"> Cancel </v-btn>
+              <v-btn color="warning" @click="dialog3 = false; reset()"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -97,6 +97,8 @@ export default {
       userEmail: "",
       userName: "",
       userAddress: "",
+      resetPassword1ValidationArray: [this.resetPassword1Validation],
+      resetPassword2ValidationArray: [this.resetPassword2Validation],
       headers: [
         {
           text: "Name",
@@ -164,13 +166,15 @@ export default {
     },
 
     validateForResetPassword() {
-      this.$refs.form.validate();
-      this.submitDataForResetPassword();
-      this.dialog3 = false;
-      this.$emit(
-        "schoolmodified",
-        "A school has been modified and sent to database"
-      );
+      if (this.newPassword != "" && this.newPassword != null && this.newPassword2 != "" && this.newPassword2 != null) {
+        this.$refs.form.validate();
+        this.submitDataForResetPassword();
+        this.dialog3 = false;
+        this.$emit(
+          "schoolmodified",
+          "A school has been modified and sent to database"
+        );
+      }
     },
     submitDataForResetPassword() {
       base_endpoint
@@ -189,7 +193,22 @@ export default {
           console.log(response);
         });
     },
-
+    resetPassword1Validation() {
+      if (this.newPassword == "" || this.newPassword == null) {
+        return "This field is required";
+      } else {
+        return true;
+      }
+    },
+    resetPassword2Validation() {
+      if (this.newPassword2 == "" || this.newPassword2 == null) {
+        return "This field is required";
+      } else if (this.newPassword2 != this.newPassword) {
+        return "The passwords must match";
+      } else {
+        return true;
+      }
+    },
     validate() {
       this.$refs.form.validate();
     },

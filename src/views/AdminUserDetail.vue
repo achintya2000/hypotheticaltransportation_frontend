@@ -355,13 +355,15 @@ export default {
         });
     },
     validateForResetPassword() {
-      this.$refs.form.validate();
-      this.submitDataForResetPassword();
-      this.dialog3 = false;
-      this.$emit(
-        "schoolmodified",
-        "A school has been modified and sent to database"
+      if (this.newPassword != "" && this.newPassword != null && this.newPassword2 != "" && this.newPassword2 != null) {
+        this.$refs.form.validate();
+        this.submitDataForResetPassword();
+        this.dialog3 = false;
+        this.$emit(
+          "schoolmodified",
+          "A school has been modified and sent to database"
       );
+      }
     },
 
     validate() {
@@ -400,7 +402,22 @@ export default {
       if (this.newEmail == null || this.newEmail == "") {
         return "Parent email is required";
       } else {
-        return true;
+        const splitStringAt = this.newEmail.split('@');
+        console.log("HIIIII 1");
+        if (splitStringAt.length != 2) {
+            console.log("HIIIII 2");
+            return 'Please enter a valid email address';
+        } else {
+            console.log("HIIIII 3");
+            const splitStringPeriod = splitStringAt[1].split('.');
+            if (splitStringPeriod.length != 2 || splitStringPeriod[1].length == 0) {
+              console.log("HIIIII 4");
+              return 'Please enter a valid email address';
+            } else {
+              console.log("HIIIII 5");
+              return true;
+            }
+        }
       }
     },
     userAddressValidate() {

@@ -170,6 +170,7 @@ export default {
       latitude: 0,
       longitude: 0,
       formatted_address: "",
+      //reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
       userNameValidateArray: [this.userNameValidate],
       userEmailValidateArray: [this.userEmailValidate],
       userPasswordValidateArray: [this.userPasswordValidate],
@@ -248,7 +249,7 @@ export default {
             console.log("PRINTING PARENT ID CREATED");
             console.log(response.data.id);
             this.$emit(
-              "studentcreated",
+              "usercreated",
               "A new student has been created and sent to database"
             );
             if (
@@ -340,7 +341,22 @@ export default {
       ) {
         return "Parent email is required";
       } else {
-        return true;
+        const splitStringAt = this.parentEmail.split('@');
+        console.log("HIIIII 1");
+        if (splitStringAt.length != 2) {
+            console.log("HIIIII 2");
+            return 'Please enter a valid email address';
+        } else {
+            console.log("HIIIII 3");
+            const splitStringPeriod = splitStringAt[1].split('.');
+            if (splitStringPeriod.length != 2 || splitStringPeriod[1].length == 0) {
+              console.log("HIIIII 4");
+              return 'Please enter a valid email address';
+            } else {
+              console.log("HIIIII 5");
+              return true;
+            }
+        }
       }
     },
     userPasswordValidate() {
