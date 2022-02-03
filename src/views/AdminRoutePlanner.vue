@@ -91,6 +91,11 @@
         </GmapMap>
         <v-btn dark @click="submitChanges()"> Save </v-btn>
         <v-btn outlined> Cancel </v-btn>
+        <v-img
+          src="../assets/marker_key.jpeg"
+          max-height="200"
+          max-width="250"
+        ></v-img>
       </v-col>
     </v-row>
   </v-card>

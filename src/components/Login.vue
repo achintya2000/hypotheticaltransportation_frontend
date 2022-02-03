@@ -44,9 +44,7 @@
             </v-alert>
             <v-col class="d-flex" cols="12" sm="6" xsm="12"> </v-col>
             <v-spacer></v-spacer>
-            <v-btn type="submit" text :disabled="!valid" color="blue darken-1">
-              Login
-            </v-btn>
+            <v-btn type="submit" text :disabled="!valid"> Login </v-btn>
           </v-row>
         </v-form>
       </v-card-text>
