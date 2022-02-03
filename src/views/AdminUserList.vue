@@ -3,8 +3,9 @@
     <v-card-title>
       Your Users
       <v-spacer></v-spacer>
-
-      <create-new-user @usercreated="getRequestAllUsers"></create-new-user>
+      <create-new-student
+        @usercreated="getRequestAllUsers"
+      ></create-new-student>
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
@@ -40,10 +41,10 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-import CreateNewUser from "../components/CreateNewUser.vue";
+import CreateNewStudent from "../components/CreateNewStudent.vue";
 
 export default {
-  components: { CreateNewUser },
+  components: {CreateNewStudent },
   data() {
     return {
       search: "",

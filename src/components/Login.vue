@@ -32,12 +32,10 @@
               <v-text-field
                 v-model="password"
                 :append-icon="show ? 'eye' : 'eye-off'"
-                :rules="[rules.required, rules.min]"
+                :rules="[rules.required]"
                 :type="show ? 'text' : 'password'"
                 name="input-10-1"
                 label="Password"
-                hint="At least 8 characters"
-                counter
                 @click:append="show = !show"
               ></v-text-field>
             </v-col>
