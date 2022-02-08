@@ -28,7 +28,7 @@ export default {
       dialog2: false,
       name: "Old Name",
       nameRules: [(v) => !!v || "Name is required"],
-      studentId: "",
+      studentId: "", 
       studentIDRules: [(v) => !!v || "Student ID is required"],
       parentValue: "Old Parent",
       parentRules: [(v) => !!v || "Parent is required"],
