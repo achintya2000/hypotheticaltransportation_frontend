@@ -36,6 +36,7 @@
                 color="success"
                 class="mr-4"
                 @click="validateForResetPassword"
+                type="submit"
               >
                 Save
               </v-btn>
@@ -99,7 +100,7 @@
                 :label="'Admin Status'"
               ></v-checkbox>
 
-              <v-btn color="success" class="mr-4" @click="updateUser">
+              <v-btn color="success" class="mr-4" @click="updateUser" type="submit">
                 Save
               </v-btn>
 

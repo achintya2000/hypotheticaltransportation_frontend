@@ -39,6 +39,7 @@
                 color="success"
                 class="mr-4"
                 @click="validateForModify"
+                type="submit"
               >
                 Save
               </v-btn>
@@ -89,6 +90,7 @@
                 color="success"
                 class="mr-4"
                 @click="validateForDelete"
+                type="submit"
               >
                 Submit
               </v-btn>

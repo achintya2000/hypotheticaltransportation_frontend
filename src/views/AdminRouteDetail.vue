@@ -38,6 +38,7 @@
                 color="success"
                 class="mr-4"
                 @click="validateForModify"
+                type="submit"
               >
                 Save
               </v-btn>
@@ -73,7 +74,7 @@
             <v-form ref="form">
               <v-spacer></v-spacer>
 
-              <v-btn color="error" class="mr-4" @click="submitDataForDelete">
+              <v-btn color="error" class="mr-4" @click="submitDataForDelete" >
                 Yes, Delete
               </v-btn>
 
