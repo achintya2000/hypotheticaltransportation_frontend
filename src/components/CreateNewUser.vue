@@ -52,6 +52,7 @@
             color="success"
             class="mr-4"
             @click="validate"
+            type="submit"
           >
             Submit
           </v-btn>

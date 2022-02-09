@@ -50,6 +50,7 @@
                 class="mr-4"
                 @click="updateStudent"
                 :disabled="!valid"
+                type="submit"
               >
                 Save
               </v-btn>
