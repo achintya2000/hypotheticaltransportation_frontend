@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="font-weight-black">
       {{ routeName }}
       <v-spacer></v-spacer>
       <v-btn @click="planNewRoute" outlined>Modify Route</v-btn>
@@ -84,10 +84,12 @@
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle> {{ routeSchool }} 
+    <v-card-subtitle> <span class="black--text font-weight-bold"> School: </span><span class="black--text"> {{ routeSchool }} </span>
       <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
     </v-card-subtitle>
-    <v-card-subtitle> {{ routeDescription }} </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Description: </span><span class="black--text"> {{ routeDescription }} </span>
+    </v-card-subtitle>
 
     <v-row>
       <v-col>

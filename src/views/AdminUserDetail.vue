@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="font-weight-black">
       {{ full_name }}
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog3" width="500">
@@ -147,14 +147,18 @@
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle v-if="currentAddress != ''">
+    <v-card-subtitle v-if="currentAddress != ''" class="black--text">
       {{ currentAddress }}
     </v-card-subtitle>
-    <v-card-subtitle v-if="currentAddress == ''">
+    <v-card-subtitle v-if="currentAddress == ''" class="black--text">
       No address has been assigned
     </v-card-subtitle>
-    <v-card-subtitle> Email: {{ email }} </v-card-subtitle>
-    <v-card-subtitle> Admin: {{ administrator }} </v-card-subtitle>
+    <v-card-subtitle> 
+      <span class="black--text font-weight-bold"> Email: </span><span class="black--text"> {{ email }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle> 
+      <span class="black--text font-weight-bold"> Admin: </span><span class="black--text"> {{ administrator }} </span>
+    </v-card-subtitle>
     <v-card-title> Students </v-card-title>
     <v-data-table
       :headers="headers"
