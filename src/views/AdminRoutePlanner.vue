@@ -179,6 +179,9 @@ export default {
       };
     },
     getDisplayMarkers(item) {
+      if (item.is_school) {
+        this.center = { lat: item.latitude, lng: item.longitude };
+      }
       return {
         position: { lat: item.latitude, lng: item.longitude },
         routeID: item.route,
@@ -224,7 +227,12 @@ export default {
         });
     },
     validate() {
-      if (this.name != "" && this.name != null && this.description != "" && this.description != null) {
+      if (
+        this.name != "" &&
+        this.name != null &&
+        this.description != "" &&
+        this.description != null
+      ) {
         this.$refs.form.validate();
         this.submitData();
         this.dialog = false;
@@ -276,14 +284,14 @@ export default {
         this.currentPlace = null;
       }
     },
-    geolocate: function () {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.center = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-      });
-    },
+    // geolocate: function () {
+    //   navigator.geolocation.getCurrentPosition((position) => {
+    //     this.center = {
+    //       lat: position.coords.latitude,
+    //       lng: position.coords.longitude,
+    //     };
+    //   });
+    // },
     toggleInfo(m) {
       if (m.isSchool) return;
       console.log("Currently selected route id: " + this.activeRouteID);
@@ -346,7 +354,7 @@ export default {
     this.getMarkerData();
   },
   mounted() {
-    this.geolocate();
+    //this.geolocate();
   },
   watch: {
     selected: function () {

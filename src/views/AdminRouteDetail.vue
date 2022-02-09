@@ -84,7 +84,8 @@
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle> {{ routeSchool }} 
+    <v-card-subtitle>
+      {{ routeSchool }}
       <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
     </v-card-subtitle>
     <v-card-subtitle> {{ routeDescription }} </v-card-subtitle>
