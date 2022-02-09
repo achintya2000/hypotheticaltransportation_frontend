@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="font-weight-black">
       Your Information
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog3" width="500">
@@ -58,9 +58,15 @@
       <v-spacer></v-spacer>
     </v-card-title>
     <v-spacer></v-spacer>
-    <v-card-subtitle> Name: {{ userName }} </v-card-subtitle>
-    <v-card-subtitle> Email: {{ userEmail }} </v-card-subtitle>
-    <v-card-subtitle> Address: {{ userAddress }} </v-card-subtitle>
+    <v-card-subtitle>
+       <span class="black--text font-weight-bold"> Name: </span><span class="black--text"> {{ userName }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle>
+        <span class="black--text font-weight-bold"> Email: </span><span class="black--text"> {{ userEmail }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle> 
+        <span class="black--text font-weight-bold"> Address: </span><span class="black--text"> {{ userAddress }} </span>
+    </v-card-subtitle>
 
     <v-data-table
       :headers="headers"

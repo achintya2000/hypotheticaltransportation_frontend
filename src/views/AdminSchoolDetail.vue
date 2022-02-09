@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="font-weight-black">
       {{ schoolName }}
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
@@ -112,7 +112,9 @@
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle> {{ schoolAddress }} </v-card-subtitle>
+    <v-card-subtitle class="black--text"> 
+      <span class="black--text font-weight-bold"> Address: </span><span class="black--text"> {{ schoolAddress }} </span>
+    </v-card-subtitle>
     <v-card-title>
       Bus Routes
       <v-spacer></v-spacer>
