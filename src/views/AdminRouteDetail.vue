@@ -234,6 +234,9 @@ export default {
       };
     },
     getDisplayRouteMarkers(item) {
+      if (item.is_school) {
+        this.center = { lat: item.latitude, lng: item.longitude };
+      }
       return {
         position: { lat: item.latitude, lng: item.longitude },
         isSchool: item.is_school,
