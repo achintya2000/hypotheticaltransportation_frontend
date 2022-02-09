@@ -4,10 +4,9 @@
       {{ routeName }}
       <v-spacer></v-spacer>
       <v-btn @click="planNewRoute" outlined>Modify Route</v-btn>
-      <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on">
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Modify Name and Description
           </v-btn>
         </template>
@@ -26,12 +25,12 @@
                 required
               ></v-text-field>
 
-              <v-text-field
+              <v-textarea
                 v-model="newRouteDescription"
                 :rules="desValidateArray"
                 label="Route Description"
                 required
-              ></v-text-field>
+              ></v-textarea>
 
               <v-btn
                 :disabled="!valid"
@@ -58,8 +57,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
-      <v-dialog v-model="dialog" width="500">
+      <v-dialog style="margin: 10px" v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
           <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
         </template>
@@ -82,12 +80,11 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
     </v-card-title>
     <v-card-subtitle> {{ routeSchool }} 
       <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
     </v-card-subtitle>
-    <v-card-subtitle> {{ routeDescription }} </v-card-subtitle>
+    <span style="white-space: pre;"><v-card-subtitle>{{routeDescription}}</v-card-subtitle></span>
 
     <v-row>
       <v-col>
@@ -95,8 +92,6 @@
           :headers="headers"
           :items="students"
           :search="search"
-          :sort-by="['name']"
-          :sort-desc="[true]"
         >
           <template v-slot:[`item.actions`]="{ item }">
             <v-btn

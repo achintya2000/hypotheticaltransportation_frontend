@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Modify </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Modify </v-btn>
         </template>
 
         <v-card>
@@ -72,10 +72,9 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Delete </v-btn>
         </template>
 
         <v-card>
@@ -96,7 +95,6 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
     </v-card-title>
     <v-card-subtitle> ID: {{ studentId }} </v-card-subtitle>
     <v-card-subtitle>
@@ -321,6 +319,10 @@ export default {
         return "Student ID is required";
       } else if (isNaN(this.newStudentId) == true) {
         return "Student ID must be a number";
+      } else if (isNaN(this.newStudentId) == false) {
+        if (parseInt(this.newStudentId) < 0) {
+          return "Student ID must be a postive number";
+        }
       } else {
         return true;
       }

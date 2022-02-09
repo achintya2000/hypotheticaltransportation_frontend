@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card height=100%>
     <v-row>
       <v-col width="50%">
         <v-card-title> {{ schoolName }} </v-card-title>
@@ -16,8 +16,6 @@
           :headers="headers"
           :items="routes"
           :search="search"
-          :sort-by="['name']"
-          :sort-desc="[true]"
           item-key="name"
           show-select
           :single-select="true"
@@ -43,13 +41,13 @@
                   required
                 ></v-text-field>
 
-                <v-text-field
+                <v-textarea
                   v-model="description"
                   :rules="desValidateArray"
                   label="Route Description"
                   append-icon="mdi-message-text"
                   required
-                ></v-text-field>
+                ></v-textarea>
 
                 <v-btn
                   :disabled="!valid"
@@ -59,8 +57,6 @@
                 >
                   Submit
                 </v-btn>
-
-                <v-btn color="error" class="mr-4" @click="clear"> Clear </v-btn>
                 <v-btn
                   color="warning"
                   @click="
@@ -97,6 +93,25 @@
         ></v-img>
       </v-col>
     </v-row>
+    <v-snackbar
+      v-model="snackbar"
+      outlines
+      bottom
+      color="success"
+    >
+      A new route has been created
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-card>
 </template>
 
@@ -113,6 +128,7 @@ export default {
   data() {
     return {
       mapMarker,
+      snackbar: false,
       mapMarkerActive,
       mapMarkerUnassigned,
       schoolMapMarker,
@@ -228,6 +244,7 @@ export default {
         this.$refs.form.validate();
         this.submitData();
         this.dialog = false;
+        this.snackbar = true;
         this.$refs.form.reset();
       }
     },
