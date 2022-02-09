@@ -24,10 +24,8 @@
       :search="search"
       :sort-by="['name']"
       :sort-desc="[true]"
+      @click:row="viewItem"
     >
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-btn dense small dark @click="viewItem(item)"> Details </v-btn>
-      </template>
     </v-data-table>
   </v-card>
 </template>
@@ -49,14 +47,13 @@ export default {
           value: "name",
         },
         { text: "Address", value: "address", sortable: false },
-        { text: "Actions", value: "actions", sortable: false },
       ],
       addresses: [],
     };
   },
   methods: {
-    viewItem(item) {
-      this.$router.push({ name: "AdminSchoolDetail", query: { id: item.id } });
+    viewItem(row) {
+      this.$router.push({ name: "AdminSchoolDetail", query: { id: row.id } });
     },
     getDisplayAddress(item) {
       return {
