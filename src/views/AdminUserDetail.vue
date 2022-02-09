@@ -147,8 +147,8 @@
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle v-if="currentAddress != ''" class="black--text">
-      {{ currentAddress }}
+    <v-card-subtitle v-if="currentAddress != ''" >
+      <span class="black--text font-weight-bold"> Address: </span><span class="black--text"> {{ currentAddress }} </span>
     </v-card-subtitle>
     <v-card-subtitle v-if="currentAddress == ''" class="black--text">
       No address has been assigned

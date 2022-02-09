@@ -110,7 +110,9 @@
       </v-dialog>
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle class="black--text"> {{ schoolAddress }} </v-card-subtitle>
+    <v-card-subtitle class="black--text"> 
+      <span class="black--text font-weight-bold"> Address: </span><span class="black--text"> {{ schoolAddress }} </span>
+    </v-card-subtitle>
     <v-card-title>
       Bus Routes
       <v-spacer></v-spacer>
