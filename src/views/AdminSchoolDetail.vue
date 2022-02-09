@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Modify </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Modify </v-btn>
         </template>
 
         <v-card>
@@ -60,10 +60,9 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Delete </v-btn>
         </template>
 
         <v-card>
@@ -110,22 +109,18 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
+      <v-btn style="margin: 10px" @click="planNewRoute" outlined>Plan New Route</v-btn>
     </v-card-title>
     <v-card-subtitle class="black--text"> 
       <span class="black--text font-weight-bold"> Address: </span><span class="black--text"> {{ schoolAddress }} </span>
     </v-card-subtitle>
     <v-card-title>
       Bus Routes
-      <v-spacer></v-spacer>
-      <v-btn @click="planNewRoute" outlined>Plan New Route</v-btn>
     </v-card-title>
     <v-data-table
       :headers="routeHeaders"
       :items="busRoutes"
       :search="search"
-      :sort-by="['name']"
-      :sort-desc="[true]"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -147,8 +142,6 @@
       :headers="studentsHeaders"
       :items="students"
       :search="search"
-      :sort-by="['name']"
-      :sort-desc="[true]"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -191,6 +184,7 @@ export default {
           value: "routeName",
         },
         { text: "Description", value: "routeDescription" },
+        { text: "# of Students", value: "routeNumStudent" },
         { text: "Actions", value: "actions", sortable: false },
       ],
       busRoutes: [],
@@ -255,6 +249,7 @@ export default {
         routeId: item.id,
         routeName: item.name,
         routeDescription: item.description,
+        routeNumStudent: item.student_count,
       };
     },
     getSchoolRoutes() {

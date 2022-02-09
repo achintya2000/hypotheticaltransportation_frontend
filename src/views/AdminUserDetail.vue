@@ -3,9 +3,12 @@
     <v-card-title class="font-weight-black">
       {{ full_name }}
       <v-spacer></v-spacer>
+      <create-new-student-only
+      @studentcreated="getStudents()"
+      ></create-new-student-only>
       <v-dialog v-model="dialog3" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Reset Password </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Reset Password </v-btn>
         </template>
 
         <v-card>
@@ -56,10 +59,9 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Modify </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Modify </v-btn>
         </template>
 
         <v-card>
@@ -70,7 +72,7 @@
               <v-text-field
                 v-model="newFull_name"
                 :rules="userNameValidateArray"
-                label="Name"
+                label="Full Name"
                 required
               ></v-text-field>
 
@@ -122,10 +124,9 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Delete </v-btn>
         </template>
 
         <v-card>
@@ -146,7 +147,6 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
     </v-card-title>
     <v-card-subtitle v-if="currentAddress != ''" >
       <span class="black--text font-weight-bold"> Address: </span><span class="black--text"> {{ currentAddress }} </span>
@@ -165,8 +165,6 @@
       :headers="headers"
       :items="students"
       :search="search"
-      :sort-by="['name']"
-      :sort-desc="[true]"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -181,16 +179,38 @@
         </v-btn>
       </template>
     </v-data-table>
+     <v-snackbar
+      v-model="snackbar"
+      outlines
+      bottom
+      color="success"
+    >
+      Password has been changed
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-card>
 </template>
 
 <script>
+import CreateNewStudentOnly from '../components/CreateNewStudentOnly.vue';
 import { base_endpoint } from "../services/axios-api";
 export default {
+  components: { CreateNewStudentOnly },
   data() {
     return {
       search: "",
       valid: true,
+      snackbar: false,
       userEmail: "",
       userName: "",
       userAddress: "",
@@ -368,6 +388,7 @@ export default {
       ) {
         this.$refs.form.validate();
         this.submitDataForResetPassword();
+        this.snackbar = true;
         this.dialog3 = false;
         this.$emit(
           "schoolmodified",
