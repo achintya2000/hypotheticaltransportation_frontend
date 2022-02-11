@@ -2,12 +2,14 @@
   <v-card height="100%">
     <v-row>
       <v-col width="50%">
-        <v-btn text 
+        <v-btn
+          text
           @click="viewSchool(schoolID)"
-          style="text-transform:none !important"
+          style="text-transform: none !important"
           class="black--text font-weight-bold"
-          size=6rem>
-          {{ schoolName }} 
+          size="6rem"
+        >
+          {{ schoolName }}
         </v-btn>
         <v-text-field
           v-model="search"
@@ -110,7 +112,7 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { gmapApi } from "vue2-google-maps-withscopedautocomp";
-import { mapActions} from "vuex";
+import { mapActions } from "vuex";
 import {
   mapMarker,
   mapMarkerActive,
@@ -317,7 +319,7 @@ export default {
         return true;
       }
     },
-     viewSchool(item) {
+    viewSchool(item) {
       this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
     },
   },
@@ -331,13 +333,12 @@ export default {
   },
   computed: {
     google: gmapApi,
-  }
+  },
   watch: {
     selected: function () {
       this.toggleRoute(this.selected);
     },
   },
- 
 };
 </script>
 
