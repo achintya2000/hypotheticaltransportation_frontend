@@ -148,6 +148,10 @@
       :sort-by="['name']"
       :sort-desc="[true]"
     >
+      <template v-slot:[`item.studentRoute`]="{ item }">
+        <div v-if="item.studentRoute">{{item.studentRoute}}</div>
+        <div v-if="!item.studentRoute">No Route</div>
+      </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
           dense
