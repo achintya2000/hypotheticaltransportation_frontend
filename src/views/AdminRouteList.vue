@@ -15,6 +15,7 @@
       :headers="headers"
       :items="schools"
       :search="search"
+      @click:row="viewItem"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -48,14 +49,13 @@ export default {
         { text: "School", value: "school" },
         { text: "Description", value: "description", sortable: false },
         { text: "# of Students", value: "student_count" },
-        { text: "Actions", value: "actions", sortable: false },
       ],
       schools: [],
     };
   },
   methods: {
-    viewItem(item) {
-      this.$router.push({ name: "AdminRouteDetail", query: { id: item.id } });
+    viewItem(row) {
+      this.$router.push({ name: "AdminRouteDetail", query: { id: row.id } });
     },
     getDisplayRoute(item) {
       return {

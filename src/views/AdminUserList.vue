@@ -19,6 +19,7 @@
       :headers="headers"
       :items="profiles"
       :search="search"
+      @click:row="viewItem"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -78,15 +79,14 @@ export default {
         { text: "Address", value: "address", sortable: false },
         { text: "Students", value: "student_count", sortable: false },
         { text: "Administrator", value: "administrator", sortable: false },
-        { text: "Actions", value: "actions", sortable: false },
       ],
       profiles: [],
     };
   },
 
   methods: {
-    viewItem(item) {
-      this.$router.push({ name: "AdminUserDetail", query: { id: item.id } });
+    viewItem(row) {
+      this.$router.push({ name: "AdminUserDetail", query: { id: row.id } });
     },
     getDisplayUser(item) {
       return {
