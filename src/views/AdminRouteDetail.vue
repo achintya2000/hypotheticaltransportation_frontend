@@ -28,7 +28,6 @@
 
               <v-text-field
                 v-model="newRouteDescription"
-                :rules="desValidateArray"
                 label="Route Description"
                 required
               ></v-text-field>
@@ -165,7 +164,6 @@ export default {
       ],
       students: [],
       nameValidateArray: [this.nameValidate],
-      desValidateArray: [this.desValidate],
       markers: [],
     };
   },
@@ -286,14 +284,6 @@ export default {
       console.log(this.name);
       if (this.newRouteName == "" || this.newRouteName == null) {
         return "Name is required";
-      } else {
-        return true;
-      }
-    },
-    desValidate() {
-      console.log(this.name);
-      if (this.newRouteDescription == "" || this.newRouteDescription == null) {
-        return "Description is required";
       } else {
         return true;
       }
