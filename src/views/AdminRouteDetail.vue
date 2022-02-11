@@ -81,8 +81,12 @@
         </v-card>
       </v-dialog>
     </v-card-title>
-    <v-card-subtitle> <span class="black--text font-weight-bold"> School: </span><span class="black--text"> {{ routeSchool }} </span>
-      <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
+    <v-card-subtitle> <span class="black--text font-weight-bold"> School: </span>
+        <v-btn text 
+        @click="viewSchool(routeSchoolID)"
+        style="text-transform:none !important">
+        {{ routeSchool }} 
+        </v-btn>
     </v-card-subtitle>
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Description: </span><span style="white-space: pre;" class="black--text">{{routeDescription}}</span>

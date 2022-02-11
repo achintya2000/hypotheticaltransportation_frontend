@@ -101,21 +101,39 @@
       <span class="black--text font-weight-bold"> ID: </span><span class="black--text"> {{ studentId }} </span>
     </v-card-subtitle>
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> School: </span><span class="black--text"> {{ studentSchool }} </span>
+      <span class="black--text font-weight-bold"> School: </span> 
+      <v-btn text 
+        @click="viewSchool(studentSchoolId)"
+        style="text-transform:none !important">
+        {{ studentSchool }} 
+        </v-btn>
 
-      <v-icon small @click="viewSchool(studentSchoolId)"> mdi-eye </v-icon>
     </v-card-subtitle>
 
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Route: </span><span class="black--text"> {{ studentRoute }} </span>
+      <span class="black--text font-weight-bold"> Route: </span>
+      <v-btn text 
+        @click="viewSchool(studentRouteId)"
+        style="text-transform:none !important"
+        v-if="studentRoute != 'No route assigned'">
+        {{ studentRoute }} 
+        </v-btn>
+        
+        <v-btn text 
+        style="text-transform:none !important"
+        v-if="studentRoute == 'No route assigned'">
+        No Route Assigned
+        </v-btn>
 
-      <v-icon small @click="viewRoute(studentRouteId)" v-if="studentRoute != 'No route assigned'"> mdi-eye </v-icon>
     </v-card-subtitle>
 
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Parent: </span><span class="black--text"> {{ studentParent }} </span>
-
-      <v-icon small @click="viewParent(studentParentId)"> mdi-eye </v-icon>
+      <span class="black--text font-weight-bold"> Parent: </span>
+      <v-btn text 
+        @click="viewSchool(studentParentId)"
+        style="text-transform:none !important">
+        {{ studentParent }} 
+        </v-btn>
     </v-card-subtitle>
   </v-card>
 </template>
@@ -357,4 +375,5 @@ export default {
 };
 </script>
 <style>
+
 </style>
