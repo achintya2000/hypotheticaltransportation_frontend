@@ -227,7 +227,6 @@ export default {
           var bounds = new this.google.maps.LatLngBounds();
           for (var i = 0; i < this.markers.length; i++) {
             if (!this.markers[i].is_school) {
-              console.log(this.markers[i].position);
               bounds.extend(this.markers[i].position);
             }
           }
