@@ -155,6 +155,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
     selectRow(value, row) {
       if (row.isSelected) {
         this.activeRouteID = null;
@@ -182,6 +186,10 @@ export default {
         )
         .then(() => {
           this.getMarkerData();
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
         });
     },
     getDisplayRoute(item) {
