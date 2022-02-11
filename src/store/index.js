@@ -8,7 +8,8 @@ export default new Vuex.Store({
   state: {
     accessToken: window.localStorage.getItem('token'),
     isAdmin: window.localStorage.getItem('isAdmin'),
-    loggedInUserID: window.localStorage.getItem('userID')
+    loggedInUserID: window.localStorage.getItem('userID'),
+    snackbar: { active: false, color: "", message: "", },
   },
   mutations: {
     updateStorage(state, { access }) {
@@ -25,6 +26,9 @@ export default new Vuex.Store({
       state.accessToken = null
       state.isAdmin = "false"
       state.loggedInUserID = null
+    },
+    SET_SNACKBAR(state, snackbar) {
+      state.snackbar = snackbar;
     }
   },
   getters: {
@@ -74,7 +78,14 @@ export default new Vuex.Store({
             reject()
           });
       })
-    }
+    },
+    snackBar({ commit }, message) {
+      commit("SET_SNACKBAR", {
+        active: true,
+        color: "red", // You can create another actions for diferent color.
+        message: message,
+      });
+    },
   },
   modules: {
   }

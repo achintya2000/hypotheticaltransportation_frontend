@@ -43,6 +43,7 @@
 <script>
 //import { mapState } from "vuex";
 import { base_endpoint } from "../services/axios-api";
+import { mapActions} from "vuex";
 import CreateNewSchool from "../components/CreateNewSchool.vue";
 
 export default {
@@ -63,8 +64,12 @@ export default {
     };
   },
   methods: {
-    viewItem(row) {
-      this.$router.push({ name: "AdminSchoolDetail", query: { id: row.id } });
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
+    viewItem(item) {
+      this.$router.push({ name: "AdminSchoolDetail", query: { id: item.id } });
     },
     getDisplayAddress(item) {
       return {
@@ -82,6 +87,7 @@ export default {
           this.addresses = response.data.map(this.getDisplayAddress);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },

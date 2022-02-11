@@ -27,7 +27,6 @@
 
               <v-textarea
                 v-model="newRouteDescription"
-                :rules="desValidateArray"
                 label="Route Description"
                 required
               ></v-textarea>
@@ -82,10 +81,12 @@
         </v-card>
       </v-dialog>
     </v-card-title>
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> School: </span
-      ><span class="black--text"> {{ routeSchool }} </span>
-      <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
+    <v-card-subtitle> <span class="black--text font-weight-bold"> School: </span>
+        <v-btn text 
+        @click="viewSchool(routeSchoolID)"
+        style="text-transform:none !important">
+        {{ routeSchool }} 
+        </v-btn>
     </v-card-subtitle>
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Description: </span
@@ -139,7 +140,7 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { mapMarker, schoolMapMarker } from "../assets/markers";
-
+import { mapActions} from "vuex";
 export default {
   data() {
     return {
@@ -167,11 +168,14 @@ export default {
       ],
       students: [],
       nameValidateArray: [this.nameValidate],
-      desValidateArray: [this.desValidate],
       markers: [],
     };
   },
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
     viewSchool(item) {
       this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
     },
@@ -197,6 +201,7 @@ export default {
           this.oldSchoolID = response.data.school.id;
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -218,6 +223,10 @@ export default {
           console.log(response);
           this.getRouteInfo();
           this.getStudentsInRoute();
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
         });
     },
     validateForModify() {
@@ -255,6 +264,7 @@ export default {
           this.$router.push({ name: "AdminRouteList" });
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -267,6 +277,7 @@ export default {
           this.students = response.data.map(this.getDisplayStudents);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -280,6 +291,7 @@ export default {
           console.log(this.markers);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -295,16 +307,8 @@ export default {
         return true;
       }
     },
-    desValidate() {
-      console.log(this.name);
-      if (this.newRouteDescription == "" || this.newRouteDescription == null) {
-        return "Description is required";
-      } else {
-        return true;
-      }
-    },
-    viewItem(row) {
-      this.$router.push({ name: "AdminStudentDetail", query: { id: row.id } });
+    viewItem(item) {
+      this.$router.push({ name: "AdminStudentDetail", query: { id: item.id } });
     },
     validate() {
       this.$refs.form.validate();

@@ -106,37 +106,46 @@
       ><span class="black--text"> {{ studentId }} </span>
     </v-card-subtitle>
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> School: </span
-      ><span class="black--text"> {{ studentSchool }} </span>
-
-      <v-icon small @click="viewSchool(studentSchoolId)"> mdi-eye </v-icon>
+      <span class="black--text font-weight-bold"> School: </span> 
+      <v-btn text 
+        @click="viewSchool(studentSchoolId)"
+        style="text-transform:none !important">
+        {{ studentSchool }} 
+        </v-btn>
+        
     </v-card-subtitle>
 
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Route: </span
-      ><span class="black--text"> {{ studentRoute }} </span>
-
-      <v-icon
-        small
+      <span class="black--text font-weight-bold"> Route: </span>
+      <v-btn text 
         @click="viewRoute(studentRouteId)"
-        v-if="studentRoute == null"
-      >
-        mdi-eye
-      </v-icon>
+        style="text-transform:none !important"
+        v-if="studentRoute != 'No route assigned'">
+        {{ studentRoute }} 
+        </v-btn>
+        
+        <v-btn text 
+        style="text-transform:none !important"
+        v-if="studentRoute == 'No route assigned'">
+        No Route Assigned
+        </v-btn>
+
     </v-card-subtitle>
 
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Parent: </span
-      ><span class="black--text"> {{ studentParent }} </span>
-
-      <v-icon small @click="viewParent(studentParentId)"> mdi-eye </v-icon>
+      <span class="black--text font-weight-bold"> Parent: </span>
+      <v-btn text 
+        @click="viewSchool(studentParentId)"
+        style="text-transform:none !important">
+        {{ studentParent }} 
+        </v-btn>
     </v-card-subtitle>
   </v-card>
 </template>
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-
+import { mapActions} from "vuex";
 export default {
   data() {
     return {
@@ -182,6 +191,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
     getStudentInfo() {
       base_endpoint
         .get("/api/student/get/" + this.$route.query.id, {
@@ -205,6 +218,7 @@ export default {
           this.getParents();
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -231,6 +245,7 @@ export default {
           });
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -256,6 +271,7 @@ export default {
           });
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -284,8 +300,8 @@ export default {
           console.log(response);
           this.getStudentInfo();
         })
-
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -312,6 +328,7 @@ export default {
           this.$router.push({ name: "AdminStudentList" });
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -371,4 +388,5 @@ export default {
 };
 </script>
 <style>
+
 </style>

@@ -2,7 +2,13 @@
   <v-card height="100%">
     <v-row>
       <v-col width="50%">
-        <v-card-title> {{ schoolName }} </v-card-title>
+        <v-btn text 
+          @click="viewSchool(schoolID)"
+          style="text-transform:none !important"
+          class="black--text font-weight-bold"
+          size=6rem>
+          {{ schoolName }} 
+        </v-btn>
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
@@ -43,7 +49,6 @@
 
                 <v-textarea
                   v-model="description"
-                  :rules="desValidateArray"
                   label="Route Description"
                   append-icon="mdi-message-text"
                   required
@@ -105,7 +110,7 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { gmapApi } from "vue2-google-maps-withscopedautocomp";
-
+import { mapActions} from "vuex";
 import {
   mapMarker,
   mapMarkerActive,
@@ -128,7 +133,6 @@ export default {
       markers: [],
       places: [],
       nameValidateArray: [this.nameValidate],
-      desValidateArray: [this.desValidate],
       schoolName: "",
       search: "",
       selected: [],
@@ -136,6 +140,7 @@ export default {
       valid: true,
       name: "",
       description: "",
+      schoolID: this.$route.query.id,
       headers: [
         {
           text: "Name",
@@ -201,6 +206,7 @@ export default {
           this.routes = response.data.map(this.getDisplayRoute);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -213,6 +219,7 @@ export default {
           this.schoolName = response.data.name;
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -236,16 +243,12 @@ export default {
           });
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
     validate() {
-      if (
-        this.name != "" &&
-        this.name != null &&
-        this.description != "" &&
-        this.description != null
-      ) {
+      if (this.name != "" && this.name != null) {
         this.$refs.form.validate();
         this.submitData();
         this.dialog = false;
@@ -270,6 +273,10 @@ export default {
         )
         .then(() => {
           this.getRequestAllRoutes();
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
         });
     },
     reset() {
@@ -310,6 +317,9 @@ export default {
         return true;
       }
     },
+     viewSchool(item) {
+      this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
+    },
   },
   created() {
     this.getRequestAllRoutes();
@@ -321,7 +331,13 @@ export default {
   },
   computed: {
     google: gmapApi,
+  }
+  watch: {
+    selected: function () {
+      this.toggleRoute(this.selected);
+    },
   },
+ 
 };
 </script>
 

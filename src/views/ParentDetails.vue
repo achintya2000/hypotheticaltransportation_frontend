@@ -79,6 +79,10 @@
       :sort-desc="[false, true]"
       @click:row="viewItem"
     >
+      <template v-slot:[`item.route`]="{ item }">
+        <div v-if="item.route">{{item.route}}</div>
+        <div v-if="!item.route">No Route</div>
+      </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
           dense
@@ -106,7 +110,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-
+import { mapActions} from "vuex";
 export default {
   data() {
     return {
@@ -139,7 +143,11 @@ export default {
     };
   },
   methods: {
-    viewItem(row) {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
+    viewItem(item) {
       this.$router.push({
         name: "ParentStudentDetail",
         query: { id: row.id },
@@ -158,6 +166,7 @@ export default {
           this.administrator = response.data.is_superuser;
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -186,6 +195,7 @@ export default {
           //this.$store.state.addresses = response.data;
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -223,6 +233,10 @@ export default {
         )
         .then((response) => {
           console.log(response);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
         });
     },
     resetPassword1Validation() {
