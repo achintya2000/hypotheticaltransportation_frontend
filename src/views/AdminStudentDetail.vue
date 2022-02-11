@@ -5,7 +5,9 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Modify </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
+            Modify
+          </v-btn>
         </template>
 
         <v-card>
@@ -75,7 +77,9 @@
       </v-dialog>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Delete </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
+            Delete
+          </v-btn>
         </template>
 
         <v-card>
@@ -97,8 +101,9 @@
         </v-card>
       </v-dialog>
     </v-card-title>
-    <v-card-subtitle> 
-      <span class="black--text font-weight-bold"> ID: </span><span class="black--text"> {{ studentId }} </span>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> ID: </span
+      ><span class="black--text"> {{ studentId }} </span>
     </v-card-subtitle>
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> School: </span> 
@@ -107,7 +112,7 @@
         style="text-transform:none !important">
         {{ studentSchool }} 
         </v-btn>
-
+        
     </v-card-subtitle>
 
     <v-card-subtitle>

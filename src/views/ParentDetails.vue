@@ -58,13 +58,16 @@
     </v-card-title>
     <v-spacer></v-spacer>
     <v-card-subtitle>
-       <span class="black--text font-weight-bold"> Name: </span><span class="black--text"> {{ userName }} </span>
+      <span class="black--text font-weight-bold"> Name: </span
+      ><span class="black--text"> {{ userName }} </span>
     </v-card-subtitle>
     <v-card-subtitle>
-        <span class="black--text font-weight-bold"> Email: </span><span class="black--text"> {{ userEmail }} </span>
+      <span class="black--text font-weight-bold"> Email: </span
+      ><span class="black--text"> {{ userEmail }} </span>
     </v-card-subtitle>
-    <v-card-subtitle> 
-        <span class="black--text font-weight-bold"> Address: </span><span class="black--text"> {{ userAddress }} </span>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Address: </span
+      ><span class="black--text"> {{ userAddress }} </span>
     </v-card-subtitle>
 
     <v-card-title>Your Students:</v-card-title>
@@ -93,21 +96,11 @@
         </v-btn>
       </template>
     </v-data-table>
-     <v-snackbar
-      v-model="snackbar"
-      outlines
-      bottom
-      color="success"
-    >
+    <v-snackbar v-model="snackbar" outlines bottom color="success">
       Your password has been changed
 
       <template v-slot:action="{ attrs }">
-        <v-btn
-          color="white"
-          text
-          v-bind="attrs"
-          @click="snackbar = false"
-        >
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
           Close
         </v-btn>
       </template>

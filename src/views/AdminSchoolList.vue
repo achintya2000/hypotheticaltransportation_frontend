@@ -1,11 +1,14 @@
 <template>
-  <v-card height=100%>
+  <v-card height="100%">
     <v-card-title>
       Your Schools
       <v-spacer></v-spacer>
 
       <create-new-school
-        @schoolcreated="getRequestAllSchools(); snackbar = true"
+        @schoolcreated="
+          getRequestAllSchools();
+          snackbar = true;
+        "
       ></create-new-school>
 
       <v-spacer></v-spacer>
@@ -24,22 +27,12 @@
       :search="search"
       @click:row="viewItem"
     >
- 
     </v-data-table>
-      <v-snackbar
-      v-model="snackbar"
-      outlines
-      color="success"
-    >
+    <v-snackbar v-model="snackbar" outlines color="success">
       A new school has been created
 
       <template v-slot:action="{ attrs }">
-        <v-btn
-          color="white"
-          text
-          v-bind="attrs"
-          @click="snackbar = false"
-        >
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
           Close
         </v-btn>
       </template>

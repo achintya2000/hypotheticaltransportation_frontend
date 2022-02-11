@@ -71,7 +71,7 @@
             <v-form ref="form">
               <v-spacer></v-spacer>
 
-              <v-btn color="error" class="mr-4" @click="submitDataForDelete" >
+              <v-btn color="error" class="mr-4" @click="submitDataForDelete">
                 Yes, Delete
               </v-btn>
 
@@ -89,7 +89,10 @@
         </v-btn>
     </v-card-subtitle>
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Description: </span><span style="white-space: pre;" class="black--text">{{routeDescription}}</span>
+      <span class="black--text font-weight-bold"> Description: </span
+      ><span style="white-space: pre" class="black--text">{{
+        routeDescription
+      }}</span>
     </v-card-subtitle>
 
     <v-row>
@@ -242,6 +245,9 @@ export default {
       };
     },
     getDisplayRouteMarkers(item) {
+      if (item.is_school) {
+        this.center = { lat: item.latitude, lng: item.longitude };
+      }
       return {
         position: { lat: item.latitude, lng: item.longitude },
         isSchool: item.is_school,
