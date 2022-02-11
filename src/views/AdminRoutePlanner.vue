@@ -49,7 +49,6 @@
 
                 <v-textarea
                   v-model="description"
-                  :rules="desValidateArray"
                   label="Route Description"
                   append-icon="mdi-message-text"
                   required
@@ -148,7 +147,6 @@ export default {
       markers: [],
       places: [],
       nameValidateArray: [this.nameValidate],
-      desValidateArray: [this.desValidate],
       schoolName: "",
       search: "",
       selected: [],
@@ -248,7 +246,7 @@ export default {
         });
     },
     validate() {
-      if (this.name != "" && this.name != null && this.description != "" && this.description != null) {
+      if (this.name != "" && this.name != null) {
         this.$refs.form.validate();
         this.submitData();
         this.dialog = false;

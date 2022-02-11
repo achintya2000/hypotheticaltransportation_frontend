@@ -24,6 +24,11 @@
       :search="search"
       @click:row="viewItem"
     >
+      
+      <template v-slot:[`item.route`]="{ item }">
+        <div v-if="item.route">{{item.route}}</div>
+        <div v-if="!item.route">No Route</div>
+      </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
           dense
