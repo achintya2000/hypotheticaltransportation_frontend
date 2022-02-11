@@ -113,7 +113,7 @@
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Route: </span>
       <v-btn text 
-        @click="viewSchool(studentRouteId)"
+        @click="viewRoute(studentRouteId)"
         style="text-transform:none !important"
         v-if="studentRoute != 'No route assigned'">
         {{ studentRoute }} 
