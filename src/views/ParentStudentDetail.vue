@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="font-weight-black">
       {{ studentName }}
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500"> </v-dialog>
@@ -8,12 +8,20 @@
 
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle> ID: {{ studentId }} </v-card-subtitle>
-    <v-card-subtitle> School: {{ studentSchool }} </v-card-subtitle>
+    <v-card-subtitle> 
+      <span class="black--text font-weight-bold"> ID: </span><span class="black--text"> {{ studentId }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> School: </span><span class="black--text"> {{ studentSchool }} </span>
+    </v-card-subtitle>
 
-    <v-card-subtitle> Route: {{ studentRoute }} </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Route: </span><span class="black--text"> {{ studentRoute }} </span>
+    </v-card-subtitle>
 
-    <v-card-subtitle> Parent: {{ studentParent }} </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Parent: </span><span class="black--text"> {{ studentParent }} </span>
+    </v-card-subtitle>
   </v-card>
 </template>
 
@@ -28,7 +36,7 @@ export default {
       dialog2: false,
       name: "Old Name",
       nameRules: [(v) => !!v || "Name is required"],
-      studentId: "",
+      studentId: "", 
       studentIDRules: [(v) => !!v || "Student ID is required"],
       parentValue: "Old Parent",
       parentRules: [(v) => !!v || "Parent is required"],

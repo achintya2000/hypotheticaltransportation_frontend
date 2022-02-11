@@ -1,11 +1,11 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="font-weight-black">
       {{ schoolName }}
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Modify </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Modify </v-btn>
         </template>
 
         <v-card>
@@ -60,10 +60,9 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Delete </v-btn>
         </template>
 
         <v-card>
@@ -110,20 +109,19 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
+      <v-btn style="margin: 10px" @click="planNewRoute" outlined>Plan New Route</v-btn>
     </v-card-title>
-    <v-card-subtitle> {{ schoolAddress }} </v-card-subtitle>
+    <v-card-subtitle class="black--text"> 
+      <span class="black--text font-weight-bold"> Address: </span><span class="black--text"> {{ schoolAddress }} </span>
+    </v-card-subtitle>
     <v-card-title>
       Bus Routes
-      <v-spacer></v-spacer>
-      <v-btn @click="planNewRoute" outlined>Plan New Route</v-btn>
     </v-card-title>
     <v-data-table
       :headers="routeHeaders"
       :items="busRoutes"
       :search="search"
-      :sort-by="['name']"
-      :sort-desc="[true]"
+      @click:row="viewRoute"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -145,8 +143,7 @@
       :headers="studentsHeaders"
       :items="students"
       :search="search"
-      :sort-by="['name']"
-      :sort-desc="[true]"
+      @click:row="viewStudent"
     >
       <template v-slot:[`item.studentRoute`]="{ item }">
         <div v-if="item.studentRoute">{{item.studentRoute}}</div>
@@ -193,7 +190,7 @@ export default {
           value: "routeName",
         },
         { text: "Description", value: "routeDescription" },
-        { text: "Actions", value: "actions", sortable: false },
+        { text: "# of Students", value: "routeNumStudent" },
       ],
       busRoutes: [],
       studentsHeaders: [
@@ -204,7 +201,6 @@ export default {
         },
         { text: "Route", value: "studentRoute" },
         { text: "Parent", value: "studentParent" },
-        { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],
       deleteValidationArray: [this.deleteValidation],
@@ -224,16 +220,16 @@ export default {
         query: { id: this.$route.query.id },
       });
     },
-    viewRoute(item) {
+    viewRoute(row) {
       this.$router.push({
         name: "AdminRouteDetail",
-        query: { id: item.routeId },
+        query: { id: row.routeId },
       });
     },
-    viewStudent(item) {
+    viewStudent(row) {
       this.$router.push({
         name: "AdminStudentDetail",
-        query: { id: item.studentId },
+        query: { id: row.studentId },
       });
     },
     getSchoolInfo() {
@@ -257,6 +253,7 @@ export default {
         routeId: item.id,
         routeName: item.name,
         routeDescription: item.description,
+        routeNumStudent: item.student_count,
       };
     },
     getSchoolRoutes() {

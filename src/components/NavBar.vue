@@ -20,12 +20,9 @@
         v-for="link in navBarLinks"
         :key="link.title"
         v-show="link.show"
+        :to="link.to"
       >
-        <router-link
-          :to="link.to"
-          style="text-decoration: none; color: inherit"
-          >{{ link.title }}</router-link
-        >
+        {{ link.title }}
       </v-btn>
 
       <login v-if="!loggedIn"></login>
@@ -74,7 +71,7 @@ export default {
           show: this.isAdmin,
         },
         {
-          title: "Your Students",
+          title: "Your Details",
           to: "/parentdetails",
           show: this.loggedIn,
         },

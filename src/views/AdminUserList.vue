@@ -1,10 +1,10 @@
 <template>
-  <v-card>
+  <v-card height=100%>
     <v-card-title>
       Your Users
       <v-spacer></v-spacer>
       <create-new-student
-        @usercreated="getRequestAllUsers"
+        @usercreated="getRequestAllUsers(); snackbar = true"
       ></create-new-student>
       <v-spacer></v-spacer>
       <v-text-field
@@ -19,8 +19,7 @@
       :headers="headers"
       :items="profiles"
       :search="search"
-      :sort-by="['name']"
-      :sort-desc="[true]"
+      @click:row="viewItem"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -34,7 +33,29 @@
           Details
         </v-btn>
       </template>
+      <template v-slot:[`item.administrator`]="{ item }">
+        <v-icon v-if="item.administrator==false"> mdi-close </v-icon>
+        <v-icon v-if="item.administrator==true"> mdi-badge-account-horizontal </v-icon>
+      </template>
     </v-data-table>
+    <v-snackbar
+      v-model="snackbar"
+      outlines
+      color="success"
+    >
+      A new user has been created
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-card>
 </template>
 
@@ -47,6 +68,7 @@ export default {
   data() {
     return {
       search: "",
+      snackbar: false,
       headers: [
         {
           text: "Name",
@@ -57,15 +79,14 @@ export default {
         { text: "Address", value: "address", sortable: false },
         { text: "Students", value: "student_count", sortable: false },
         { text: "Administrator", value: "administrator", sortable: false },
-        { text: "Actions", value: "actions", sortable: false },
       ],
       profiles: [],
     };
   },
 
   methods: {
-    viewItem(item) {
-      this.$router.push({ name: "AdminUserDetail", query: { id: item.id } });
+    viewItem(row) {
+      this.$router.push({ name: "AdminUserDetail", query: { id: row.id } });
     },
     getDisplayUser(item) {
       return {
