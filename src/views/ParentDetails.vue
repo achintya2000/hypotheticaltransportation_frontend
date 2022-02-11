@@ -1,16 +1,16 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="font-weight-black">
       Your Information
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog3" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Reset Password </v-btn>
+          <v-btn outlined v-bind="attrs" v-on="on"> Change Password </v-btn>
         </template>
 
         <v-card>
           <v-card-title class="text-h5 grey lighten-2">
-            Reset Password
+            Change Password
           </v-card-title>
 
           <v-card-text>
@@ -55,19 +55,26 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
     </v-card-title>
     <v-spacer></v-spacer>
-    <v-card-subtitle> Name: {{ userName }} </v-card-subtitle>
-    <v-card-subtitle> Email: {{ userEmail }} </v-card-subtitle>
-    <v-card-subtitle> Address: {{ userAddress }} </v-card-subtitle>
+    <v-card-subtitle>
+       <span class="black--text font-weight-bold"> Name: </span><span class="black--text"> {{ userName }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle>
+        <span class="black--text font-weight-bold"> Email: </span><span class="black--text"> {{ userEmail }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle> 
+        <span class="black--text font-weight-bold"> Address: </span><span class="black--text"> {{ userAddress }} </span>
+    </v-card-subtitle>
 
+    <v-card-title>Your Students:</v-card-title>
     <v-data-table
       :headers="headers"
       :items="students"
       :search="search"
       :sort-by="['sid']"
       :sort-desc="[false, true]"
+      @click:row="viewItem"
     >
       <template v-slot:[`item.route`]="{ item }">
         <div v-if="item.route">{{item.route}}</div>
@@ -86,6 +93,25 @@
         </v-btn>
       </template>
     </v-data-table>
+     <v-snackbar
+      v-model="snackbar"
+      outlines
+      bottom
+      color="success"
+    >
+      Your password has been changed
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-card>
 </template>
 
@@ -98,6 +124,7 @@ export default {
       dialog3: false,
       valid: true,
       reveal: false,
+      snackbar: false,
       search: "",
       newPassword: "",
       newPasswordRules: [(v) => !!v || "Name is required"],
@@ -130,7 +157,7 @@ export default {
     viewItem(item) {
       this.$router.push({
         name: "ParentStudentDetail",
-        query: { id: item.id },
+        query: { id: row.id },
       });
     },
     getUserInfo() {
@@ -190,6 +217,7 @@ export default {
         this.$refs.form.validate();
         this.submitDataForResetPassword();
         this.dialog3 = false;
+        this.snackbar = true;
         this.$emit(
           "schoolmodified",
           "A school has been modified and sent to database"

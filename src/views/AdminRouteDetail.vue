@@ -1,13 +1,12 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="font-weight-black">
       {{ routeName }}
       <v-spacer></v-spacer>
       <v-btn @click="planNewRoute" outlined>Modify Route</v-btn>
-      <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on">
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Modify Name and Description
           </v-btn>
         </template>
@@ -26,11 +25,11 @@
                 required
               ></v-text-field>
 
-              <v-text-field
+              <v-textarea
                 v-model="newRouteDescription"
                 label="Route Description"
                 required
-              ></v-text-field>
+              ></v-textarea>
 
               <v-btn
                 :disabled="!valid"
@@ -58,8 +57,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
-      <v-dialog v-model="dialog" width="500">
+      <v-dialog style="margin: 10px" v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
           <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
         </template>
@@ -82,12 +80,17 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle> {{ routeSchool }} 
-      <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
+    <v-card-subtitle> <span class="black--text font-weight-bold"> School: </span>
+        <v-btn text 
+        @click="viewSchool(routeSchoolID)"
+        style="text-transform:none !important">
+        {{ routeSchool }} 
+        </v-btn>
     </v-card-subtitle>
-    <v-card-subtitle> {{ routeDescription }} </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Description: </span><span style="white-space: pre;" class="black--text">{{routeDescription}}</span>
+    </v-card-subtitle>
 
     <v-row>
       <v-col>
@@ -95,8 +98,7 @@
           :headers="headers"
           :items="students"
           :search="search"
-          :sort-by="['name']"
-          :sort-desc="[true]"
+          @click:row="viewItem"
         >
           <template v-slot:[`item.actions`]="{ item }">
             <v-btn
@@ -160,7 +162,6 @@ export default {
           align: "start",
           value: "name",
         },
-        { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],
       nameValidateArray: [this.nameValidate],

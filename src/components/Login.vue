@@ -6,7 +6,7 @@
     @click:outside="dialog = false"
   >
     <template v-slot:activator="{ on, attrs }">
-      <v-btn text v-bind="attrs" v-on="on"> login </v-btn>
+      <v-btn v-bind="attrs" v-on="on" x-large color="primary"> login </v-btn>
     </template>
     <v-card>
       <v-card-title>

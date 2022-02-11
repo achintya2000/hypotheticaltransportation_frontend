@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" width="50%">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn outlined v-bind="attrs" v-on="on"> Create New Student/User </v-btn>
+      <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Create New Student/User </v-btn>
     </template>
 
     <v-card>
@@ -26,7 +26,7 @@
             v-if="userCheckbox"
             v-model="parentName"
             :rules="userNameValidateArray"
-            label="User Name"
+            label="Full Name for User"
             append-icon="mdi-account"
             dense
             required
@@ -46,6 +46,17 @@
             v-model="parentPassword"
             append-icon="mdi-lock"
             label="User Password"
+            :type="'password'"
+            dense
+            required
+          ></v-text-field>
+          <v-text-field
+            v-if="userCheckbox"
+            :rules="userPasswordValidateArray2"
+            v-model="parentPassword2"
+            append-icon="mdi-lock"
+            label="Confirm User Password"
+            :type="'password'"
             dense
             required
           ></v-text-field>
@@ -156,6 +167,7 @@ export default {
       parentName: "",
       parentEmail: "",
       parentPassword: "",
+      parentPassword2: "",
       parentAddress: "",
       userAdminCheckbox: false,
       parentSelected: null,
@@ -174,6 +186,7 @@ export default {
       userNameValidateArray: [this.userNameValidate],
       userEmailValidateArray: [this.userEmailValidate],
       userPasswordValidateArray: [this.userPasswordValidate],
+      userPasswordValidateArray2: [this.userPasswordValidate2],
       userAddressValidateArray: [this.userAddressValidate],
       studentNameValidateArray: [this.studentNameValidate],
       studentIDValidateArray: [this.studentIDValidate],
@@ -253,17 +266,6 @@ export default {
           )
           .then((response) => {
             this.newParentID = response.data.id;
-            console.log("PRINTING PARENT ID CREATED");
-            console.log(response.data.id);
-            console.log(this.studentName != null);
-            console.log(this.studentName != "");
-            console.log(this.sid != null);
-            console.log(this.sid != "");
-            console.log(this.schoolSelected.id != null);
-            console.log(this.schoolSelected.id != "");
-            console.log(this.newParentID != null);
-            console.log(this.newParentID != "");
-            console.log(this.newParentID);
             
             this.$emit(
               "usercreated",
@@ -350,6 +352,8 @@ export default {
           this.parentEmail != "") &&
           (this.parentPassword != null &&
           this.parentPassword != "") &&
+          (this.parentPassword2 != null &&
+          this.parentPassword2 != "") &&
           (this.parentAddress != null && 
           this.parentAddress != "")) ||
         (this.studentCheckbox == true &&
@@ -416,6 +420,17 @@ export default {
         return true;
       }
     },
+    userPasswordValidate2() {
+      if (this.userCheckbox == true &&
+        (this.parentPassword2 == "" || this.parentPassword2 == null)) {
+        return "This field is required";
+      } else if (this.userCheckbox == true &&
+        (this.parentPassword != this.parentPassword2)) {
+        return "The passwords must match";
+      } else {
+        return true;
+      }
+    },
     userAddressValidate() {
       console.log("HIIIIIII  GUYS");
       if (
@@ -445,6 +460,10 @@ export default {
         return "Student ID is required";
       } else if (isNaN(this.sid) == true) {
         return "Student ID must be a number";
+      } else if (isNaN(this.sid) == false) {
+        if (parseInt(this.sid) < 0) {
+          return "Student ID must be a postive number";
+        }
       } else {
         return true;
       }

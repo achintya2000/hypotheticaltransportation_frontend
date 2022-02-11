@@ -15,8 +15,7 @@
       :headers="headers"
       :items="schools"
       :search="search"
-      :sort-by="['name']"
-      :sort-desc="[true]"
+      @click:row="viewItem"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -50,7 +49,6 @@ export default {
         { text: "School", value: "school" },
         { text: "Description", value: "description", sortable: false },
         { text: "# of Students", value: "student_count" },
-        { text: "Actions", value: "actions", sortable: false },
       ],
       schools: [],
     };

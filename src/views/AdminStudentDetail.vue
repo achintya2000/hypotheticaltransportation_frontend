@@ -1,11 +1,11 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="font-weight-black">
       {{ studentName }}
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Modify </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Modify </v-btn>
         </template>
 
         <v-card>
@@ -73,10 +73,9 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Delete </v-btn>
         </template>
 
         <v-card>
@@ -97,25 +96,44 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle> ID: {{ studentId }} </v-card-subtitle>
+    <v-card-subtitle> 
+      <span class="black--text font-weight-bold"> ID: </span><span class="black--text"> {{ studentId }} </span>
+    </v-card-subtitle>
     <v-card-subtitle>
-      School: {{ studentSchool }}
+      <span class="black--text font-weight-bold"> School: </span> 
+      <v-btn text 
+        @click="viewSchool(studentSchoolId)"
+        style="text-transform:none !important">
+        {{ studentSchool }} 
+        </v-btn>
 
-      <v-icon small @click="viewSchool(studentSchoolId)"> mdi-eye </v-icon>
     </v-card-subtitle>
 
     <v-card-subtitle>
-      Route: {{ studentRoute }}
+      <span class="black--text font-weight-bold"> Route: </span>
+      <v-btn text 
+        @click="viewRoute(studentRouteId)"
+        style="text-transform:none !important"
+        v-if="studentRoute != 'No route assigned'">
+        {{ studentRoute }} 
+        </v-btn>
+        
+        <v-btn text 
+        style="text-transform:none !important"
+        v-if="studentRoute == 'No route assigned'">
+        No Route Assigned
+        </v-btn>
 
-      <v-icon small @click="viewRoute(studentRouteId)" v-if="studentRoute == null"> mdi-eye </v-icon>
     </v-card-subtitle>
 
     <v-card-subtitle>
-      Parent: {{ studentParent }}
-
-      <v-icon small @click="viewParent(studentParentId)"> mdi-eye </v-icon>
+      <span class="black--text font-weight-bold"> Parent: </span>
+      <v-btn text 
+        @click="viewSchool(studentParentId)"
+        style="text-transform:none !important">
+        {{ studentParent }} 
+        </v-btn>
     </v-card-subtitle>
   </v-card>
 </template>
@@ -330,6 +348,10 @@ export default {
         return "Student ID is required";
       } else if (isNaN(this.newStudentId) == true) {
         return "Student ID must be a number";
+      } else if (isNaN(this.newStudentId) == false) {
+        if (parseInt(this.newStudentId) < 0) {
+          return "Student ID must be a postive number";
+        }
       } else {
         return true;
       }
@@ -361,4 +383,5 @@ export default {
 };
 </script>
 <style>
+
 </style>

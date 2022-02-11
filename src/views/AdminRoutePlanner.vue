@@ -1,8 +1,14 @@
 <template>
-  <v-card>
+  <v-card height=100%>
     <v-row>
       <v-col width="50%">
-        <v-card-title> {{ schoolName }} </v-card-title>
+        <v-btn text 
+          @click="viewSchool(schoolID)"
+          style="text-transform:none !important"
+          class="black--text font-weight-bold"
+          size=6rem>
+          {{ schoolName }} 
+        </v-btn>
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
@@ -16,8 +22,6 @@
           :headers="headers"
           :items="routes"
           :search="search"
-          :sort-by="['name']"
-          :sort-desc="[true]"
           item-key="name"
           show-select
           :single-select="true"
@@ -43,12 +47,12 @@
                   required
                 ></v-text-field>
 
-                <v-text-field
+                <v-textarea
                   v-model="description"
                   label="Route Description"
                   append-icon="mdi-message-text"
                   required
-                ></v-text-field>
+                ></v-textarea>
 
                 <v-btn
                   :disabled="!valid"
@@ -59,8 +63,6 @@
                 >
                   Submit
                 </v-btn>
-
-                <v-btn color="error" class="mr-4" @click="clear"> Clear </v-btn>
                 <v-btn
                   color="warning"
                   @click="
@@ -97,6 +99,25 @@
         ></v-img>
       </v-col>
     </v-row>
+    <v-snackbar
+      v-model="snackbar"
+      outlines
+      bottom
+      color="success"
+    >
+      A new route has been created
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-card>
 </template>
 
@@ -114,6 +135,7 @@ export default {
   data() {
     return {
       mapMarker,
+      snackbar: false,
       mapMarkerActive,
       mapMarkerUnassigned,
       schoolMapMarker,
@@ -133,6 +155,7 @@ export default {
       valid: true,
       name: "",
       description: "",
+      schoolID: this.$route.query.id,
       headers: [
         {
           text: "Name",
@@ -239,6 +262,7 @@ export default {
         this.$refs.form.validate();
         this.submitData();
         this.dialog = false;
+        this.snackbar = true;
         this.$refs.form.reset();
       }
     },
@@ -346,6 +370,17 @@ export default {
         return true;
       }
     },
+    desValidate() {
+      console.log(this.name);
+      if (this.description == "" || this.description == null) {
+        return "Description is required";
+      } else {
+        return true;
+      }
+    },
+     viewSchool(item) {
+      this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
+    },
   },
   created() {
     this.getRequestAllRoutes();
@@ -355,11 +390,13 @@ export default {
   mounted() {
     this.geolocate();
   },
+  
   watch: {
     selected: function () {
       this.toggleRoute(this.selected);
     },
   },
+ 
 };
 </script>
 
