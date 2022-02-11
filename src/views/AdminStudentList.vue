@@ -1,10 +1,10 @@
 <template>
-  <v-card>
+  <v-card height=100%>
     <v-card-title>
       Your Students
       <v-spacer></v-spacer>
       <create-new-student
-        @studentcreated="getRequestAllStudents"
+        @studentcreated="getRequestAllStudents(); snackbar = true"
       ></create-new-student>
 
       <v-spacer></v-spacer>
@@ -22,8 +22,6 @@
       :headers="headers"
       :items="students"
       :search="search"
-      :sort-by="['sid']"
-      :sort-desc="[false, true]"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -38,6 +36,25 @@
         </v-btn>
       </template>
     </v-data-table>
+    <v-snackbar
+      v-model="snackbar"
+      outlines
+      bottom
+      color="success"
+    >
+      A new student has been created
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-card>
 </template>
 
@@ -50,6 +67,7 @@ export default {
   data() {
     return {
       search: "",
+      snackbar: false,
       headers: [
         {
           text: "Name",
@@ -99,4 +117,11 @@ export default {
 </script>
 
 <style>
+.v-snackbar {
+  position: fixed;
+  left: 50%;
+  bottom: 50px;
+  transform: translate(-50%, -50%);
+  margin: 0 auto; 
+}
 </style>

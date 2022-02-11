@@ -15,8 +15,6 @@
       :headers="headers"
       :items="schools"
       :search="search"
-      :sort-by="['name']"
-      :sort-desc="[true]"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn

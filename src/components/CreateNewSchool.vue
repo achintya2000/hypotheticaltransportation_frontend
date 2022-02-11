@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn outlined v-bind="attrs" v-on="on"> Create New School </v-btn>
+      <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Create New School </v-btn>
     </template>
 
     <v-card>
@@ -10,7 +10,7 @@
       </v-card-title>
 
       <v-card-text>
-        <v-form ref="form" v-model="valid" lazy-validation>
+        <v-form ref="form" v-model="valid" lazy-validation >
           <v-text-field
             v-model="name"
             append-icon="mdi-school"
@@ -19,7 +19,7 @@
             required
           ></v-text-field>
 
-          <gmap-autocomplete @place_changed="setPlace">
+          <gmap-autocomplete @place_changed="setPlace" >
             <template v-slot:input="slotProps">
               <v-text-field
                 v-model="address"
@@ -39,6 +39,7 @@
             color="success"
             class="mr-4"
             @click="validate"
+            type="submit"
           >
             Submit
           </v-btn>

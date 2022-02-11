@@ -1,11 +1,11 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="font-weight-black">
       {{ studentName }}
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Modify </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Modify </v-btn>
         </template>
 
         <v-card>
@@ -50,6 +50,7 @@
                 class="mr-4"
                 @click="updateStudent"
                 :disabled="!valid"
+                type="submit"
               >
                 Save
               </v-btn>
@@ -72,10 +73,9 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Delete </v-btn>
         </template>
 
         <v-card>
@@ -96,23 +96,24 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle> ID: {{ studentId }} </v-card-subtitle>
+    <v-card-subtitle> 
+      <span class="black--text font-weight-bold"> ID: </span><span class="black--text"> {{ studentId }} </span>
+    </v-card-subtitle>
     <v-card-subtitle>
-      School: {{ studentSchool }}
+      <span class="black--text font-weight-bold"> School: </span><span class="black--text"> {{ studentSchool }} </span>
 
       <v-icon small @click="viewSchool(studentSchoolId)"> mdi-eye </v-icon>
     </v-card-subtitle>
 
     <v-card-subtitle>
-      Route: {{ studentRoute }}
+      <span class="black--text font-weight-bold"> Route: </span><span class="black--text"> {{ studentRoute }} </span>
 
       <v-icon small @click="viewRoute(studentRouteId)" v-if="studentRoute == null"> mdi-eye </v-icon>
     </v-card-subtitle>
 
     <v-card-subtitle>
-      Parent: {{ studentParent }}
+      <span class="black--text font-weight-bold"> Parent: </span><span class="black--text"> {{ studentParent }} </span>
 
       <v-icon small @click="viewParent(studentParentId)"> mdi-eye </v-icon>
     </v-card-subtitle>
@@ -321,6 +322,10 @@ export default {
         return "Student ID is required";
       } else if (isNaN(this.newStudentId) == true) {
         return "Student ID must be a number";
+      } else if (isNaN(this.newStudentId) == false) {
+        if (parseInt(this.newStudentId) < 0) {
+          return "Student ID must be a postive number";
+        }
       } else {
         return true;
       }

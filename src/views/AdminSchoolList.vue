@@ -1,11 +1,14 @@
 <template>
-  <v-card>
+  <v-card height="100%">
     <v-card-title>
       Your Schools
       <v-spacer></v-spacer>
 
       <create-new-school
-        @schoolcreated="getRequestAllSchools"
+        @schoolcreated="
+          getRequestAllSchools();
+          snackbar = true;
+        "
       ></create-new-school>
 
       <v-spacer></v-spacer>
@@ -18,15 +21,17 @@
       ></v-text-field>
     </v-card-title>
 
-    <v-data-table
-      :headers="headers"
-      :items="addresses"
-      :search="search"
-      :sort-by="['name']"
-      :sort-desc="[true]"
-      @click:row="viewItem"
-    >
+    <v-data-table :headers="headers" :items="addresses" :search="search">
     </v-data-table>
+    <v-snackbar v-model="snackbar" outlines color="success">
+      A new school has been created
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-card>
 </template>
 
@@ -39,6 +44,7 @@ export default {
   components: { CreateNewSchool },
   data() {
     return {
+      snackbar: false,
       search: "",
       headers: [
         {
