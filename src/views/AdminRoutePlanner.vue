@@ -1,5 +1,5 @@
 <template>
-  <v-card height=100%>
+  <v-card height="100%">
     <v-row>
       <v-col width="50%">
         <v-card-title> {{ schoolName }} </v-card-title>
@@ -16,9 +16,9 @@
           :headers="headers"
           :items="routes"
           :search="search"
-          item-key="name"
-          show-select
+          item-key="id"
           :single-select="true"
+          @click:row="selectRow"
         ></v-data-table>
 
         <v-dialog v-model="dialog" width="500">
@@ -79,14 +79,11 @@
             :key="index"
             v-for="(m, index) in markers"
             :position="m.position"
-            @click="
-              center = m.position;
-              toggleInfo(m);
-            "
+            @click="toggleInfo(m)"
             :icon="getMarkers(m)"
           />
         </GmapMap>
-        <v-btn dark @click="submitChanges()"> Save </v-btn>
+        <v-btn dark> Save </v-btn>
         <v-img
           src="../assets/marker_key.jpeg"
           max-height="200"
@@ -94,21 +91,11 @@
         ></v-img>
       </v-col>
     </v-row>
-    <v-snackbar
-      v-model="snackbar"
-      outlines
-      bottom
-      color="success"
-    >
+    <v-snackbar v-model="snackbar" outlines bottom color="success">
       A new route has been created
 
       <template v-slot:action="{ attrs }">
-        <v-btn
-          color="white"
-          text
-          v-bind="attrs"
-          @click="snackbar = false"
-        >
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
           Close
         </v-btn>
       </template>
@@ -138,7 +125,6 @@ export default {
       selectedMarker: null,
       address: "",
       center: { lat: 45.508, lng: -73.587 },
-      currentPlace: null,
       markers: [],
       places: [],
       nameValidateArray: [this.nameValidate],
@@ -159,34 +145,37 @@ export default {
         { text: "Description", value: "description" },
       ],
       routes: [],
-      markerChanges: [],
     };
   },
   methods: {
-    submitChanges() {
-      // Giving you a UserID and RouteID
-      this.markerChanges.forEach((routeUpdate) => {
-        base_endpoint
-          .patch(
-            "/api/route/addstudentsfromparent",
-            {
-              parent_id: routeUpdate.id,
-              route_id: routeUpdate.newRoute,
-              school_id: this.$route.query.id,
-            },
-            {
-              headers: {
-                Authorization: `Token ${this.$store.state.accessToken}`,
-              },
-            }
-          )
-          .then(() => {
-            this.getMarkerData();
-          });
-      });
+    selectRow(value, row) {
+      if (row.isSelected) {
+        this.activeRouteID = null;
+        row.select(false);
+      } else {
+        this.activeRouteID = value.id;
+        row.select(true);
+      }
     },
-    clearChanges() {
-      this.markerChanges = [];
+    updateMarker(parentID, newRouteID) {
+      // Giving you a UserID and RouteID
+      base_endpoint
+        .patch(
+          "/api/route/addstudentsfromparent",
+          {
+            parent_id: parentID,
+            route_id: newRouteID,
+            school_id: this.$route.query.id,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then(() => {
+          this.getMarkerData();
+        });
     },
     getDisplayRoute(item) {
       return {
@@ -236,7 +225,6 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-          console.log(response.data);
           this.markers = response.data.map(this.getDisplayMarkers);
         })
         .catch((err) => {
@@ -272,8 +260,7 @@ export default {
             },
           }
         )
-        .then((response) => {
-          console.log(response);
+        .then(() => {
           this.getRequestAllRoutes();
         });
     },
@@ -287,70 +274,21 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
-    setPlace(place) {
-      this.currentPlace = place;
-    },
-    addMarker() {
-      if (this.currentPlace) {
-        const marker = {
-          lat: this.currentPlace.geometry.location.lat(),
-          lng: this.currentPlace.geometry.location.lng(),
-        };
-        this.markers.push({ position: marker });
-        this.places.push(this.currentPlace);
-        this.center = marker;
-        this.currentPlace = null;
-      }
-    },
-    // geolocate: function () {
-    //   navigator.geolocation.getCurrentPosition((position) => {
-    //     this.center = {
-    //       lat: position.coords.latitude,
-    //       lng: position.coords.longitude,
-    //     };
-    //   });
-    // },
     toggleInfo(m) {
       if (m.isSchool) return;
-      console.log("Currently selected route id: " + this.activeRouteID);
-      console.log(m);
       if (m.routeID == this.activeRouteID) {
-        m.routeID = null;
-        this.trackChange(m.parentID, null);
-      } else if (m.routeID == null) {
-        m.routeID = this.activeRouteID;
-        this.trackChange(m.parentID, this.activeRouteID);
+        this.updateMarker(m.parentID, null);
+      } else {
+        this.updateMarker(m.parentID, this.activeRouteID);
       }
     },
     getMarkers(m) {
-      console.log(m.isSchool);
       if (m.isSchool == true) return this.schoolMapMarker;
       if (m.routeID == null) return this.mapMarkerUnassigned;
       if (m.routeID == this.activeRouteID) return this.mapMarkerActive;
       return this.mapMarker;
     },
-    toggleRoute(selected) {
-      if (selected.length == 0) {
-        this.activeRouteID = null;
-      } else {
-        this.activeRouteID = selected[0].id;
-      }
-    },
-    trackChange(parentID, newVal) {
-      this.markerChanges.forEach((element) => {
-        if (element.id == parentID) {
-          element.newRoute = newVal;
-          return;
-        }
-      });
-      var change = {
-        id: parentID,
-        newRoute: newVal,
-      };
-      this.markerChanges.push(change);
-    },
     nameValidate() {
-      console.log(this.name);
       if (this.name == "" || this.name == null) {
         return "Name is required";
       } else {
@@ -358,7 +296,6 @@ export default {
       }
     },
     desValidate() {
-      console.log(this.name);
       if (this.description == "" || this.description == null) {
         return "Description is required";
       } else {
@@ -374,13 +311,11 @@ export default {
   mounted() {
     //this.geolocate();
   },
-  watch: {
-    selected: function () {
-      this.toggleRoute(this.selected);
-    },
-  },
 };
 </script>
 
 <style>
+tr.v-data-table__selected {
+  background: #7d92f5 !important;
+}
 </style>
