@@ -2,7 +2,13 @@
   <v-card height=100%>
     <v-row>
       <v-col width="50%">
-        <v-card-title> {{ schoolName }} </v-card-title>
+        <v-btn text 
+          @click="viewSchool(schoolID)"
+          style="text-transform:none !important"
+          class="black--text font-weight-bold"
+          size=6rem>
+          {{ schoolName }} 
+        </v-btn>
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
@@ -150,6 +156,7 @@ export default {
       valid: true,
       name: "",
       description: "",
+      schoolID: this.$route.query.id,
       headers: [
         {
           text: "Name",
@@ -357,6 +364,9 @@ export default {
         return true;
       }
     },
+     viewSchool(item) {
+      this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
+    },
   },
   created() {
     this.getRequestAllRoutes();
@@ -366,11 +376,13 @@ export default {
   mounted() {
     this.geolocate();
   },
+  
   watch: {
     selected: function () {
       this.toggleRoute(this.selected);
     },
   },
+ 
 };
 </script>
 
