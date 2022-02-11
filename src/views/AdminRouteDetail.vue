@@ -1,5 +1,5 @@
 <template>
-  <v-card height=100%>
+  <v-card height="100%">
     <v-card-title class="font-weight-black">
       {{ routeName }}
       <v-spacer></v-spacer>
@@ -20,35 +20,37 @@
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-row>
                 <v-col>
-              <v-text-field
-                v-model="newRouteName"
-                :rules="nameValidateArray"
-                label="Route Name"
-                required
-              ></v-text-field>
+                  <v-text-field
+                    v-model="newRouteName"
+                    :rules="nameValidateArray"
+                    label="Route Name"
+                    required
+                  ></v-text-field>
 
-              <v-textarea
-                v-model="newRouteDescription"
-                :rules="desValidateArray"
-                label="Route Description"
-                required
-              ></v-textarea>
-              </v-col>
+                  <v-textarea
+                    v-model="newRouteDescription"
+                    :rules="desValidateArray"
+                    label="Route Description"
+                    required
+                  ></v-textarea>
+                </v-col>
 
-              <v-col>
-              
-              <GmapMap :center="center" :zoom="12" style="width: 90%; height: 400px">
-          <GmapMarker
-            :key="index"
-            v-for="(m, index) in markers"
-            :position="m.position"
-            @click="center = m.position"
-            :icon="getMarkers(m)"
-          />
-        </GmapMap>
-        </v-col>
-        </v-row>
-
+                <v-col>
+                  <GmapMap
+                    :center="center"
+                    :zoom="12"
+                    style="width: 90%; height: 400px"
+                    ref="mapRef"
+                  >
+                    <GmapMarker
+                      :key="index"
+                      v-for="(m, index) in markers"
+                      :position="m.position"
+                      :icon="getMarkers(m)"
+                    />
+                  </GmapMap>
+                </v-col>
+              </v-row>
 
               <v-btn
                 :disabled="!valid"
@@ -90,7 +92,7 @@
             <v-form ref="form">
               <v-spacer></v-spacer>
 
-              <v-btn color="error" class="mr-4" @click="submitDataForDelete" >
+              <v-btn color="error" class="mr-4" @click="submitDataForDelete">
                 Yes, Delete
               </v-btn>
 
@@ -100,23 +102,22 @@
         </v-card>
       </v-dialog>
     </v-card-title>
-    
 
     <v-row>
       <v-col>
-        <v-card-subtitle> <span class="black--text font-weight-bold"> School: </span><span class="black--text"> {{ routeSchool }} </span>
-      <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
-    </v-card-subtitle>
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Description: </span>
-      <br>
-      <span style="white-space: pre;" class="black--text">{{routeDescription}}</span>
-    </v-card-subtitle>
-        <v-data-table
-          :headers="headers"
-          :items="students"
-          :search="search"
-        >
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> School: </span
+          ><span class="black--text"> {{ routeSchool }} </span>
+          <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
+        </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> Description: </span>
+          <br />
+          <span style="white-space: pre" class="black--text">{{
+            routeDescription
+          }}</span>
+        </v-card-subtitle>
+        <v-data-table :headers="headers" :items="students" :search="search">
           <template v-slot:[`item.actions`]="{ item }">
             <v-btn
               dense
@@ -132,7 +133,7 @@
         </v-data-table>
       </v-col>
       <v-col>
-        <GmapMap :center="center" :zoom="12" style="width: 90%; height: 400px">
+        <GmapMap style="width: 90%; height: 400px" ref="mapRef">
           <GmapMarker
             :key="index"
             v-for="(m, index) in markers"
@@ -154,6 +155,7 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { mapMarker, schoolMapMarker } from "../assets/markers";
+import { gmapApi } from "vue2-google-maps-withscopedautocomp";
 
 export default {
   data() {
@@ -290,7 +292,14 @@ export default {
         })
         .then((response) => {
           this.markers = response.data.map(this.getDisplayRouteMarkers);
-          console.log(this.markers);
+
+          var bounds = new this.google.maps.LatLngBounds();
+          for (var i = 0; i < this.markers.length; i++) {
+            bounds.extend(this.markers[i].position);
+          }
+          this.$refs.mapRef.$mapPromise.then((map) => {
+            map.fitBounds(bounds);
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -333,6 +342,9 @@ export default {
     this.getRouteInfo();
     this.getStudentsInRoute();
     this.getRouteMarkers();
+  },
+  computed: {
+    google: gmapApi,
   },
 };
 </script>

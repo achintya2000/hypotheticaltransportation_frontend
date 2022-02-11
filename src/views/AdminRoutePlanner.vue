@@ -20,7 +20,6 @@
         ></v-text-field>
 
         <v-data-table
-          v-model="selected"
           :headers="headers"
           :items="routes"
           :search="search"
@@ -137,7 +136,6 @@ export default {
       nameValidateArray: [this.nameValidate],
       schoolName: "",
       search: "",
-      selected: [],
       dialog: false,
       valid: true,
       name: "",
@@ -169,7 +167,6 @@ export default {
       }
     },
     updateMarker(parentID, newRouteID) {
-      // Giving you a UserID and RouteID
       base_endpoint
         .patch(
           "/api/route/addstudentsfromparent",
@@ -243,11 +240,8 @@ export default {
 
           var bounds = new this.google.maps.LatLngBounds();
           for (var i = 0; i < this.markers.length; i++) {
-            if (!this.markers[i].is_school) {
-              bounds.extend(this.markers[i].position);
-            }
+            bounds.extend(this.markers[i].position);
           }
-          console.log(bounds);
           this.$refs.mapRef.$mapPromise.then((map) => {
             map.fitBounds(bounds);
           });
@@ -341,11 +335,6 @@ export default {
   },
   computed: {
     google: gmapApi,
-  },
-  watch: {
-    selected: function () {
-      this.toggleRoute(this.selected);
-    },
   },
 };
 </script>
