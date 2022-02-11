@@ -109,7 +109,7 @@
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Route: </span><span class="black--text"> {{ studentRoute }} </span>
 
-      <v-icon small @click="viewRoute(studentRouteId)" v-if="studentRoute == null"> mdi-eye </v-icon>
+      <v-icon small @click="viewRoute(studentRouteId)" v-if="studentRoute != 'No route assigned'"> mdi-eye </v-icon>
     </v-card-subtitle>
 
     <v-card-subtitle>
