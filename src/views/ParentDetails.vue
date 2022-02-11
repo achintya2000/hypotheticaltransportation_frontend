@@ -80,7 +80,7 @@
       @click:row="viewItem"
     >
       <template v-slot:[`item.route`]="{ item }">
-        <div v-if="item.route">{{item.route}}</div>
+        <div v-if="item.route">{{ item.route }}</div>
         <div v-if="!item.route">No Route</div>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
@@ -110,7 +110,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-import { mapActions} from "vuex";
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -147,7 +147,7 @@ export default {
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
-    viewItem(item) {
+    viewItem(row) {
       this.$router.push({
         name: "ParentStudentDetail",
         query: { id: row.id },
