@@ -137,7 +137,7 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { mapMarker, schoolMapMarker } from "../assets/markers";
-
+import { mapActions} from "vuex";
 export default {
   data() {
     return {
@@ -169,6 +169,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
     viewSchool(item) {
       this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
     },
@@ -194,6 +198,7 @@ export default {
           this.oldSchoolID = response.data.school.id;
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -215,6 +220,10 @@ export default {
           console.log(response);
           this.getRouteInfo();
           this.getStudentsInRoute();
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
         });
     },
     validateForModify() {
@@ -249,6 +258,7 @@ export default {
           this.$router.push({ name: "AdminRouteList" });
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -261,6 +271,7 @@ export default {
           this.students = response.data.map(this.getDisplayStudents);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -274,6 +285,7 @@ export default {
           console.log(this.markers);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },

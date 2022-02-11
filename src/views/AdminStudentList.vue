@@ -67,7 +67,7 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import CreateNewStudent from "../components/CreateNewStudent.vue";
-
+import { mapActions} from "vuex";
 export default {
   components: { CreateNewStudent },
   data() {
@@ -88,8 +88,12 @@ export default {
     };
   },
   methods: {
-    viewItem(row) {
-      this.$router.push({ name: "AdminStudentDetail", query: { id: row.id } });
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
+    viewItem(item) {
+      this.$router.push({ name: "AdminStudentDetail", query: { id: item.id } });
     },
     getDisplayStudent(item) {
       return {
@@ -110,6 +114,7 @@ export default {
           //this.$store.state.addresses = response.data;
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },

@@ -27,7 +27,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-
+import { mapActions} from "vuex";
 export default {
   data() {
     return {
@@ -68,6 +68,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
     getStudentInfo() {
       base_endpoint
         .get("/api/student/get/" + this.$route.query.id, {
@@ -88,6 +92,7 @@ export default {
           this.studentParentId = response.data.parent_id;
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },

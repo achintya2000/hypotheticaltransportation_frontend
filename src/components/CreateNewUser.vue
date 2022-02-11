@@ -75,6 +75,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
+import { mapActions} from "vuex";
 export default {
   data() {
     return {
@@ -96,6 +97,13 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
+    showSnackBarAddress() {
+      this.snackBar("Uh-Oh! Something Went Wrong! Make sure to click the Autofill result to complete your Address!");
+    },
     setPlace(place) {
       this.formatted_address = place.formatted_address;
       this.latitude = place.geometry.location.lat();
@@ -127,6 +135,7 @@ export default {
           );
         })
         .catch((err) => {
+          this.showSnackBarAddress();
           console.log(err);
         });
     },

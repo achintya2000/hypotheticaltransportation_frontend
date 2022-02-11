@@ -123,6 +123,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
+import { mapActions} from "vuex";
 import {
   mapMarker,
   mapMarkerActive,
@@ -168,6 +169,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
     submitChanges() {
       // Giving you a UserID and RouteID
       this.markerChanges.forEach((routeUpdate) => {
@@ -187,6 +192,10 @@ export default {
           )
           .then(() => {
             this.getMarkerData();
+          })
+          .catch((err) => {
+            this.showSnackBar();
+            console.log(err);
           });
       });
     },
@@ -217,6 +226,7 @@ export default {
           this.routes = response.data.map(this.getDisplayRoute);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -229,6 +239,7 @@ export default {
           this.schoolName = response.data.name;
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -242,6 +253,7 @@ export default {
           this.markers = response.data.map(this.getDisplayMarkers);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -272,6 +284,10 @@ export default {
         .then((response) => {
           console.log(response);
           this.getRequestAllRoutes();
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
         });
     },
     reset() {
