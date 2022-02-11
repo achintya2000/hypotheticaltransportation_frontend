@@ -74,7 +74,7 @@
       </v-col>
 
       <v-col width="50%">
-        <GmapMap :center="center" :zoom="12" style="width: 100%; height: 400px">
+        <GmapMap style="width: 100%; height: 400px" ref="mapRef">
           <GmapMarker
             :key="index"
             v-for="(m, index) in markers"
@@ -83,7 +83,6 @@
             :icon="getMarkers(m)"
           />
         </GmapMap>
-        <v-btn dark> Save </v-btn>
         <v-img
           src="../assets/marker_key.jpeg"
           max-height="200"
@@ -105,6 +104,8 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
+import { gmapApi } from "vue2-google-maps-withscopedautocomp";
+
 import {
   mapMarker,
   mapMarkerActive,
@@ -124,7 +125,6 @@ export default {
       selectedIndex: null,
       selectedMarker: null,
       address: "",
-      center: { lat: 45.508, lng: -73.587 },
       markers: [],
       places: [],
       nameValidateArray: [this.nameValidate],
@@ -185,9 +185,6 @@ export default {
       };
     },
     getDisplayMarkers(item) {
-      if (item.is_school) {
-        this.center = { lat: item.latitude, lng: item.longitude };
-      }
       return {
         position: { lat: item.latitude, lng: item.longitude },
         routeID: item.route,
@@ -226,6 +223,18 @@ export default {
         })
         .then((response) => {
           this.markers = response.data.map(this.getDisplayMarkers);
+
+          var bounds = new this.google.maps.LatLngBounds();
+          for (var i = 0; i < this.markers.length; i++) {
+            if (!this.markers[i].is_school) {
+              console.log(this.markers[i].position);
+              bounds.extend(this.markers[i].position);
+            }
+          }
+          console.log(bounds);
+          this.$refs.mapRef.$mapPromise.then((map) => {
+            map.fitBounds(bounds);
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -310,6 +319,9 @@ export default {
   },
   mounted() {
     //this.geolocate();
+  },
+  computed: {
+    google: gmapApi,
   },
 };
 </script>
