@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Create New School </v-btn>
+      <v-btn style="margin: 10px" input-value=null outlined v-bind="attrs" v-on="on"> Create New School </v-btn>
     </template>
 
     <v-card>

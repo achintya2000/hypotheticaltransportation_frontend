@@ -1,10 +1,10 @@
 <template>
-  <v-card>
+  <v-card height=100%>
     <v-card-title class="font-weight-black">
       {{ routeName }}
       <v-spacer></v-spacer>
       <v-btn @click="planNewRoute" outlined>Modify Route</v-btn>
-      <v-dialog v-model="dialog2" width="500">
+      <v-dialog v-model="dialog2" width="80%">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Modify Name and Description
@@ -18,6 +18,8 @@
 
           <v-card-text>
             <v-form ref="form" v-model="valid" lazy-validation>
+              <v-row>
+                <v-col>
               <v-text-field
                 v-model="newRouteName"
                 :rules="nameValidateArray"
@@ -27,9 +29,26 @@
 
               <v-textarea
                 v-model="newRouteDescription"
+                :rules="desValidateArray"
                 label="Route Description"
                 required
               ></v-textarea>
+              </v-col>
+
+              <v-col>
+              
+              <GmapMap :center="center" :zoom="12" style="width: 90%; height: 400px">
+          <GmapMarker
+            :key="index"
+            v-for="(m, index) in markers"
+            :position="m.position"
+            @click="center = m.position"
+            :icon="getMarkers(m)"
+          />
+        </GmapMap>
+        </v-col>
+        </v-row>
+
 
               <v-btn
                 :disabled="!valid"
@@ -71,7 +90,7 @@
             <v-form ref="form">
               <v-spacer></v-spacer>
 
-              <v-btn color="error" class="mr-4" @click="submitDataForDelete">
+              <v-btn color="error" class="mr-4" @click="submitDataForDelete" >
                 Yes, Delete
               </v-btn>
 
@@ -81,27 +100,22 @@
         </v-card>
       </v-dialog>
     </v-card-title>
-    <v-card-subtitle> <span class="black--text font-weight-bold"> School: </span>
-        <v-btn text 
-        @click="viewSchool(routeSchoolID)"
-        style="text-transform:none !important">
-        {{ routeSchool }} 
-        </v-btn>
-    </v-card-subtitle>
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Description: </span
-      ><span style="white-space: pre" class="black--text">{{
-        routeDescription
-      }}</span>
-    </v-card-subtitle>
+    
 
     <v-row>
       <v-col>
+        <v-card-subtitle> <span class="black--text font-weight-bold"> School: </span><span class="black--text"> {{ routeSchool }} </span>
+      <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
+    </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Description: </span>
+      <br>
+      <span style="white-space: pre;" class="black--text">{{routeDescription}}</span>
+    </v-card-subtitle>
         <v-data-table
           :headers="headers"
           :items="students"
           :search="search"
-          @click:row="viewItem"
         >
           <template v-slot:[`item.actions`]="{ item }">
             <v-btn
@@ -140,7 +154,7 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { mapMarker, schoolMapMarker } from "../assets/markers";
-import { mapActions} from "vuex";
+
 export default {
   data() {
     return {
@@ -165,17 +179,15 @@ export default {
           align: "start",
           value: "name",
         },
+        { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],
       nameValidateArray: [this.nameValidate],
+      desValidateArray: [this.desValidate],
       markers: [],
     };
   },
   methods: {
-    ...mapActions(["snackBar"]),
-    showSnackBar() {
-      this.snackBar("Uh-Oh! Something Went Wrong!");
-    },
     viewSchool(item) {
       this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
     },
@@ -201,7 +213,6 @@ export default {
           this.oldSchoolID = response.data.school.id;
         })
         .catch((err) => {
-          this.showSnackBar();
           console.log(err);
         });
     },
@@ -223,10 +234,6 @@ export default {
           console.log(response);
           this.getRouteInfo();
           this.getStudentsInRoute();
-        })
-        .catch((err) => {
-          this.showSnackBar();
-          console.log(err);
         });
     },
     validateForModify() {
@@ -245,9 +252,6 @@ export default {
       };
     },
     getDisplayRouteMarkers(item) {
-      if (item.is_school) {
-        this.center = { lat: item.latitude, lng: item.longitude };
-      }
       return {
         position: { lat: item.latitude, lng: item.longitude },
         isSchool: item.is_school,
@@ -264,7 +268,6 @@ export default {
           this.$router.push({ name: "AdminRouteList" });
         })
         .catch((err) => {
-          this.showSnackBar();
           console.log(err);
         });
     },
@@ -277,7 +280,6 @@ export default {
           this.students = response.data.map(this.getDisplayStudents);
         })
         .catch((err) => {
-          this.showSnackBar();
           console.log(err);
         });
     },
@@ -291,7 +293,6 @@ export default {
           console.log(this.markers);
         })
         .catch((err) => {
-          this.showSnackBar();
           console.log(err);
         });
     },
@@ -303,6 +304,14 @@ export default {
       console.log(this.name);
       if (this.newRouteName == "" || this.newRouteName == null) {
         return "Name is required";
+      } else {
+        return true;
+      }
+    },
+    desValidate() {
+      console.log(this.name);
+      if (this.newRouteDescription == "" || this.newRouteDescription == null) {
+        return "Description is required";
       } else {
         return true;
       }
