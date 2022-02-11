@@ -95,6 +95,7 @@
           :headers="headers"
           :items="students"
           :search="search"
+          @click:row="viewItem"
         >
           <template v-slot:[`item.actions`]="{ item }">
             <v-btn
@@ -158,7 +159,6 @@ export default {
           align: "start",
           value: "name",
         },
-        { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],
       nameValidateArray: [this.nameValidate],
@@ -295,8 +295,8 @@ export default {
         return true;
       }
     },
-    viewItem(item) {
-      this.$router.push({ name: "AdminStudentDetail", query: { id: item.id } });
+    viewItem(row) {
+      this.$router.push({ name: "AdminStudentDetail", query: { id: row.id } });
     },
     validate() {
       this.$refs.form.validate();

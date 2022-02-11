@@ -121,6 +121,7 @@
       :headers="routeHeaders"
       :items="busRoutes"
       :search="search"
+      @click:row="viewRoute"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -142,6 +143,7 @@
       :headers="studentsHeaders"
       :items="students"
       :search="search"
+      @click:row="viewStudent"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -185,7 +187,6 @@ export default {
         },
         { text: "Description", value: "routeDescription" },
         { text: "# of Students", value: "routeNumStudent" },
-        { text: "Actions", value: "actions", sortable: false },
       ],
       busRoutes: [],
       studentsHeaders: [
@@ -196,7 +197,6 @@ export default {
         },
         { text: "Route", value: "studentRoute" },
         { text: "Parent", value: "studentParent" },
-        { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],
       deleteValidationArray: [this.deleteValidation],
@@ -216,16 +216,16 @@ export default {
         query: { id: this.$route.query.id },
       });
     },
-    viewRoute(item) {
+    viewRoute(row) {
       this.$router.push({
         name: "AdminRouteDetail",
-        query: { id: item.routeId },
+        query: { id: row.routeId },
       });
     },
-    viewStudent(item) {
+    viewStudent(row) {
       this.$router.push({
         name: "AdminStudentDetail",
-        query: { id: item.studentId },
+        query: { id: row.studentId },
       });
     },
     getSchoolInfo() {

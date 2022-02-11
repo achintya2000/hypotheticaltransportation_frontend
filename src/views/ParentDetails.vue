@@ -74,6 +74,7 @@
       :search="search"
       :sort-by="['sid']"
       :sort-desc="[false, true]"
+      @click:row="viewItem"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -145,10 +146,10 @@ export default {
     };
   },
   methods: {
-    viewItem(item) {
+    viewItem(row) {
       this.$router.push({
         name: "ParentStudentDetail",
-        query: { id: item.id },
+        query: { id: row.id },
       });
     },
     getUserInfo() {
