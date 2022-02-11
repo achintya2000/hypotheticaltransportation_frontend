@@ -27,7 +27,6 @@
 
               <v-textarea
                 v-model="newRouteDescription"
-                :rules="desValidateArray"
                 label="Route Description"
                 required
               ></v-textarea>
@@ -162,7 +161,6 @@ export default {
       ],
       students: [],
       nameValidateArray: [this.nameValidate],
-      desValidateArray: [this.desValidate],
       markers: [],
     };
   },
@@ -287,16 +285,8 @@ export default {
         return true;
       }
     },
-    desValidate() {
-      console.log(this.name);
-      if (this.newRouteDescription == "" || this.newRouteDescription == null) {
-        return "Description is required";
-      } else {
-        return true;
-      }
-    },
-    viewItem(row) {
-      this.$router.push({ name: "AdminStudentDetail", query: { id: row.id } });
+    viewItem(item) {
+      this.$router.push({ name: "AdminStudentDetail", query: { id: item.id } });
     },
     validate() {
       this.$refs.form.validate();
