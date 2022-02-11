@@ -21,7 +21,12 @@
       ></v-text-field>
     </v-card-title>
 
-    <v-data-table :headers="headers" :items="addresses" :search="search">
+    <v-data-table
+      :headers="headers"
+      :items="addresses"
+      :search="search"
+      @click:row="viewItem"
+    >
     </v-data-table>
     <v-snackbar v-model="snackbar" outlines color="success">
       A new school has been created

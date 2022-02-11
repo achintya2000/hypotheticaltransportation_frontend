@@ -165,6 +165,7 @@
       :headers="headers"
       :items="students"
       :search="search"
+      @click:row="viewStudent"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn
@@ -252,7 +253,6 @@ export default {
         },
         { text: "Route", value: "studentRoute" },
         { text: "Parent", value: "studentParent" },
-        { text: "Actions", value: "actions", sortable: false },
       ],
     };
   },
@@ -263,10 +263,10 @@ export default {
       this.longitude = place.geometry.location.lng();
     },
 
-    viewStudent(item) {
+    viewStudent(row) {
       this.$router.push({
         name: "AdminStudentDetail",
-        query: { id: item.studentId },
+        query: { id: row.studentId },
       });
     },
     getUserInfo() {
