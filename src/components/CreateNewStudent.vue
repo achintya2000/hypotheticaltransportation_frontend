@@ -144,6 +144,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
+import { mapActions} from "vuex";
 export default {
   data() {
     return {
@@ -181,6 +182,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
     setPlace(place) {
       this.formatted_address = place.formatted_address;
       this.latitude = place.geometry.location.lat();
@@ -202,6 +207,7 @@ export default {
           this.schools = response.data.map(this.getDisplaySchool);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -220,6 +226,7 @@ export default {
           this.parents = response.data.map(this.getDisplayParent);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -294,8 +301,16 @@ export default {
                     "studentcreated",
                     "A new student has been created and sent to database"
                   );
+                })
+                .catch((err) => {
+                  this.showSnackBar();
+                  console.log(err);
                 });
             }
+          })
+          .catch((err) => {
+            this.showSnackBar();
+            console.log(err);
           });
       } else {
         console.log("GOT INTO THE ELSE STATMENT");
@@ -319,6 +334,10 @@ export default {
               "studentcreated",
               "A new student has been created and sent to database"
             );
+          })
+          .catch((err) => {
+            this.showSnackBar();
+            console.log(err);
           });
       }
     },

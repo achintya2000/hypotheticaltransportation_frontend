@@ -182,6 +182,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
+import { mapActions} from "vuex";
 export default {
   data() {
     return {
@@ -233,6 +234,13 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
+    showSnackBarAddress() {
+      this.snackBar("Uh-Oh! Something Went Wrong! Make sure to click the Autofill result to complete your Address!");
+    },
     setPlace(place) {
       this.formatted_address = place.formatted_address;
       this.latitude = place.geometry.location.lat();
@@ -262,6 +270,7 @@ export default {
           this.formatted_address = response.data.address;
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -284,6 +293,7 @@ export default {
           console.log(this.students);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -316,8 +326,8 @@ export default {
           this.email = this.newEmail;
           this.$forceUpdate();
         })
-
         .catch((err) => {
+          this.showSnackBarAddress();
           console.log(err);
         });
     },
@@ -333,6 +343,7 @@ export default {
           this.$router.push({ name: "AdminUserList" });
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -353,6 +364,10 @@ export default {
         )
         .then((response) => {
           console.log(response);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
         });
     },
     validateForResetPassword() {

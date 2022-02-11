@@ -41,7 +41,7 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import CreateNewStudent from "../components/CreateNewStudent.vue";
-
+import { mapActions} from "vuex";
 export default {
   components: { CreateNewStudent },
   data() {
@@ -64,6 +64,10 @@ export default {
   },
 
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
     viewItem(item) {
       this.$router.push({ name: "AdminUserDetail", query: { id: item.id } });
     },
@@ -86,6 +90,7 @@ export default {
           this.profiles = response.data.map(this.getDisplayUser);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },

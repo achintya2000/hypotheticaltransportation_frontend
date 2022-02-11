@@ -36,7 +36,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-
+import { mapActions} from "vuex";
 export default {
   data() {
     return {
@@ -56,6 +56,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
     viewItem(item) {
       this.$router.push({ name: "AdminRouteDetail", query: { id: item.id } });
     },
@@ -78,6 +82,7 @@ export default {
           //this.$store.state.addresses = response.data;
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },

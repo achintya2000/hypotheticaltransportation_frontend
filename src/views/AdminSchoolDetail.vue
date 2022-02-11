@@ -170,6 +170,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
+import { mapActions} from "vuex";
 export default {
   data() {
     return {
@@ -213,6 +214,13 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
+    showSnackBarAddress() {
+      this.snackBar("Uh-Oh! Something Went Wrong! Make sure to click the Autofill result to complete your Address!");
+    },
     setPlace(place) {
       this.formatted_address = place.formatted_address;
       this.latitude = place.geometry.location.lat();
@@ -249,6 +257,7 @@ export default {
           this.formatted_address = response.data.address;
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -268,6 +277,7 @@ export default {
           this.busRoutes = response.data.map(this.getDisplayRoutes);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -288,6 +298,7 @@ export default {
           this.students = response.data.map(this.getDisplayStudents);
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -301,6 +312,7 @@ export default {
           this.$router.push({ name: "AdminSchoolList" });
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -334,6 +346,10 @@ export default {
         .then((response) => {
           console.log(response);
           this.getSchoolInfo();
+        })
+        .catch((err) => {
+          this.showSnackBarAddress();
+          console.log(err);
         });
     },
     validateForModify() {

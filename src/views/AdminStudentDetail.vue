@@ -122,7 +122,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-
+import { mapActions} from "vuex";
 export default {
   data() {
     return {
@@ -168,6 +168,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["snackBar"]),
+    showSnackBar() {
+      this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
     getStudentInfo() {
       base_endpoint
         .get("/api/student/get/" + this.$route.query.id, {
@@ -191,6 +195,7 @@ export default {
           this.getParents();
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -217,6 +222,7 @@ export default {
           });
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -242,6 +248,7 @@ export default {
           });
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -270,8 +277,8 @@ export default {
           console.log(response);
           this.getStudentInfo();
         })
-
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
@@ -298,6 +305,7 @@ export default {
           this.$router.push({ name: "AdminStudentList" });
         })
         .catch((err) => {
+          this.showSnackBar();
           console.log(err);
         });
     },
