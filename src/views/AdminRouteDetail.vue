@@ -1,10 +1,10 @@
 <template>
-  <v-card>
+  <v-card height=100%>
     <v-card-title class="font-weight-black">
       {{ routeName }}
       <v-spacer></v-spacer>
       <v-btn @click="planNewRoute" outlined>Modify Route</v-btn>
-      <v-dialog v-model="dialog2" width="500">
+      <v-dialog v-model="dialog2" width="80%">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Modify Name and Description
@@ -18,6 +18,8 @@
 
           <v-card-text>
             <v-form ref="form" v-model="valid" lazy-validation>
+              <v-row>
+                <v-col>
               <v-text-field
                 v-model="newRouteName"
                 :rules="nameValidateArray"
@@ -31,6 +33,22 @@
                 label="Route Description"
                 required
               ></v-textarea>
+              </v-col>
+
+              <v-col>
+              
+              <GmapMap :center="center" :zoom="12" style="width: 90%; height: 400px">
+          <GmapMarker
+            :key="index"
+            v-for="(m, index) in markers"
+            :position="m.position"
+            @click="center = m.position"
+            :icon="getMarkers(m)"
+          />
+        </GmapMap>
+        </v-col>
+        </v-row>
+
 
               <v-btn
                 :disabled="!valid"
@@ -82,15 +100,18 @@
         </v-card>
       </v-dialog>
     </v-card-title>
-    <v-card-subtitle> <span class="black--text font-weight-bold"> School: </span><span class="black--text"> {{ routeSchool }} </span>
-      <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
-    </v-card-subtitle>
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Description: </span><span style="white-space: pre;" class="black--text">{{routeDescription}}</span>
-    </v-card-subtitle>
+    
 
     <v-row>
       <v-col>
+        <v-card-subtitle> <span class="black--text font-weight-bold"> School: </span><span class="black--text"> {{ routeSchool }} </span>
+      <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
+    </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Description: </span>
+      <br>
+      <span style="white-space: pre;" class="black--text">{{routeDescription}}</span>
+    </v-card-subtitle>
         <v-data-table
           :headers="headers"
           :items="students"
