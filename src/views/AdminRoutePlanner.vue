@@ -2,6 +2,7 @@
   <v-card height="100%">
     <v-row>
       <v-col width="50%">
+        <v-card-title>
         <v-btn
           text
           @click="viewSchool(schoolID)"
@@ -11,6 +12,10 @@
         >
           {{ schoolName }}
         </v-btn>
+        </v-card-title>
+        <v-card-subtitle>
+        <v-row>
+          <v-col>
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
@@ -18,16 +23,8 @@
           single-line
           hide-details
         ></v-text-field>
-
-        <v-data-table
-          :headers="headers"
-          :items="routes"
-          :search="search"
-          item-key="id"
-          :single-select="true"
-          @click:row="selectRow"
-        ></v-data-table>
-
+        </v-col>
+          <v-col>
         <v-dialog v-model="dialog" width="500">
           <template v-slot:activator="{ on, attrs }">
             <v-btn outlined v-bind="attrs" v-on="on"> Add New Route </v-btn>
@@ -77,9 +74,27 @@
             </v-card-text>
           </v-card>
         </v-dialog>
+        </v-col>
+        </v-row>
+        </v-card-subtitle>
+
+        <v-data-table
+          v-model="selected"
+          :headers="headers"
+          :items="routes"
+          :search="search"
+          item-key="id"
+          dense
+          :single-select="true"
+          @click:row="selectRow"
+        >
+        </v-data-table>
+
+
       </v-col>
 
       <v-col width="50%">
+
         <GmapMap style="width: 100%; height: 400px" ref="mapRef">
           <GmapMarker
             :key="index"
@@ -148,6 +163,7 @@ export default {
           value: "name",
         },
         { text: "Description", value: "description" },
+        { text: "# of Students", value: "routeNumStudent" },
       ],
       routes: [],
     };
@@ -194,6 +210,7 @@ export default {
         id: item.id,
         name: item.name,
         description: item.description,
+        routeNumStudent: item.student_count,
       };
     },
     getDisplayMarkers(item) {

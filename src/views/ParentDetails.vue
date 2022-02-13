@@ -135,7 +135,7 @@ export default {
           value: "name",
         },
         { text: "Student ID", value: "sid" },
-        { text: "School", value: "school" },
+        { text: "School", value: "school" }, 
         { text: "Route", value: "route", sortable: false },
         { text: "Actions", value: "actions", sortable: false },
       ],
