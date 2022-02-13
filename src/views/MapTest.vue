@@ -1,5 +1,5 @@
 <template>
-  <GoogleMapLoader>
+  <GoogleMapLoader :markers="markers">
     <template slot-scope="{ google, map }">
       <GoogleMapMarker
         v-for="marker in markers"

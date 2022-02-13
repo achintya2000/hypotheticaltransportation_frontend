@@ -12,6 +12,12 @@ import { Loader } from "@googlemaps/js-api-loader";
 
 export default {
   name: "GoogleMapLoader",
+  props: {
+    markers: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
       google: null,
@@ -28,27 +34,15 @@ export default {
     loader.load().then(() => {
       this.google = window.google;
       this.map = new this.google.maps.Map(document.getElementById("map"), {
-        center: { lat: -34.397, lng: 150.644 },
-        zoom: 8,
+        center: { lat: 36.0006935, lng: -78.9480547 },
+        zoom: 12,
       });
 
-      // var marker = new this.google.maps.Marker({
-      //   position: { lat: -34.397, lng: 150.644 },
-      //   map: this.map,
-      //   label: {
-      //     text: "\ue530",
-      //     fontFamily: "Material Icons",
-      //     color: "#ffffff",
-      //     fontSize: "18px",
-      //   },
-      //   draggable: true,
-      //   title: "Material Icon Font Marker",
-      // });
-
-      // this.google.maps.event.addListener(marker, "dragend", function () {
-      //   console.log(this.getPosition().lat());
-      //   console.log(this.getPosition().lng());
-      // });
+      var bounds = new this.google.maps.LatLngBounds();
+      for (var i = 0; i < this.markers.length; i++) {
+        bounds.extend(this.markers[i].position);
+      }
+      this.map.fitBounds(bounds);
     });
   },
 };
