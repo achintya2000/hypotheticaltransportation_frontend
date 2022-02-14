@@ -139,7 +139,7 @@
             v-for="(m, index) in markers"
             :position="m.position"
             @click="center = m.position"
-            :icon="getMarkers(m)"
+            :label="lbl"
           />
         </GmapMap>
         <v-img
@@ -187,6 +187,12 @@ export default {
       nameValidateArray: [this.nameValidate],
       desValidateArray: [this.desValidate],
       markers: [],
+      lbl: {
+        text: "\ue530",
+        fontFamily: "Material Icons",
+        color: "#ffffff",
+        fontSize: "18px",
+      },
     };
   },
   methods: {
