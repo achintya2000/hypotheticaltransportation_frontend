@@ -1,7 +1,6 @@
 <template>
   <v-card height="100%">
-    <v-row>
-      <v-col width="50%">
+    <v-card-title>
         <v-btn
           text
           @click="viewSchool(schoolID)"
@@ -11,6 +10,44 @@
         >
           {{ schoolName }}
         </v-btn>
+        
+        <v-spacer></v-spacer>
+        <v-tooltip left>
+      <template v-slot:activator="{ on, attrs }">
+        <v-icon
+          color="primary"
+          dark
+          v-bind="attrs"
+          v-on="on"
+        >
+          mdi-information-outline
+        </v-icon>
+      </template>
+      <v-img
+          src="../assets/marker_key.jpeg"
+          max-height="200"
+          max-width="250"
+        ></v-img>
+    </v-tooltip>
+        </v-card-title>
+    <v-col>
+
+        <GmapMap style="width: 100%; height: 400px" ref="mapRef">
+          <GmapMarker
+            :key="index"
+            v-for="(m, index) in markers"
+            :position="m.position"
+            @click="toggleInfo(m)"
+            :icon="getMarkers(m)"
+          />
+        </GmapMap>
+        
+      </v-col>
+    <v-row>
+      <v-col width="50%">
+        <v-card-subtitle>
+        <v-row>
+          <v-col>
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
@@ -78,28 +115,43 @@
           </v-card>
         </v-dialog>
       </v-col>
-
       <v-col width="50%">
-        <GmapMap
-          style="width: 100%; height: 400px"
-          ref="mapRef"
-          :center="center"
+        <v-card-subtitle>
+            <v-form ref="form" v-model="valid2" lazy-validation>
+              <v-row>
+                <v-col>
+              <v-text-field
+                v-model="stopName"
+                label="Enter Stop Name (optional)"
+                single-line
+              ></v-text-field>
+              </v-col>
+              <v-col>
+              <v-btn outlined :disabled="!valid"
+                  @click="addNewStop"
+                  type="submit"> Create Stop </v-btn>
+                  </v-col>
+                  </v-row>
+            </v-form>
+        </v-card-subtitle>
+
+        <v-data-table
+          v-model="selected"
+          :headers="headers"
+          :items="routes"
+          :search="search"
+          item-key="id"
+          dense
+          :single-select="true"
+          @click:row="selectRow"
         >
-          <GmapMarker
-            :key="index"
-            v-for="(m, index) in markers"
-            :position="m.position"
-            @click="toggleInfo(m)"
-            :icon="getMarkers(m)"
-          />
-        </GmapMap>
-        <v-img
-          src="../assets/marker_key.jpeg"
-          max-height="200"
-          max-width="250"
-        ></v-img>
+        </v-data-table>
+
       </v-col>
+
+      
     </v-row>
+    
     <v-snackbar v-model="snackbar" outlines bottom color="success">
       A new route has been created
 

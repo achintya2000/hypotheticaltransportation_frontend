@@ -34,6 +34,22 @@
             </template>
           </gmap-autocomplete>
 
+<v-text-field
+  v-model="busArriveTime"
+  label="Bus Arrival Time"
+  type="time"
+  :rules="busArriveValidateArray"
+  required
+></v-text-field>
+
+<v-text-field
+  v-model="busDepTime"
+  label="Bus Departure Time"
+  type="time"
+  :rules="busDepValidateArray"
+  required
+></v-text-field>
+
           <v-btn
             :disabled="!valid"
             color="success"
@@ -78,6 +94,8 @@ export default {
       formatted_address: "",
       nameValidateArray: [this.nameValidate],
       addressValidateArray: [this.addressValidate],
+      busArriveValidateArray: [this.busArriveValidate],
+      busDepValidateArray: [this.busDepValidate],
     };
   },
   methods: {
@@ -102,6 +120,8 @@ export default {
             address: this.formatted_address,
             latitude: this.latitude,
             longitude: this.longitude,
+            arrivalTime: this.busArriveTime.toString(),
+            departureTime: this.busDepTime.toString(),
           },
           {
             headers: {
@@ -121,7 +141,7 @@ export default {
         });
     },
     validate() {
-      if (this.name != "" && this.name != null && this.address != "" && this.address != null) {
+      if (this.name != "" && this.name != null && this.address != "" && this.address != null && this.busArriveTime != "" && this.busArriveTime != null && this.busDepTime != "" && this.busDepTime != null) {
         this.submitData();
         this.dialog = false;
         this.reset();
@@ -145,6 +165,22 @@ export default {
       console.log(this.name);
       if (this.address == "" || this.address == null) {
         return "Address is required";
+      } else {
+        return true;
+      }
+    },
+    busArriveValidate() {
+      console.log(this.busArriveTime);
+      if (this.busArriveTime == "" || this.busArriveTime == null) {
+        return "Bus Arrival Time is required, remember to type AM or PM";
+      } else {
+        return true;
+      }
+    },
+    busDepValidate() {
+      console.log(this.busDepTime);
+      if (this.busDepTime == "" || this.busDepTime == null) {
+        return "Bus Departure Time is required, remember to type AM or PM";
       } else {
         return true;
       }
