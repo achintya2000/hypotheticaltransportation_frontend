@@ -133,13 +133,19 @@
         </v-data-table>
       </v-col>
       <v-col>
-        <GmapMap style="width: 90%; height: 400px" ref="mapRef">
+        <GmapMap
+          style="width: 90%; height: 400px"
+          ref="mapRef"
+          @click="handleMapClick($event)"
+          :center="center"
+        >
           <GmapMarker
             :key="index"
             v-for="(m, index) in markers"
             :position="m.position"
             @click="center = m.position"
-            :icon="getMarkers(m)"
+            :label="m.label"
+            :icon="m.icon"
           />
         </GmapMap>
         <v-img
@@ -190,6 +196,10 @@ export default {
     };
   },
   methods: {
+    handleMapClick(event) {
+      console.log(event.latLng.lat());
+      console.log(event.latLng.lng());
+    },
     viewSchool(item) {
       this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
     },
@@ -257,6 +267,8 @@ export default {
       return {
         position: { lat: item.latitude, lng: item.longitude },
         isSchool: item.is_school,
+        icon: this.schoolMapMarker.icon,
+        label: this.schoolMapMarker.label,
       };
     },
     submitDataForDelete() {
