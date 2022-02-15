@@ -80,7 +80,11 @@
       </v-col>
 
       <v-col width="50%">
-        <GmapMap style="width: 100%; height: 400px" ref="mapRef">
+        <GmapMap
+          style="width: 100%; height: 400px"
+          ref="mapRef"
+          :center="center"
+        >
           <GmapMarker
             :key="index"
             v-for="(m, index) in markers"
@@ -123,10 +127,11 @@ export default {
   data() {
     return {
       mapMarker,
-      snackbar: false,
       mapMarkerActive,
       mapMarkerUnassigned,
       schoolMapMarker,
+      snackbar: false,
+      center: { lat: 36.001465, lng: -78.939133 },
       activeRouteID: null,
       selectedIndex: null,
       selectedMarker: null,
