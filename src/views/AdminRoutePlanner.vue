@@ -10,7 +10,6 @@
         >
           {{ schoolName }}
         </v-btn>
-        
         <v-spacer></v-spacer>
         <v-tooltip left>
       <template v-slot:activator="{ on, attrs }">
@@ -30,7 +29,6 @@
         ></v-img>
     </v-tooltip>
         </v-card-title>
-    <v-col>
 
         <GmapMap style="width: 100%; height: 400px" ref="mapRef">
           <GmapMarker
@@ -42,7 +40,6 @@
           />
         </GmapMap>
         
-      </v-col>
     <v-row>
       <v-col width="50%">
         <v-card-subtitle>
@@ -55,16 +52,8 @@
           single-line
           hide-details
         ></v-text-field>
-
-        <v-data-table
-          :headers="headers"
-          :items="routes"
-          :search="search"
-          item-key="id"
-          :single-select="true"
-          @click:row="selectRow"
-        ></v-data-table>
-
+        </v-col>
+          <v-col>
         <v-dialog v-model="dialog" width="500">
           <template v-slot:activator="{ on, attrs }">
             <v-btn outlined v-bind="attrs" v-on="on"> Add New Route </v-btn>
@@ -114,6 +103,23 @@
             </v-card-text>
           </v-card>
         </v-dialog>
+        </v-col>
+        </v-row>
+        </v-card-subtitle>
+
+        <v-data-table
+          v-model="selected"
+          :headers="headers"
+          :items="routes"
+          :search="search"
+          item-key="id"
+          dense
+          :single-select="true"
+          @click:row="selectRow"
+        >
+        </v-data-table>
+
+
       </v-col>
       <v-col width="50%">
         <v-card-subtitle>
@@ -147,6 +153,7 @@
         >
         </v-data-table>
 
+
       </v-col>
 
       
@@ -179,11 +186,10 @@ export default {
   data() {
     return {
       mapMarker,
+      snackbar: false,
       mapMarkerActive,
       mapMarkerUnassigned,
       schoolMapMarker,
-      snackbar: false,
-      center: { lat: 36.001465, lng: -78.939133 },
       activeRouteID: null,
       selectedIndex: null,
       selectedMarker: null,
@@ -205,6 +211,7 @@ export default {
           value: "name",
         },
         { text: "Description", value: "description" },
+        { text: "# of Students", value: "routeNumStudent" },
       ],
       routes: [],
     };
@@ -251,6 +258,7 @@ export default {
         id: item.id,
         name: item.name,
         description: item.description,
+        routeNumStudent: item.student_count,
       };
     },
     getDisplayMarkers(item) {
