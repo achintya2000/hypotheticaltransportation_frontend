@@ -113,6 +113,11 @@ const routes = [
     component: () => import('../views/MapTest.vue')
   },
   {
+    path: '/dragtest',
+    name: 'Draggable',
+    component: () => import('../views/Draggable.vue')
+  },
+  {
     path: '/adminrouteplanner',
     name: 'AdminRoutePlanner',
     component: () => import('../views/AdminRoutePlanner.vue'),

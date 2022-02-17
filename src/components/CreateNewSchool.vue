@@ -115,8 +115,8 @@ export default {
       this.longitude = place.geometry.location.lng();
     },
     submitData() {
-      console.log(new Date("2021-01-01 " + this.busArriveTime + ":00"));
-      console.log(new Date("2021-01-01 " + this.busDepTime + ":00"));
+      console.log(new Date("2021-01-01 " + this.busArriveTime + ":00").toUTCString());
+      console.log(new Date("2021-01-01 " + this.busDepTime + ":00").toUTCString());
       base_endpoint
         .post(
           "/api/school/create",
@@ -125,8 +125,8 @@ export default {
             address: this.formatted_address,
             latitude: this.latitude,
             longitude: this.longitude,
-            arrivalTime: new Date("2021-01-01 " + this.busArriveTime + ":00"),
-            departureTime: new Date("2021-01-01 " + this.busDepTime + ":00"),
+            arrivalTime: new Date("2021-01-01 " + this.busArriveTime + ":00").toUTCString(),
+            departureTime: new Date("2021-01-01 " + this.busDepTime + ":00").toUTCString(),
           },
           {
             headers: {

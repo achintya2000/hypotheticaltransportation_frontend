@@ -40,12 +40,13 @@
   </v-card>
 </template>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.js">
+<script>
 
 //import { mapState } from "vuex";
 import { base_endpoint } from "../services/axios-api";
 import { mapActions} from "vuex";
 import CreateNewSchool from "../components/CreateNewSchool.vue";
+import moment from 'moment';
 
 export default {
   components: { CreateNewSchool },
@@ -75,12 +76,15 @@ export default {
       this.$router.push({ name: "AdminSchoolDetail", query: { id: item.id } });
     },
     getDisplayAddress(item) {
+      var arrTime = moment.utc(item.arrivalTime)
+      var depTime = moment.utc(item.departureTime)
+      
       return {
         name: item.name,
         address: item.address,
         id: item.id,
-        arrTime: moment(item.arrivalTime, 'HH:mm:ss').format('h:mm:ss A'),
-        depTime: item.departureTime,
+        arrTime: arrTime.local().format("h:mm A"),
+        depTime: depTime.local().format("h:mm A"),
       };
     },
     convert(input) {
