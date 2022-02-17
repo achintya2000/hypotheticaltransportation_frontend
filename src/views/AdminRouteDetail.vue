@@ -143,7 +143,6 @@
             :key="index"
             v-for="(m, index) in markers"
             :position="m.position"
-            @click="center = m.position"
             :label="m.label"
             :icon="m.icon"
           />
@@ -267,8 +266,10 @@ export default {
       return {
         position: { lat: item.latitude, lng: item.longitude },
         isSchool: item.is_school,
-        icon: this.schoolMapMarker.icon,
-        label: this.schoolMapMarker.label,
+        icon: item.is_school ? this.schoolMapMarker.icon : this.mapMarker.icon,
+        label: item.is_school
+          ? this.schoolMapMarker.label
+          : this.mapMarker.label,
       };
     },
     submitDataForDelete() {

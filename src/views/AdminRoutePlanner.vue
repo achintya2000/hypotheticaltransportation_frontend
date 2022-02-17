@@ -1,114 +1,112 @@
 <template>
   <v-card height="100%">
     <v-card-title>
-        <v-btn
-          text
-          @click="viewSchool(schoolID)"
-          style="text-transform: none !important"
-          class="black--text font-weight-bold"
-          size="6rem"
-        >
-          {{ schoolName }}
-        </v-btn>
-        <v-spacer></v-spacer>
-        <v-tooltip left>
-      <template v-slot:activator="{ on, attrs }">
-        <v-icon
-          color="primary"
-          dark
-          v-bind="attrs"
-          v-on="on"
-        >
-          mdi-information-outline
-        </v-icon>
-      </template>
-      <v-img
+      <v-btn
+        text
+        @click="viewSchool(schoolID)"
+        style="text-transform: none !important"
+        class="black--text font-weight-bold"
+        size="6rem"
+      >
+        {{ schoolName }}
+      </v-btn>
+      <v-spacer></v-spacer>
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-icon color="primary" dark v-bind="attrs" v-on="on">
+            mdi-information-outline
+          </v-icon>
+        </template>
+        <v-img
           src="../assets/marker_key.jpeg"
           max-height="200"
           max-width="250"
         ></v-img>
-    </v-tooltip>
-        </v-card-title>
+      </v-tooltip>
+    </v-card-title>
 
-        <GmapMap style="width: 100%; height: 400px" ref="mapRef">
-          <GmapMarker
-            :key="index"
-            v-for="(m, index) in markers"
-            :position="m.position"
-            @click="toggleInfo(m)"
-            :icon="getMarkers(m)"
-          />
-        </GmapMap>
-        
+    <GmapMap style="width: 100%; height: 400px" ref="mapRef" :center="center">
+      <GmapMarker
+        :key="index"
+        v-for="(m, index) in markers"
+        :position="m.position"
+        @click="toggleInfo(m)"
+        :icon="getMarkerIcons(m)"
+        :label="getMarkerLabels(m)"
+        :draggable="isDraggable(m.isSchool)"
+      />
+    </GmapMap>
+
     <v-row>
       <v-col width="50%">
         <v-card-subtitle>
-        <v-row>
-          <v-col>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-        </v-col>
-          <v-col>
-        <v-dialog v-model="dialog" width="500">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn outlined v-bind="attrs" v-on="on"> Add New Route </v-btn>
-          </template>
+          <v-row>
+            <v-col>
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+              ></v-text-field>
+            </v-col>
+            <v-col>
+              <v-dialog v-model="dialog" width="500">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn outlined v-bind="attrs" v-on="on">
+                    Add New Route
+                  </v-btn>
+                </template>
 
-          <v-card>
-            <v-card-title class="text-h5 grey lighten-2">
-              Add New Route
-            </v-card-title>
+                <v-card>
+                  <v-card-title class="text-h5 grey lighten-2">
+                    Add New Route
+                  </v-card-title>
 
-            <v-card-text>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                <v-text-field
-                  v-model="name"
-                  :rules="nameValidateArray"
-                  label="Name"
-                  append-icon="mdi-bus"
-                  required
-                ></v-text-field>
+                  <v-card-text>
+                    <v-form ref="form" v-model="valid" lazy-validation>
+                      <v-text-field
+                        v-model="name"
+                        :rules="nameValidateArray"
+                        label="Name"
+                        append-icon="mdi-bus"
+                        required
+                      ></v-text-field>
 
-                <v-textarea
-                  v-model="description"
-                  label="Route Description"
-                  append-icon="mdi-message-text"
-                  required
-                ></v-textarea>
+                      <v-textarea
+                        v-model="description"
+                        label="Route Description"
+                        append-icon="mdi-message-text"
+                        required
+                      ></v-textarea>
 
-                <v-btn
-                  :disabled="!valid"
-                  color="success"
-                  class="mr-4"
-                  @click="validate"
-                  type="submit"
-                >
-                  Submit
-                </v-btn>
-                <v-btn
-                  color="warning"
-                  @click="
-                    dialog = false;
-                    reset();
-                  "
-                >
-                  Cancel
-                </v-btn>
-              </v-form>
-            </v-card-text>
-          </v-card>
-        </v-dialog>
-        </v-col>
-        </v-row>
+                      <v-btn
+                        :disabled="!valid"
+                        color="success"
+                        class="mr-4"
+                        @click="validate"
+                        type="submit"
+                      >
+                        Submit
+                      </v-btn>
+                      <v-btn
+                        color="warning"
+                        @click="
+                          dialog = false;
+                          reset();
+                        "
+                      >
+                        Cancel
+                      </v-btn>
+                    </v-form>
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
+            </v-col>
+          </v-row>
         </v-card-subtitle>
 
         <v-data-table
-          v-model="selected"
           :headers="headers"
           :items="routes"
           :search="search"
@@ -118,31 +116,29 @@
           @click:row="selectRow"
         >
         </v-data-table>
-
-
       </v-col>
       <v-col width="50%">
         <v-card-subtitle>
-            <v-form ref="form" v-model="valid2" lazy-validation>
-              <v-row>
-                <v-col>
-              <v-text-field
-                v-model="stopName"
-                label="Enter Stop Name (optional)"
-                single-line
-              ></v-text-field>
+          <v-form ref="form" lazy-validation>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="stopName"
+                  label="Enter Stop Name (optional)"
+                  single-line
+                ></v-text-field>
               </v-col>
               <v-col>
-              <v-btn outlined :disabled="!valid"
-                  @click="addNewStop"
-                  type="submit"> Create Stop </v-btn>
-                  </v-col>
-                  </v-row>
-            </v-form>
+                <v-switch
+                  v-model="canCreateStops"
+                  :label="`Enable Stop Creation`"
+                ></v-switch>
+              </v-col>
+            </v-row>
+          </v-form>
         </v-card-subtitle>
 
         <v-data-table
-          v-model="selected"
           :headers="headers"
           :items="routes"
           :search="search"
@@ -152,13 +148,9 @@
           @click:row="selectRow"
         >
         </v-data-table>
-
-
       </v-col>
-
-      
     </v-row>
-    
+
     <v-snackbar v-model="snackbar" outlines bottom color="success">
       A new route has been created
 
@@ -186,10 +178,13 @@ export default {
   data() {
     return {
       mapMarker,
-      snackbar: false,
       mapMarkerActive,
       mapMarkerUnassigned,
       schoolMapMarker,
+      center: { lat: 36.001465, lng: -78.939133 },
+      stopName: "",
+      snackbar: false,
+      canCreateStops: false,
       activeRouteID: null,
       selectedIndex: null,
       selectedMarker: null,
@@ -366,11 +361,17 @@ export default {
         this.updateMarker(m.parentID, this.activeRouteID);
       }
     },
-    getMarkers(m) {
-      if (m.isSchool == true) return this.schoolMapMarker;
-      if (m.routeID == null) return this.mapMarkerUnassigned;
-      if (m.routeID == this.activeRouteID) return this.mapMarkerActive;
-      return this.mapMarker;
+    getMarkerIcons(m) {
+      if (m.isSchool == true) return this.schoolMapMarker.icon;
+      if (m.routeID == null) return this.mapMarkerUnassigned.icon;
+      if (m.routeID == this.activeRouteID) return this.mapMarkerActive.icon;
+      return this.mapMarker.icon;
+    },
+    getMarkerLabels(m) {
+      if (m.isSchool == true) return this.schoolMapMarker.label;
+      if (m.routeID == null) return this.mapMarkerUnassigned.label;
+      if (m.routeID == this.activeRouteID) return this.mapMarkerActive.label;
+      return this.mapMarker.label;
     },
     nameValidate() {
       if (this.name == "" || this.name == null) {
@@ -388,6 +389,9 @@ export default {
     },
     viewSchool(item) {
       this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
+    },
+    isDraggable(is_school) {
+      return is_school ? true : false;
     },
   },
   created() {
