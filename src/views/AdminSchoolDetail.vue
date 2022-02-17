@@ -5,7 +5,9 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Modify </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
+            Modify
+          </v-btn>
         </template>
 
         <v-card>
@@ -62,7 +64,9 @@
       </v-dialog>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Delete </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
+            Delete
+          </v-btn>
         </template>
 
         <v-card>
@@ -109,14 +113,15 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-btn style="margin: 10px" @click="planNewRoute" outlined>Plan New Route</v-btn>
+      <v-btn style="margin: 10px" @click="planNewRoute" outlined
+        >Plan New Route</v-btn
+      >
     </v-card-title>
-    <v-card-subtitle class="black--text"> 
-      <span class="black--text font-weight-bold"> Address: </span><span class="black--text"> {{ schoolAddress }} </span>
+    <v-card-subtitle class="black--text">
+      <span class="black--text font-weight-bold"> Address: </span
+      ><span class="black--text"> {{ schoolAddress }} </span>
     </v-card-subtitle>
-    <v-card-title>
-      Bus Routes
-    </v-card-title>
+    <v-card-title> Bus Routes </v-card-title>
     <v-data-table
       :headers="routeHeaders"
       :items="busRoutes"
@@ -146,7 +151,7 @@
       @click:row="viewStudent"
     >
       <template v-slot:[`item.studentRoute`]="{ item }">
-        <div v-if="item.studentRoute">{{item.studentRoute}}</div>
+        <div v-if="item.studentRoute">{{ item.studentRoute }}</div>
         <div v-if="!item.studentRoute">No Route</div>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
@@ -167,7 +172,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-import { mapActions} from "vuex";
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -215,7 +220,9 @@ export default {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
     showSnackBarAddress() {
-      this.snackBar("Uh-Oh! Something Went Wrong! Make sure to click the Autofill result to complete your Address!");
+      this.snackBar(
+        "Uh-Oh! Something Went Wrong! Make sure to click the Autofill result to complete your Address!"
+      );
     },
     setPlace(place) {
       this.formatted_address = place.formatted_address;
@@ -350,7 +357,12 @@ export default {
         });
     },
     validateForModify() {
-      if (this.newSchoolName != "" && this.newSchoolName != null && this.newAddress != "" && this.newAddress != null) {
+      if (
+        this.newSchoolName != "" &&
+        this.newSchoolName != null &&
+        this.newAddress != "" &&
+        this.newAddress != null
+      ) {
         this.$refs.form.validate();
         this.submitDataForModify();
         this.dialog2 = false;

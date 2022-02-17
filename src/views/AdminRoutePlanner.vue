@@ -163,10 +163,32 @@
         <v-data-table
           :headers="headers_stops"
           :items="stops"
-          :search="search"
           item-key="id"
           dense
+          :show-select="false"
+          :disable-pagination="true"
+          :hide-default-footer="true"
+          class="page__table"
+          :single-select="true"
         >
+          <template #body="props">
+            <draggable
+              :list="props.items"
+              tag="tbody"
+              :disabled="!allowDrag"
+              :move="onMoveCallback"
+              :clone="onCloneCallback"
+              @end="onDropCallback"
+            >
+              <data-table-row-handler
+                v-for="(item, index) in props.items"
+                :key="index"
+                :item="item"
+                :headers="activeHeaders"
+              >
+              </data-table-row-handler>
+            </draggable>
+          </template>
         </v-data-table>
       </v-col>
     </v-row>
@@ -187,6 +209,7 @@
 import { base_endpoint } from "../services/axios-api";
 import { gmapApi } from "vue2-google-maps-withscopedautocomp";
 import { mapActions } from "vuex";
+import DataTableRowHandler from "../components/DataTableRowHandler.vue";
 import {
   mapMarker,
   mapMarkerActive,
@@ -194,6 +217,7 @@ import {
   schoolMapMarker,
   stopMapMarker,
 } from "../assets/markers";
+import draggable from "vuedraggable";
 
 export default {
   data() {
@@ -221,6 +245,8 @@ export default {
       name: "",
       description: "",
       schoolID: this.$route.query.id,
+      allowDrag: true,
+      selected: [],
       headers: [
         {
           text: "Name",
@@ -460,6 +486,29 @@ export default {
       this.stops[index].position.lat = event.latLng.lat();
       this.stops[index].position.lng = event.latLng.lng();
     },
+    onCloneCallback(item) {
+      // Create a fresh copy of item
+      const cloneMe = JSON.parse(JSON.stringify(item));
+
+      return cloneMe;
+    },
+    onMoveCallback(
+      evt //originalEvent
+    ) {
+      const item = evt.draggedContext.element;
+      //const itemIdx = evt.draggedContext.futureIndex;
+
+      console.log("onMoveCallback");
+
+      if (item.locked) {
+        return false;
+      }
+
+      return true;
+    },
+    //onDropCallback(evt, originalEvent) {
+    //  console.log("onDropCallback");
+    //},
   },
   created() {
     this.getRequestAllRoutes();
@@ -471,6 +520,18 @@ export default {
   },
   computed: {
     google: gmapApi,
+    activeHeaders() {
+      return this.headers.filter((h) => {
+        if (!this.allowDrag && h.value === "lock") {
+          return false;
+        }
+        return true;
+      });
+    },
+  },
+  components: {
+    draggable,
+    DataTableRowHandler,
   },
 };
 </script>
