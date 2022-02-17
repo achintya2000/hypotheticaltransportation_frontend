@@ -33,12 +33,19 @@
         @click="toggleInfo(m)"
         :icon="getMarkerIcons(m)"
         :label="getMarkerLabels(m)"
-        :draggable="isDraggable(m.isSchool)"
+      />
+      <GmapMarker
+        :key="'stop_' + index"
+        v-for="(m, index) in stops"
+        :position="m.position"
+        :icon="stopMapMarker.icon"
+        :label="m.label"
+        :draggable="true"
         @drag="moveCircle($event, index)"
       />
       <GmapCircle
-        :key="index"
-        v-for="(m, index) in markers"
+        :key="'circle_' + index"
+        v-for="(m, index) in stops"
         :center="m.position"
         :radius="483"
         :visible="true"
@@ -154,13 +161,11 @@
         </v-card-subtitle>
 
         <v-data-table
-          :headers="headers"
-          :items="routes"
+          :headers="headers_stops"
+          :items="stops"
           :search="search"
           item-key="id"
           dense
-          :single-select="true"
-          @click:row="selectRow"
         >
         </v-data-table>
       </v-col>
@@ -187,6 +192,7 @@ import {
   mapMarkerActive,
   mapMarkerUnassigned,
   schoolMapMarker,
+  stopMapMarker,
 } from "../assets/markers";
 
 export default {
@@ -196,6 +202,7 @@ export default {
       mapMarkerActive,
       mapMarkerUnassigned,
       schoolMapMarker,
+      stopMapMarker,
       center: { lat: 36.001465, lng: -78.939133 },
       stopName: "",
       snackbar: false,
@@ -223,7 +230,18 @@ export default {
         { text: "Description", value: "description" },
         { text: "# of Students", value: "routeNumStudent" },
       ],
+      headers_stops: [
+        {
+          text: "Name",
+          align: "start",
+          value: "item",
+        },
+        { text: "Pick Up Time", value: "pickupTime" },
+        { text: "Drop Off Time", value: "dropoffTime" },
+        { text: "Order", value: "order" },
+      ],
       routes: [],
+      stops: [],
     };
   },
   methods: {
@@ -231,13 +249,43 @@ export default {
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
+    getDisplayStops(item) {
+      return {
+        item: item.name,
+        pickupTime: item.pickupTime,
+        dropoffTime: item.dropoffTime,
+        position: { lat: item.latitude, lng: item.longitude },
+        order: item.order,
+        label: {
+          text: item.order.toString(),
+          fontFamily: "Roboto",
+          color: "#ffffff",
+          fontSize: "18px",
+        },
+      };
+    },
     selectRow(value, row) {
       if (row.isSelected) {
         this.activeRouteID = null;
         row.select(false);
+        this.stops = [];
       } else {
         this.activeRouteID = value.id;
         row.select(true);
+        base_endpoint
+          .get("/api/stop/getallfromroute/" + value.id, {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          })
+          .then((response) => {
+            this.stops = response.data.map(this.getDisplayStops);
+            console.log(this.stops);
+          })
+          .catch((err) => {
+            this.showSnackBar();
+            console.log(err);
+          });
       }
     },
     updateMarker(parentID, newRouteID) {
@@ -409,11 +457,8 @@ export default {
       return is_school ? true : false;
     },
     moveCircle(event, index) {
-      console.log(event.latLng.lat());
-      console.log(event.latLng.lng());
-      console.log("INDEX: " + index);
-      this.markers[index].position.lat = event.latLng.lat();
-      this.markers[index].position.lng = event.latLng.lng();
+      this.stops[index].position.lat = event.latLng.lat();
+      this.stops[index].position.lng = event.latLng.lng();
     },
   },
   created() {
