@@ -41,10 +41,12 @@
 </template>
 
 <script>
+
 //import { mapState } from "vuex";
 import { base_endpoint } from "../services/axios-api";
 import { mapActions} from "vuex";
 import CreateNewSchool from "../components/CreateNewSchool.vue";
+import moment from 'moment';
 
 export default {
   components: { CreateNewSchool },
@@ -59,6 +61,8 @@ export default {
           value: "name",
         },
         { text: "Address", value: "address", sortable: false },
+        { text: "Arrival Time", value: "arrTime", sortable: false },
+        { text: "Departure Time", value: "depTime", sortable: false },
       ],
       addresses: [],
     };
@@ -72,11 +76,19 @@ export default {
       this.$router.push({ name: "AdminSchoolDetail", query: { id: item.id } });
     },
     getDisplayAddress(item) {
+      var arrTime = moment.utc(item.arrivalTime)
+      var depTime = moment.utc(item.departureTime)
+      
       return {
         name: item.name,
         address: item.address,
         id: item.id,
+        arrTime: arrTime.local().format("h:mm A"),
+        depTime: depTime.local().format("h:mm A"),
       };
+    },
+    convert(input) {
+        return moment(input, 'HH:mm:ss').format('h:mm:ss A');
     },
     getRequestAllSchools() {
       base_endpoint
