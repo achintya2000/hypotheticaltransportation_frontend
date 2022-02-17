@@ -34,6 +34,21 @@
         :icon="getMarkerIcons(m)"
         :label="getMarkerLabels(m)"
         :draggable="isDraggable(m.isSchool)"
+        @drag="moveCircle($event, index)"
+      />
+      <GmapCircle
+        :key="index"
+        v-for="(m, index) in markers"
+        :center="m.position"
+        :radius="483"
+        :visible="true"
+        :options="{
+          strokeColor: '#FF0000',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#FF0000',
+          fillOpacity: 0.35,
+        }"
       />
     </GmapMap>
 
@@ -392,6 +407,13 @@ export default {
     },
     isDraggable(is_school) {
       return is_school ? true : false;
+    },
+    moveCircle(event, index) {
+      console.log(event.latLng.lat());
+      console.log(event.latLng.lng());
+      console.log("INDEX: " + index);
+      this.markers[index].position.lat = event.latLng.lat();
+      this.markers[index].position.lng = event.latLng.lng();
     },
   },
   created() {
