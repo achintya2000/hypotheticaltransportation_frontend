@@ -80,6 +80,7 @@
   
 </template>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.js"></script>
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { mapActions} from "vuex";
@@ -96,6 +97,8 @@ export default {
       addressValidateArray: [this.addressValidate],
       busArriveValidateArray: [this.busArriveValidate],
       busDepValidateArray: [this.busDepValidate],
+      busArriveTime: "",
+      busDepTime: ""
     };
   },
   methods: {
@@ -112,6 +115,8 @@ export default {
       this.longitude = place.geometry.location.lng();
     },
     submitData() {
+      console.log(new Date("2021-01-01 " + this.busArriveTime + ":00"));
+      console.log(new Date("2021-01-01 " + this.busDepTime + ":00"));
       base_endpoint
         .post(
           "/api/school/create",
@@ -120,8 +125,8 @@ export default {
             address: this.formatted_address,
             latitude: this.latitude,
             longitude: this.longitude,
-            arrivalTime: this.busArriveTime.toString(),
-            departureTime: this.busDepTime.toString(),
+            arrivalTime: new Date("2021-01-01 " + this.busArriveTime + ":00"),
+            departureTime: new Date("2021-01-01 " + this.busDepTime + ":00"),
           },
           {
             headers: {

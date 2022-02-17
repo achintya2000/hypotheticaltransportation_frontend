@@ -40,7 +40,8 @@
   </v-card>
 </template>
 
-<script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.js">
+
 //import { mapState } from "vuex";
 import { base_endpoint } from "../services/axios-api";
 import { mapActions} from "vuex";
@@ -59,6 +60,8 @@ export default {
           value: "name",
         },
         { text: "Address", value: "address", sortable: false },
+        { text: "Arrival Time", value: "arrTime", sortable: false },
+        { text: "Departure Time", value: "depTime", sortable: false },
       ],
       addresses: [],
     };
@@ -76,7 +79,12 @@ export default {
         name: item.name,
         address: item.address,
         id: item.id,
+        arrTime: moment(item.arrivalTime, 'HH:mm:ss').format('h:mm:ss A'),
+        depTime: item.departureTime,
       };
+    },
+    convert(input) {
+        return moment(input, 'HH:mm:ss').format('h:mm:ss A');
     },
     getRequestAllSchools() {
       base_endpoint
