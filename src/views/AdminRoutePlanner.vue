@@ -166,6 +166,23 @@
           item-key="id"
           dense
         >
+          <template #body="props">
+            <draggable
+              :list="props.items"
+              tag="tbody"
+              :disabled="!allowDrag"
+              :move="onMoveCallback"
+              :clone="onCloneCallback"
+            >
+              <data-table-row-handler
+                v-for="(item, index) in props.items"
+                :key="index"
+                :item="item"
+                :headers="headers_stops"
+              >
+              </data-table-row-handler>
+            </draggable>
+          </template>
         </v-data-table>
       </v-col>
     </v-row>
@@ -186,7 +203,9 @@
 import { base_endpoint } from "../services/axios-api";
 import { gmapApi } from "vue2-google-maps-withscopedautocomp";
 import { mapActions } from "vuex";
-//import DataTableRowHandler from "../components/DataTableRowHandler.vue";
+import DataTableRowHandler from "../components/DataTableRowHandler.vue";
+import draggable from "vuedraggable";
+
 import {
   mapMarker,
   mapMarkerActive,
@@ -194,9 +213,9 @@ import {
   schoolMapMarker,
   stopMapMarker,
 } from "../assets/markers";
-//import draggable from "vuedraggable";
 
 export default {
+  components: { DataTableRowHandler, draggable },
   data() {
     return {
       mapMarker,
@@ -505,10 +524,6 @@ export default {
         return true;
       });
     },
-  },
-  components: {
-    //draggable,
-    //DataTableRowHandler,
   },
 };
 </script>
