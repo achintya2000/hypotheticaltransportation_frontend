@@ -183,6 +183,7 @@
           </template>
         </v-data-table>
       </v-col>
+
       <v-col width="50%">
         <v-card-subtitle>
           <v-form ref="form" lazy-validation>
@@ -224,6 +225,38 @@
                 :item="item"
                 :headers="headers_stops"
               >
+                <template v-slot:[`item.name`]="{ item }">
+                  <v-text-field
+                    v-model="editedStop.name"
+                    :hide-details="true"
+                    dense
+                    single-line
+                    v-if="item.id === editedStop.id"
+                  ></v-text-field>
+                  <span v-else>{{ item.name }}</span>
+                </template>
+                <template v-slot:[`item.actions`]="{ item }">
+                  <div v-if="item.id === editedStop.id">
+                    <v-icon color="red" class="mr-3" @click="closeStop">
+                      mdi-window-close
+                    </v-icon>
+                    <v-icon color="green" @click="saveStop">
+                      mdi-content-save
+                    </v-icon>
+                  </div>
+                  <div v-else>
+                    <v-icon
+                      color="green"
+                      class="mr-3"
+                      @click="editStopItem(item)"
+                    >
+                      mdi-pencil
+                    </v-icon>
+                    <v-icon color="red" @click="deleteStopItem(item)">
+                      mdi-delete
+                    </v-icon>
+                  </div>
+                </template>
               </data-table-row-handler>
             </draggable>
           </template>
@@ -301,11 +334,12 @@ export default {
         {
           text: "Name",
           align: "start",
-          value: "item",
+          value: "name",
         },
         { text: "Pick Up Time", align: "start", value: "pickupTime" },
         { text: "Drop Off Time", align: "start", value: "dropoffTime" },
-        { text: "Order", align: "start", value: "order" },
+        { text: "Order", align: "start", value: "id" },
+        { text: "Actions", value: "actions", sortable: false, width: "100px" },
       ],
       routes: [],
       stops: [],
@@ -314,9 +348,21 @@ export default {
         id: 0,
         name: "",
         description: "",
-        routeNumStudent: 0,
       },
       defaultRoute: {
+        id: -1,
+        name: "",
+        description: "",
+        routeNumStudent: 0,
+      },
+      editedStopIndex: -1,
+      editedStop: {
+        id: 0,
+        name: "",
+        description: "",
+        routeNumStudent: 0,
+      },
+      defaultStop: {
         id: -1,
         name: "",
         description: "",
@@ -334,11 +380,11 @@ export default {
       var dTime = moment.utc(item.dropoffTime);
 
       return {
-        item: item.name,
+        id: item.order,
+        name: item.name,
         pickupTime: pTime.local().format("h:mm A"),
         dropoffTime: dTime.local().format("h:mm A"),
         position: { lat: item.latitude, lng: item.longitude },
-        order: item.order,
         label: {
           text: item.order.toString(),
           fontFamily: "Roboto",
@@ -581,11 +627,34 @@ export default {
         Object.assign(this.routes[this.editedRouteIndex], this.editedRoute);
       }
       this.closeRoute();
+      console.log(this.routes);
     },
     closeRoute() {
       setTimeout(() => {
         this.editedRoute = Object.assign({}, this.defaultRoute);
         this.editedRouteIndex = -1;
+      }, 300);
+    },
+    editStopItem(item) {
+      this.editedStopIndex = this.stops.indexOf(item);
+      this.editedStop = Object.assign({}, item);
+    },
+
+    deleteStopItem(item) {
+      const index = this.routes.indexOf(item);
+      confirm("Are you sure you want to delete this item?") &&
+        this.stops.splice(index, 1);
+    },
+    saveStop() {
+      if (this.editedStopIndex > -1) {
+        Object.assign(this.stops[this.editedStopIndex], this.editedStop);
+      }
+      this.closeStop();
+    },
+    closeStop() {
+      setTimeout(() => {
+        this.editedStop = Object.assign({}, this.defaultStop);
+        this.editedStopIndex = -1;
       }, 300);
     },
   },
