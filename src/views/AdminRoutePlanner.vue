@@ -137,6 +137,50 @@
           :single-select="true"
           @click:row="selectRow"
         >
+          <template v-slot:[`item.name`]="{ item }">
+            <v-text-field
+              @click.native.stop
+              v-model="editedRoute.name"
+              :hide-details="true"
+              dense
+              single-line
+              v-if="item.id === editedRoute.id"
+            ></v-text-field>
+            <span v-else>{{ item.name }}</span>
+          </template>
+          <template v-slot:[`item.description`]="{ item }">
+            <v-text-field
+              @click.native.stop
+              v-model="editedRoute.description"
+              :hide-details="true"
+              dense
+              single-line
+              v-if="item.id === editedRoute.id"
+            ></v-text-field>
+            <span v-else>{{ item.description }}</span>
+          </template>
+          <template v-slot:[`item.actions`]="{ item }">
+            <div v-if="item.id === editedRoute.id">
+              <v-icon color="red" class="mr-3" @click.stop="closeRoute">
+                mdi-window-close
+              </v-icon>
+              <v-icon color="green" @click.stop="saveRoute">
+                mdi-content-save
+              </v-icon>
+            </div>
+            <div v-else>
+              <v-icon
+                color="green"
+                class="mr-3"
+                @click.stop="editRouteItem(item)"
+              >
+                mdi-pencil
+              </v-icon>
+              <v-icon color="red" @click.stop="deleteRouteItem(item)">
+                mdi-delete
+              </v-icon>
+            </div>
+          </template>
         </v-data-table>
       </v-col>
       <v-col width="50%">
@@ -205,7 +249,7 @@ import { gmapApi } from "vue2-google-maps-withscopedautocomp";
 import { mapActions } from "vuex";
 import DataTableRowHandler from "../components/DataTableRowHandler.vue";
 import draggable from "vuedraggable";
-
+import moment from "moment";
 import {
   mapMarker,
   mapMarkerActive,
@@ -251,6 +295,7 @@ export default {
         },
         { text: "Description", value: "description" },
         { text: "# of Students", value: "routeNumStudent" },
+        { text: "Actions", value: "actions", sortable: false, width: "100px" },
       ],
       headers_stops: [
         {
@@ -258,12 +303,25 @@ export default {
           align: "start",
           value: "item",
         },
-        { text: "Pick Up Time", value: "pickupTime" },
-        { text: "Drop Off Time", value: "dropoffTime" },
-        { text: "Order", value: "order" },
+        { text: "Pick Up Time", align: "start", value: "pickupTime" },
+        { text: "Drop Off Time", align: "start", value: "dropoffTime" },
+        { text: "Order", align: "start", value: "order" },
       ],
       routes: [],
       stops: [],
+      editedRouteIndex: -1,
+      editedRoute: {
+        id: 0,
+        name: "",
+        description: "",
+        routeNumStudent: 0,
+      },
+      defaultRoute: {
+        id: -1,
+        name: "",
+        description: "",
+        routeNumStudent: 0,
+      },
     };
   },
   methods: {
@@ -272,10 +330,13 @@ export default {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
     getDisplayStops(item) {
+      var pTime = moment.utc(item.pickupTime);
+      var dTime = moment.utc(item.dropoffTime);
+
       return {
         item: item.name,
-        pickupTime: item.pickupTime,
-        dropoffTime: item.dropoffTime,
+        pickupTime: pTime.local().format("h:mm A"),
+        dropoffTime: dTime.local().format("h:mm A"),
         position: { lat: item.latitude, lng: item.longitude },
         order: item.order,
         label: {
@@ -505,6 +566,28 @@ export default {
     //onDropCallback(evt, originalEvent) {
     //  console.log("onDropCallback");
     //},
+    editRouteItem(item) {
+      this.editedRouteIndex = this.routes.indexOf(item);
+      this.editedRoute = Object.assign({}, item);
+    },
+
+    deleteRouteItem(item) {
+      const index = this.routes.indexOf(item);
+      confirm("Are you sure you want to delete this item?") &&
+        this.routes.splice(index, 1);
+    },
+    saveRoute() {
+      if (this.editedRouteIndex > -1) {
+        Object.assign(this.routes[this.editedRouteIndex], this.editedRoute);
+      }
+      this.closeRoute();
+    },
+    closeRoute() {
+      setTimeout(() => {
+        this.editedRoute = Object.assign({}, this.defaultRoute);
+        this.editedRouteIndex = -1;
+      }, 300);
+    },
   },
   created() {
     this.getRequestAllRoutes();
