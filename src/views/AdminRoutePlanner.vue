@@ -25,7 +25,12 @@
       </v-tooltip>
     </v-card-title>
 
-    <GmapMap style="width: 100%; height: 400px" ref="mapRef" :center="center">
+    <GmapMap
+      style="width: 100%; height: 400px"
+      ref="mapRef"
+      :center="center"
+      @click="addStopMarker($event)"
+    >
       <GmapMarker
         :key="index"
         v-for="(m, index) in markers"
@@ -149,14 +154,14 @@
             <span v-else>{{ item.name }}</span>
           </template>
           <template v-slot:[`item.description`]="{ item }">
-            <v-text-field
+            <v-textarea
               @click.native.stop
               v-model="editedRoute.description"
               :hide-details="true"
               dense
-              single-line
+              rows="1"
               v-if="item.id === editedRoute.id"
-            ></v-text-field>
+            ></v-textarea>
             <span v-else>{{ item.description }}</span>
           </template>
           <template v-slot:[`item.actions`]="{ item }">
@@ -196,10 +201,12 @@
                 ></v-text-field>
               </v-col>
               <v-col>
-                <v-switch
-                  v-model="canCreateStops"
-                  :label="`Enable Stop Creation`"
-                ></v-switch>
+                <v-btn
+                  :disabled="!canCreateStops"
+                  outlined
+                  @click="enableStopMarkerCreation()"
+                  >Create Stop</v-btn
+                >
               </v-col>
             </v-row>
           </v-form>
@@ -304,6 +311,7 @@ export default {
       stopName: "",
       snackbar: false,
       canCreateStops: false,
+      canPlaceStopMarker: false,
       activeRouteID: null,
       selectedIndex: null,
       selectedMarker: null,
@@ -338,7 +346,7 @@ export default {
         },
         { text: "Pick Up Time", align: "start", value: "pickupTime" },
         { text: "Drop Off Time", align: "start", value: "dropoffTime" },
-        { text: "Order", align: "start", value: "id" },
+        { text: "Order", align: "start", value: "order" },
         { text: "Actions", value: "actions", sortable: false, width: "100px" },
       ],
       routes: [],
@@ -380,7 +388,8 @@ export default {
       var dTime = moment.utc(item.dropoffTime);
 
       return {
-        id: item.order,
+        id: item.id,
+        order: item.order,
         name: item.name,
         pickupTime: pTime.local().format("h:mm A"),
         dropoffTime: dTime.local().format("h:mm A"),
@@ -393,28 +402,35 @@ export default {
         },
       };
     },
+    getRequestAllStops() {
+      base_endpoint
+        .get("/api/stop/getallfromroute/" + this.activeRouteID, {
+          headers: {
+            Authorization: `Token ${this.$store.state.accessToken}`,
+          },
+        })
+        .then((response) => {
+          this.stops = response.data.map(this.getDisplayStops);
+          this.stops.sort((a, b) => (a.order > b.order ? 1 : -1));
+          console.log(this.stops);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
     selectRow(value, row) {
       if (row.isSelected) {
+        this.canCreateStops = false;
         this.activeRouteID = null;
         row.select(false);
         this.stops = [];
       } else {
+        this.canCreateStops = true;
         this.activeRouteID = value.id;
         row.select(true);
-        base_endpoint
-          .get("/api/stop/getallfromroute/" + value.id, {
-            headers: {
-              Authorization: `Token ${this.$store.state.accessToken}`,
-            },
-          })
-          .then((response) => {
-            this.stops = response.data.map(this.getDisplayStops);
-            console.log(this.stops);
-          })
-          .catch((err) => {
-            this.showSnackBar();
-            console.log(err);
-          });
+
+        this.getRequestAllStops();
       }
     },
     updateMarker(parentID, newRouteID) {
@@ -641,9 +657,21 @@ export default {
     },
 
     deleteStopItem(item) {
-      const index = this.routes.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.stops.splice(index, 1);
+      // const index = this.stops.indexOf(item);
+      // console.log(item);
+      // confirm("Are you sure you want to delete this item?") &&
+      //   this.stops.splice(index, 1);
+      base_endpoint
+        .delete("/api/stop/delete/" + item.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log(response);
+          this.getRequestAllStops();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     saveStop() {
       if (this.editedStopIndex > -1) {
@@ -656,6 +684,48 @@ export default {
         this.editedStop = Object.assign({}, this.defaultStop);
         this.editedStopIndex = -1;
       }, 300);
+    },
+    addStopMarker(event) {
+      // var newStop = {
+      //   name: "",
+      //   position: { lat: event.latLng.lat(), lng: event.latLng.lng() },
+      //   label: {
+      //     text: "Hello",
+      //     fontFamily: "Roboto",
+      //     color: "#ffffff",
+      //     fontSize: "18px",
+      //   },
+      // };
+      // if (this.canPlaceStopMarker) {
+      //   this.stops.push(newStop);
+      // }
+      this.canPlaceStopMarker = false;
+
+      base_endpoint
+        .post(
+          "/api/stop/create",
+          {
+            name: "",
+            route: this.activeRouteID,
+            latitude: event.latLng.lat(),
+            longitude: event.latLng.lng(),
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          this.getRequestAllStops()
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    enableStopMarkerCreation() {
+      this.canPlaceStopMarker = true;
     },
   },
   created() {
@@ -682,6 +752,6 @@ export default {
 
 <style>
 tr.v-data-table__selected {
-  background: #7d92f5 !important;
+  background: #add8e6 !important;
 }
 </style>
