@@ -83,9 +83,7 @@ export default {
         )
         .then((response) => {
           console.log(response);
-          this.$router.push({
-            name: "Home",
-          });
+           window.location.href = "http://localhost:8080/#/home"
         })
         .catch((err) => {
           this.showSnackBar();
