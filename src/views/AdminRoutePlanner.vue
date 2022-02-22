@@ -573,6 +573,7 @@ export default {
     },
     toggleInfo(m) {
       if (m.isSchool) return;
+      if (this.activeRouteID == null) return;
       if (m.routeID == this.activeRouteID) {
         this.updateMarker(m.parentID, null);
       } else {
