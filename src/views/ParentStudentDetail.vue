@@ -26,6 +26,16 @@
       <span class="black--text font-weight-bold"> Parent: </span
       ><span class="black--text"> {{ studentParent }} </span>
     </v-card-subtitle>
+
+    <v-row>
+      <v-col width="50%">
+        <v-data-table> </v-data-table>
+      </v-col>
+      <v-col width="50%">
+        <GmapMap style="width: 100%; height: 400px" :center="center" :zoom="12">
+        </GmapMap>
+      </v-col>
+    </v-row>
   </v-card>
 </template>
 
@@ -69,7 +79,8 @@ export default {
       newStudentId: "",
       newStudentSchool: "",
       newStudentParent: "",
-      stops: [],
+      stopsInRange: [],
+      center: { lat: 36.001465, lng: -78.939133 },
     };
   },
   methods: {
