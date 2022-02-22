@@ -83,18 +83,6 @@
         <div v-if="item.route">{{ item.route }}</div>
         <div v-if="!item.route">No Route</div>
       </template>
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-btn
-          dense
-          small
-          dark
-          v-bind="attrs"
-          v-on="on"
-          @click="viewItem(item)"
-        >
-          Details
-        </v-btn>
-      </template>
     </v-data-table>
     <v-snackbar v-model="snackbar" outlines bottom color="success">
       Your password has been changed
@@ -135,9 +123,8 @@ export default {
           value: "name",
         },
         { text: "Student ID", value: "sid" },
-        { text: "School", value: "school" }, 
+        { text: "School", value: "school" },
         { text: "Route", value: "route", sortable: false },
-        { text: "Actions", value: "actions", sortable: false },
       ],
       students: [],
     };
