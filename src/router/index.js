@@ -118,6 +118,11 @@ const routes = [
     component: () => import('../views/Draggable.vue')
   },
   {
+    path: '/resetpassword',
+    name: 'ResetPassword',
+    component: () => import('../views/ResetPassword.vue')
+  },
+  {
     path: '/adminrouteplanner',
     name: 'AdminRoutePlanner',
     component: () => import('../views/AdminRoutePlanner.vue'),

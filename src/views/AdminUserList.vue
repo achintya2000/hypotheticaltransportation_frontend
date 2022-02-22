@@ -6,6 +6,10 @@
       <create-new-student
         @usercreated="getRequestAllUsers(); snackbar = true"
       ></create-new-student>
+      <send-email :typeOfEmail="'allGA'"
+      ></send-email>
+      <send-email :typeOfEmail="'allRA'"
+      ></send-email>
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
@@ -62,9 +66,13 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import CreateNewStudent from "../components/CreateNewStudent.vue";
+import SendEmail from "../components/SendEmail.vue";
 import { mapActions} from "vuex";
 export default {
-  components: { CreateNewStudent },
+  components: { 
+    CreateNewStudent, 
+    SendEmail 
+  },
   data() {
     return {
       search: "",

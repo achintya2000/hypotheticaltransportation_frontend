@@ -94,6 +94,7 @@ export default {
       name: "",
       dialog: false,
       valid: true,
+      address: "",
       latitude: 0,
       longitude: 0,
       formatted_address: "",

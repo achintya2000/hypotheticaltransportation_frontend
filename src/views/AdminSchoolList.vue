@@ -60,8 +60,8 @@ export default {
           value: "name",
         },
         { text: "Address", value: "address", sortable: false },
-        { text: "Arrival Time", value: "arrTime", sortable: false },
-        { text: "Departure Time", value: "depTime", sortable: false },
+        { text: "Arrival Time", value: "arrTime", sortable: true },
+        { text: "Departure Time", value: "depTime", sortable: true },
       ],
       addresses: [],
     };

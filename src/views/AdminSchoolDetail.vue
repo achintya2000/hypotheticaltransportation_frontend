@@ -36,6 +36,22 @@
                 </template>
               </gmap-autocomplete>
 
+              <v-text-field
+                v-model="newBusArriveTime"
+                label="Bus Arrival Time"
+                type="time"
+                :rules="busArriveValidateArray"
+                required
+              ></v-text-field>
+
+              <v-text-field
+              v-model="newBusDepTime"
+                label="Bus Departure Time"
+                type="time"
+                :rules="busDepValidateArray"
+                required
+              ></v-text-field>
+
               <v-btn
                 :disabled="!valid2"
                 color="success"
@@ -113,32 +129,38 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-btn style="margin: 10px" @click="planNewRoute" outlined
-        >Plan New Route</v-btn
-      >
+
+      <v-btn style="margin: 10px" @click="planNewRoute" outlined>Plan New Route</v-btn>
+      <send-email :typeOfEmail="'schoolGA'" :relevantID = this.$route.query.id
+      ></send-email>
+      <send-email :typeOfEmail="'schoolRA'" :relevantID = this.$route.query.id
+      ></send-email>
+
     </v-card-title>
     <v-card-subtitle class="black--text">
       <span class="black--text font-weight-bold"> Address: </span
       ><span class="black--text"> {{ schoolAddress }} </span>
     </v-card-subtitle>
-    <v-card-title> Bus Routes </v-card-title>
+
+    <v-card-subtitle class="black--text"> 
+      <span class="black--text font-weight-bold"> Bus Arrival Time: </span><span class="black--text"> {{ busArriveTime }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle class="black--text"> 
+      <span class="black--text font-weight-bold"> Bus Departure Time: </span><span class="black--text"> {{ busDepTime }} </span>
+    </v-card-subtitle>
+    <v-card-title>
+      Bus Routes
+    </v-card-title>
+
     <v-data-table
       :headers="routeHeaders"
       :items="busRoutes"
       :search="search"
       @click:row="viewRoute"
     >
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-btn
-          dense
-          small
-          dark
-          v-bind="attrs"
-          v-on="on"
-          @click="viewRoute(item)"
-        >
-          Details
-        </v-btn>
+      <template v-slot:[`item.routeComplete`]="{ item }">
+        <v-icon v-if="item.routeComplete==false"> mdi-close </v-icon>
+        <v-icon v-if="item.routeComplete==true"> mdi-check </v-icon>
       </template>
     </v-data-table>
 
@@ -154,17 +176,9 @@
         <div v-if="item.studentRoute">{{ item.studentRoute }}</div>
         <div v-if="!item.studentRoute">No Route</div>
       </template>
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-btn
-          dense
-          small
-          dark
-          v-bind="attrs"
-          v-on="on"
-          @click="viewStudent(item)"
-        >
-          Details
-        </v-btn>
+      <template v-slot:[`item.studentInRange`]="{ item }">
+        <v-icon v-if="item.studentInRange==false"> mdi-close </v-icon>
+        <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
       </template>
     </v-data-table>
   </v-card>
@@ -172,12 +186,22 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-import { mapActions } from "vuex";
+import { mapActions} from "vuex";
+import moment from 'moment';
+import SendEmail from "../components/SendEmail.vue";
+
 export default {
+  components: { 
+    SendEmail 
+  },
   data() {
     return {
       schoolName: "",
       schoolAddress: "",
+      newBusArriveTime: "",
+      newBusDepTime: "",
+      busArriveTime: "",
+      busDepTime: "",
       search: "",
       valid: true,
       valid2: true,
@@ -197,6 +221,7 @@ export default {
         },
         { text: "Description", value: "routeDescription" },
         { text: "# of Students", value: "routeNumStudent" },
+        { text: "Completion Status", value: "routeComplete", sortable: false },
       ],
       busRoutes: [],
       studentsHeaders: [
@@ -207,11 +232,14 @@ export default {
         },
         { text: "Route", value: "studentRoute" },
         { text: "Parent", value: "studentParent" },
+        { text: "In-Range Status", value: "studentInRange", sortable: false },
       ],
       students: [],
       deleteValidationArray: [this.deleteValidation],
       nameValidateArray: [this.nameValidate],
       addressValidateArray: [this.addressValidate],
+      busArriveValidateArray: [this.busArriveValidate],
+      busDepValidateArray: [this.busDepValidate],
     };
   },
   methods: {
@@ -252,12 +280,21 @@ export default {
         .get("/api/school/get/" + this.$route.query.id, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
+        
         .then((response) => {
           this.schoolName = response.data.name;
           this.newSchoolName = response.data.name;
           this.schoolAddress = response.data.address;
           this.newAddress = response.data.address;
           this.formatted_address = response.data.address;
+          var arrTime = moment.utc(response.data.arrivalTime);
+          this.busArriveTime = arrTime.local().format("h:mm A");
+          var depTime = moment.utc(response.data.departureTime);
+          this.busDepTime = depTime.local().format("h:mm A");
+          var newarrTime = moment.utc(response.data.arrivalTime);
+          this.newBusArriveTime = newarrTime.local().format("hh:mm");
+          var newdepTime = moment.utc(response.data.departureTime);
+          this.newBusDepTime = newdepTime.local().format("hh:mm");
         })
         .catch((err) => {
           this.showSnackBar();
@@ -270,6 +307,7 @@ export default {
         routeName: item.name,
         routeDescription: item.description,
         routeNumStudent: item.student_count,
+        routeComplete: item.complete,
       };
     },
     getSchoolRoutes() {
@@ -279,6 +317,7 @@ export default {
         })
         .then((response) => {
           this.busRoutes = response.data.map(this.getDisplayRoutes);
+          
         })
         .catch((err) => {
           this.showSnackBar();
@@ -291,6 +330,7 @@ export default {
         studentName: item.name,
         studentRoute: item.route,
         studentParent: item.parent,
+        studentInRange: item.inRange,
       };
     },
     getStudents() {
@@ -300,6 +340,7 @@ export default {
         })
         .then((response) => {
           this.students = response.data.map(this.getDisplayStudents);
+          console.log(this.students);
         })
         .catch((err) => {
           this.showSnackBar();
@@ -332,6 +373,8 @@ export default {
       }
     },
     submitDataForModify() {
+      console.log("Here it is: " + this.newBusArriveTime);
+      console.log("Here it is 2: " + new Date("2021-01-01 " + this.newBusArriveTime + ":00").toUTCString());
       base_endpoint
         .patch(
           "/api/school/update/" + this.$route.query.id,
@@ -340,6 +383,8 @@ export default {
             address: this.formatted_address,
             latitude: this.latitude,
             longitude: this.longitude,
+            arrivalTime: new Date("2021-01-01 " + this.newBusArriveTime + ":00"),
+            departureTime: new Date("2021-01-01 " + this.newBusDepTime + ":00"),
           },
           {
             headers: {
@@ -357,12 +402,9 @@ export default {
         });
     },
     validateForModify() {
-      if (
-        this.newSchoolName != "" &&
-        this.newSchoolName != null &&
-        this.newAddress != "" &&
-        this.newAddress != null
-      ) {
+      console.log("HERE" + this.busArriveTime + "HERE");
+      if (this.newSchoolName != "" && this.newSchoolName != null && this.newAddress != "" && this.newAddress != null && this.busArriveTime != "" && this.busArriveTime != null && this.busDepTime != "" && this.busDepTime != null) {
+        console.log("Did it get here?");
         this.$refs.form.validate();
         this.submitDataForModify();
         this.dialog2 = false;
@@ -390,7 +432,6 @@ export default {
       }
     },
     nameValidate() {
-      console.log(this.name);
       if (this.newSchoolName == "" || this.newSchoolName == null) {
         return "Name is required";
       } else {
@@ -398,9 +439,23 @@ export default {
       }
     },
     addressValidate() {
-      console.log(this.name);
       if (this.newAddress == "" || this.newAddress == null) {
         return "Address is required";
+      } else {
+        return true;
+      }
+    },
+    busArriveValidate() {
+      if (this.busArriveTime == "" || this.busArriveTime == null) {
+        return "Bus Arrival Time is required, remember to type AM or PM";
+      } else {
+        return true;
+      }
+    },
+    busDepValidate() {
+      console.log("Hello 2: " + this.busDepTime);
+      if (this.busDepTime == "" || this.busDepTime == null) {
+        return "Bus Departure Time is required, remember to type AM or PM";
       } else {
         return true;
       }
