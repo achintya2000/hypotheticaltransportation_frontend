@@ -60,7 +60,9 @@ export default new Vuex.Store({
               username: usercredentials.username,
             })
               .then(otpRes => {
-                if (otpRes.data.isotp == "otp") {
+                console.log("HERE: "+ otpRes.data.isotp);
+                if (otpRes.data.isotp) {
+                  console.log("HERE 2: "+ otpRes.data.link)
                   window.location.href = otpRes.data.link;
                   resolve()
                 } else {
