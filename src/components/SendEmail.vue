@@ -77,6 +77,7 @@ export default {
       emailBody: "",
       allBool: false,
       schoolBool: false,
+      valid: "",
       routeBool: false,
       GABool: false,
       relevantIDNum: "",
