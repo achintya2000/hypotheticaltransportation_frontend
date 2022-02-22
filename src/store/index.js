@@ -55,8 +55,18 @@ export default new Vuex.Store({
           password: usercredentials.password
         })
           .then(response => {
-            context.commit('updateStorage', { access: response.data.token, refresh: null })
-            resolve()
+
+            base_endpoint.post('/api/isotp', {
+            })
+              .then(otpRes => {
+                if (otpRes.data.isotp == "otp") {
+                  window.location.href = otpRes.data.link;
+                  resolve()
+                } else {
+                  context.commit('updateStorage', { access: response.data.token, refresh: null })
+                  resolve()
+                }
+              })
           })
           .catch((err) => {
             console.log(err);

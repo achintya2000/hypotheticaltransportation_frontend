@@ -1,64 +1,67 @@
 <template>
-<v-dialog v-model="dialog" width="50%">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on" >
-                    <span v-if="GABool == true">General Announcement</span><span v-if="GABool == false">Route Announcement</span>
-                  </v-btn>
-                </template>
+  <!-- eslint-disable vue/no-parsing-error -->
+  <v-dialog v-model="dialog" width="50%">
+    <template v-slot:activator="{ on, attrs }">
+      <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
+        <span v-if="GABool == true">General Announcement</span
+        ><span v-if="GABool == false">Route Announcement</span>
+      </v-btn>
+    </template>
 
-                <v-card>
-                  <v-card-title class="text-h5 grey lighten-2">
-                   <span v-if="GABool == true">General Announcement:&nbsp</span><span v-if="GABool == false">Route Announcement:&nbsp</span>
-                   <span v-if="allBool == true">All Users</span>
-                   <span v-if="schoolBool == true">Selected School</span>
-                   <span v-if="routeBool == true">Selected Route</span>
-                  </v-card-title>
+    <v-card>
+      <v-card-title class="text-h5 grey lighten-2">
+        <span v-if="GABool == true">General Announcement:&nbsp</span
+        ><span v-if="GABool == false">Route Announcement:&nbsp</span>
+        <span v-if="allBool == true">All Users</span>
+        <span v-if="schoolBool == true">Selected School</span>
+        <span v-if="routeBool == true">Selected Route</span>
+      </v-card-title>
 
-                  <v-card-text>
-                    <v-form ref="form" v-model="valid" lazy-validation>
-                      <v-text-field
-                        v-model="subject"
-                        :rules="subjectValidateArray"
-                        label="Email Subject"
-                        required
-                      ></v-text-field>
+      <v-card-text>
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-text-field
+            v-model="subject"
+            :rules="subjectValidateArray"
+            label="Email Subject"
+            required
+          ></v-text-field>
 
-                      <v-textarea
-                        v-model="emailBody"
-                        :rules="emailBodyValidateArray"
-                        label="Email Body"
-                        required
-                      ></v-textarea>
+          <v-textarea
+            v-model="emailBody"
+            :rules="emailBodyValidateArray"
+            label="Email Body"
+            required
+          ></v-textarea>
 
-                      <v-btn
-                        :disabled="!valid"
-                        color="success"
-                        class="mr-4"
-                        @click="validate"
-                        type="submit"
-                      >
-                        Submit
-                      </v-btn>
-                      <v-btn
-                        color="warning"
-                        @click="
-                          dialog = false;
-                          reset();
-                        "
-                      >
-                        Cancel
-                      </v-btn>
-                    </v-form>
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
+          <v-btn
+            :disabled="!valid"
+            color="success"
+            class="mr-4"
+            @click="validate"
+            type="submit"
+          >
+            Submit
+          </v-btn>
+          <v-btn
+            color="warning"
+            @click="
+              dialog = false;
+              reset();
+            "
+          >
+            Cancel
+          </v-btn>
+        </v-form>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
 import { base_endpoint } from "../services/axios-api";
 
 export default {
-    props: {
+  props: {
     typeOfEmail: {
       type: String,
       required: true,
@@ -70,16 +73,17 @@ export default {
   },
   data() {
     return {
-        subject: "",
-        emailBody: "",
-        allBool: false,
-        schoolBool: false,
-        valid: "",
-        routeBool: false,
-        GABool: false,
-        relevantIDNum: "",
+      subject: "",
+      emailBody: "",
+      allBool: false,
+      schoolBool: false,
+      valid: "",
+      routeBool: false,
+      GABool: false,
+      relevantIDNum: "",
       subjectValidateArray: [this.subjectValidate],
       emailBodyValidateArray: [this.emailBodyValidate],
+      dialog: false,
     };
   },
   methods: {
@@ -93,12 +97,12 @@ export default {
       }
     },
     submitData() {
-        console.log("subject: " + this.subject);
-        console.log("body: " + this.emailBody);
-        console.log("all: " + this.allBool);
-        console.log("school: " + this.schoolBool);
-        console.log("route: " + this.routeBool);
-        console.log("GA: " + this.GABool);
+      console.log("subject: " + this.subject);
+      console.log("body: " + this.emailBody);
+      console.log("all: " + this.allBool);
+      console.log("school: " + this.schoolBool);
+      console.log("route: " + this.routeBool);
+      console.log("GA: " + this.GABool);
       base_endpoint
         .post(
           "/api/email",
