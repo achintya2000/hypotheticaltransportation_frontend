@@ -1,6 +1,6 @@
 export const mapMarker = {
     icon: {
-        url: require("@/assets/blue-marker.png"),
+        url: require("@/assets/green-marker.png"),
         scaledSize: { height: 25, width: 25 }
     },
     label: {
@@ -36,7 +36,19 @@ export const mapMarkerUnassigned = {
 }
 export const schoolMapMarker = {
     icon: {
-        url: require("@/assets/green-marker.png"),
+        url: require("@/assets/blue-marker.png"),
+        scaledSize: { height: 25, width: 25 }
+    },
+    label: {
+        text: "\ue80c",
+        fontFamily: "Material Icons",
+        color: "#ffffff",
+        fontSize: "18px",
+    },
+}
+export const stopMapMarker = {
+    icon: {
+        url: require("@/assets/orange-marker.png"),
         scaledSize: { height: 25, width: 25 }
     },
     label: {

@@ -35,7 +35,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-import { mapActions} from "vuex";
+import { mapActions } from "vuex";
 export default {
   data() {
     return {

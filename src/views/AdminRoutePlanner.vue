@@ -25,7 +25,12 @@
       </v-tooltip>
     </v-card-title>
 
-    <GmapMap style="width: 100%; height: 400px" ref="mapRef" :center="center">
+    <GmapMap
+      style="width: 100%; height: 400px"
+      ref="mapRef"
+      :center="center"
+      @click="addStopMarker($event)"
+    >
       <GmapMarker
         :key="index"
         v-for="(m, index) in markers"
@@ -33,7 +38,30 @@
         @click="toggleInfo(m)"
         :icon="getMarkerIcons(m)"
         :label="getMarkerLabels(m)"
-        :draggable="isDraggable(m.isSchool)"
+      />
+      <GmapMarker
+        :key="'stop_' + index"
+        v-for="(m, index) in stops"
+        :position="m.position"
+        :icon="stopMapMarker.icon"
+        :label="m.label"
+        :draggable="true"
+        @drag="moveCircle($event, index)"
+        @dragend="updateStopPosition($event, m)"
+      />
+      <GmapCircle
+        :key="'circle_' + index"
+        v-for="(m, index) in stops"
+        :center="m.position"
+        :radius="483"
+        :visible="true"
+        :options="{
+          strokeColor: '#FF0000',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#FF0000',
+          fillOpacity: 0.35,
+        }"
       />
     </GmapMap>
 
@@ -115,8 +143,53 @@
           :single-select="true"
           @click:row="selectRow"
         >
+          <template v-slot:[`item.name`]="{ item }">
+            <v-text-field
+              @click.native.stop
+              v-model="editedRoute.name"
+              :hide-details="true"
+              dense
+              single-line
+              v-if="item.id === editedRoute.id"
+            ></v-text-field>
+            <span v-else>{{ item.name }}</span>
+          </template>
+          <template v-slot:[`item.description`]="{ item }">
+            <v-textarea
+              @click.native.stop
+              v-model="editedRoute.description"
+              :hide-details="true"
+              dense
+              rows="1"
+              v-if="item.id === editedRoute.id"
+            ></v-textarea>
+            <span v-else>{{ item.description }}</span>
+          </template>
+          <template v-slot:[`item.actions`]="{ item }">
+            <div v-if="item.id === editedRoute.id">
+              <v-icon color="red" class="mr-3" @click.stop="closeRoute">
+                mdi-window-close
+              </v-icon>
+              <v-icon color="green" @click.stop="saveRoute">
+                mdi-content-save
+              </v-icon>
+            </div>
+            <div v-else>
+              <v-icon
+                color="green"
+                class="mr-3"
+                @click.stop="editRouteItem(item)"
+              >
+                mdi-pencil
+              </v-icon>
+              <v-icon color="red" @click.stop="deleteRouteItem(item)">
+                mdi-delete
+              </v-icon>
+            </div>
+          </template>
         </v-data-table>
       </v-col>
+
       <v-col width="50%">
         <v-card-subtitle>
           <v-form ref="form" lazy-validation>
@@ -129,44 +202,73 @@
                 ></v-text-field>
               </v-col>
               <v-col>
-                <v-switch
-                  v-model="canCreateStops"
-                  :label="`Enable Stop Creation`"
-                ></v-switch>
+                <v-btn
+                  :disabled="!canCreateStops"
+                  outlined
+                  @click="enableStopMarkerCreation()"
+                  >Create Stop</v-btn
+                >
               </v-col>
             </v-row>
           </v-form>
         </v-card-subtitle>
 
         <v-data-table
-          :headers="headers"
-          :items="routes"
+          :headers="headers_stops"
+          :items="stops"
           item-key="id"
           dense
-          :show-select="false"
-          :disable-pagination="true"
-          :hide-default-footer="true"
-          class="page__table"
-          :single-select="true"
         >
-        <template #body="props">
-        <draggable
-          :list="props.items"
-          tag="tbody"
-          :disabled="!allowDrag"
-          :move="onMoveCallback"
-          :clone="onCloneCallback"
-          @end="onDropCallback"
-        >
-          <data-table-row-handler
-            v-for="(item, index) in props.items"
-            :key="index"
-            :item="item"
-            :headers="activeHeaders"
-          >
-          </data-table-row-handler>
-        </draggable>
-      </template>
+          <template #body="props">
+            <draggable
+              :list="props.items"
+              tag="tbody"
+              :disabled="!allowDrag"
+              :move="onMoveCallback"
+              :clone="onCloneCallback"
+              @end="onDropCallback"
+            >
+              <data-table-row-handler
+                v-for="(item, index) in props.items"
+                :key="index"
+                :item="item"
+                :headers="headers_stops"
+              >
+                <template v-slot:[`item.name`]="{ item }">
+                  <v-text-field
+                    v-model="editedStop.name"
+                    :hide-details="true"
+                    dense
+                    single-line
+                    v-if="item.id === editedStop.id"
+                  ></v-text-field>
+                  <span v-else>{{ item.name }}</span>
+                </template>
+                <template v-slot:[`item.actions`]="{ item }">
+                  <div v-if="item.id === editedStop.id">
+                    <v-icon color="red" class="mr-3" @click="closeStop">
+                      mdi-window-close
+                    </v-icon>
+                    <v-icon color="green" @click="saveStop">
+                      mdi-content-save
+                    </v-icon>
+                  </div>
+                  <div v-else>
+                    <v-icon
+                      color="green"
+                      class="mr-3"
+                      @click="editStopItem(item)"
+                    >
+                      mdi-pencil
+                    </v-icon>
+                    <v-icon color="red" @click="deleteStopItem(item)">
+                      mdi-delete
+                    </v-icon>
+                  </div>
+                </template>
+              </data-table-row-handler>
+            </draggable>
+          </template>
         </v-data-table>
       </v-col>
     </v-row>
@@ -188,25 +290,30 @@ import { base_endpoint } from "../services/axios-api";
 import { gmapApi } from "vue2-google-maps-withscopedautocomp";
 import { mapActions } from "vuex";
 import DataTableRowHandler from "../components/DataTableRowHandler.vue";
+import draggable from "vuedraggable";
+import moment from "moment";
 import {
   mapMarker,
   mapMarkerActive,
   mapMarkerUnassigned,
   schoolMapMarker,
+  stopMapMarker,
 } from "../assets/markers";
-import draggable from 'vuedraggable'
 
 export default {
+  components: { DataTableRowHandler, draggable },
   data() {
     return {
       mapMarker,
       mapMarkerActive,
       mapMarkerUnassigned,
       schoolMapMarker,
+      stopMapMarker,
       center: { lat: 36.001465, lng: -78.939133 },
       stopName: "",
       snackbar: false,
       canCreateStops: false,
+      canPlaceStopMarker: false,
       activeRouteID: null,
       selectedIndex: null,
       selectedMarker: null,
@@ -231,8 +338,47 @@ export default {
         },
         { text: "Description", value: "description" },
         { text: "# of Students", value: "routeNumStudent" },
+        { text: "Actions", value: "actions", sortable: false, width: "100px" },
+      ],
+      headers_stops: [
+        {
+          text: "Name",
+          align: "start",
+          value: "name",
+        },
+        { text: "Pick Up Time", align: "start", value: "pickupTime" },
+        { text: "Drop Off Time", align: "start", value: "dropoffTime" },
+        { text: "Order", align: "start", value: "order" },
+        { text: "Actions", value: "actions", sortable: false, width: "100px" },
       ],
       routes: [],
+      stops: [],
+      editedRouteIndex: -1,
+      editedRoute: {
+        id: 0,
+        name: "",
+        description: "",
+      },
+      defaultRoute: {
+        id: -1,
+        name: "",
+        description: "",
+        routeNumStudent: 0,
+      },
+      editedStopIndex: -1,
+      editedStop: {
+        id: 0,
+        name: "",
+        description: "",
+        routeNumStudent: 0,
+      },
+      defaultStop: {
+        id: -1,
+        name: "",
+        description: "",
+        routeNumStudent: 0,
+      },
+      reorderedStop: null,
     };
   },
   methods: {
@@ -240,13 +386,54 @@ export default {
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
+    getDisplayStops(item) {
+      var pTime = moment.utc(item.pickupTime);
+      var dTime = moment.utc(item.dropoffTime);
+
+      return {
+        id: item.id,
+        order: item.order,
+        name: item.name,
+        pickupTime: pTime.local().format("h:mm A"),
+        dropoffTime: dTime.local().format("h:mm A"),
+        position: { lat: item.latitude, lng: item.longitude },
+        label: {
+          text: item.order.toString(),
+          fontFamily: "Roboto",
+          color: "#ffffff",
+          fontSize: "18px",
+        },
+      };
+    },
+    getRequestAllStops() {
+      base_endpoint
+        .get("/api/stop/getallfromroute/" + this.activeRouteID, {
+          headers: {
+            Authorization: `Token ${this.$store.state.accessToken}`,
+          },
+        })
+        .then((response) => {
+          this.stops = response.data.map(this.getDisplayStops);
+          this.stops.sort((a, b) => (a.order > b.order ? 1 : -1));
+          console.log(this.stops);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
     selectRow(value, row) {
       if (row.isSelected) {
+        this.canCreateStops = false;
         this.activeRouteID = null;
         row.select(false);
+        this.stops = [];
       } else {
+        this.canCreateStops = true;
         this.activeRouteID = value.id;
         row.select(true);
+
+        this.getRequestAllStops();
       }
     },
     updateMarker(parentID, newRouteID) {
@@ -417,28 +604,215 @@ export default {
     isDraggable(is_school) {
       return is_school ? true : false;
     },
+    updateStopPosition(event, m) {
+      base_endpoint
+        .patch(
+          "/api/stop/update/" + m.id,
+          {
+            name: m.name,
+            order: m.order,
+            latitude: event.latLng.lat(),
+            longitude: event.latLng.lng(),
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
+    moveCircle(event, index) {
+      this.stops[index].position.lat = event.latLng.lat();
+      this.stops[index].position.lng = event.latLng.lng();
+    },
     onCloneCallback(item) {
       // Create a fresh copy of item
+      console.log("OnCloneCallback");
       const cloneMe = JSON.parse(JSON.stringify(item));
-
+      this.reorderedStop = cloneMe;
       return cloneMe;
     },
-    onMoveCallback(evt, //originalEvent
-    ) {
-      const item = evt.draggedContext.element;
-      //const itemIdx = evt.draggedContext.futureIndex;
-
+    onMoveCallback(evt) {
       console.log("onMoveCallback");
+      //const item = evt.draggedContext.element;
+      //const futIdx = evt.draggedContext.futureIndex;
 
-      if (item.locked) {
-        return false;
-      }
-
-      return true;
+      console.log(evt);
     },
-    //onDropCallback(evt, originalEvent) {
-    //  console.log("onDropCallback");
-    //},
+    onDropCallback(evt) {
+      console.log("onDropCallback");
+      console.log(evt);
+      console.log(this.reorderedStop);
+
+      base_endpoint
+        .patch(
+          "/api/stop/update/" + this.reorderedStop.id,
+          {
+            name: this.reorderedStop.name,
+            order: evt.newIndex + 1,
+            latitude: this.reorderedStop.position.lat,
+            longitude: this.reorderedStop.position.lng,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then(() => {
+          this.getRequestAllStops();
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
+    editRouteItem(item) {
+      this.editedRouteIndex = this.routes.indexOf(item);
+      this.editedRoute = Object.assign({}, item);
+    },
+
+    deleteRouteItem(item) {
+      const index = this.routes.indexOf(item);
+      confirm("Are you sure you want to delete this item?") &&
+        this.routes.splice(index, 1);
+    },
+    saveRoute() {
+      if (this.editedRouteIndex > -1) {
+        Object.assign(this.routes[this.editedRouteIndex], this.editedRoute);
+      }
+      this.closeRoute();
+
+      base_endpoint
+        .patch(
+          "/api/route/update/" + this.editedRoute.id,
+          {
+            name: this.editedRoute.name,
+            description: this.editedRoute.description,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then(() => {})
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
+    closeRoute() {
+      setTimeout(() => {
+        this.editedRoute = Object.assign({}, this.defaultRoute);
+        this.editedRouteIndex = -1;
+      }, 300);
+    },
+    editStopItem(item) {
+      this.editedStopIndex = this.stops.indexOf(item);
+      this.editedStop = Object.assign({}, item);
+    },
+
+    deleteStopItem(item) {
+      // const index = this.stops.indexOf(item);
+      // console.log(item);
+      // confirm("Are you sure you want to delete this item?") &&
+      //   this.stops.splice(index, 1);
+      base_endpoint
+        .delete("/api/stop/delete/" + item.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log(response);
+          this.getRequestAllStops();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    saveStop() {
+      if (this.editedStopIndex > -1) {
+        Object.assign(this.stops[this.editedStopIndex], this.editedStop);
+      }
+      this.closeStop();
+
+      base_endpoint
+        .patch(
+          "/api/stop/update/" + this.editedStop.id,
+          {
+            name: this.editedStop.name,
+            order: this.editedStop.order,
+            latitude: this.editedStop.position.lat,
+            longitude: this.editedStop.position.lng,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
+    closeStop() {
+      setTimeout(() => {
+        this.editedStop = Object.assign({}, this.defaultStop);
+        this.editedStopIndex = -1;
+      }, 300);
+    },
+    addStopMarker(event) {
+      // var newStop = {
+      //   name: "",
+      //   position: { lat: event.latLng.lat(), lng: event.latLng.lng() },
+      //   label: {
+      //     text: "Hello",
+      //     fontFamily: "Roboto",
+      //     color: "#ffffff",
+      //     fontSize: "18px",
+      //   },
+      // };
+      // if (this.canPlaceStopMarker) {
+      //   this.stops.push(newStop);
+      // }
+      this.canPlaceStopMarker = false;
+
+      base_endpoint
+        .post(
+          "/api/stop/create",
+          {
+            name: "",
+            route: this.activeRouteID,
+            latitude: event.latLng.lat(),
+            longitude: event.latLng.lng(),
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then(() => {
+          this.getRequestAllStops();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    enableStopMarkerCreation() {
+      this.canPlaceStopMarker = true;
+    },
   },
   created() {
     this.getRequestAllRoutes();
@@ -459,15 +833,11 @@ export default {
       });
     },
   },
-  components: {
-    draggable,
-    DataTableRowHandler,
-  },
 };
 </script>
 
 <style>
 tr.v-data-table__selected {
-  background: #7d92f5 !important;
+  background: #add8e6 !important;
 }
 </style>
