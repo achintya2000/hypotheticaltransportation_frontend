@@ -386,6 +386,11 @@ export default {
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
+    showSnackBarMapError() {
+      this.snackBar(
+        "Something Went Wrong with Map Load! Please Refresh the page."
+      );
+    },
     getDisplayStops(item) {
       var pTime = moment.utc(item.pickupTime);
       var dTime = moment.utc(item.dropoffTime);
@@ -516,9 +521,11 @@ export default {
           this.$refs.mapRef.$mapPromise.then((map) => {
             map.fitBounds(bounds);
           });
+
+          this.getRequestAllRoutes();
         })
         .catch((err) => {
-          this.showSnackBar();
+          this.showSnackBarMapError();
           console.log(err);
         });
     },
@@ -639,18 +646,13 @@ export default {
       this.reorderedStop = cloneMe;
       return cloneMe;
     },
-    onMoveCallback(evt) {
-      console.log("onMoveCallback");
+    onMoveCallback() {
+      //console.log("onMoveCallback");
       //const item = evt.draggedContext.element;
       //const futIdx = evt.draggedContext.futureIndex;
-
-      console.log(evt);
+      //console.log(evt);
     },
     onDropCallback(evt) {
-      console.log("onDropCallback");
-      console.log(evt);
-      console.log(this.reorderedStop);
-
       base_endpoint
         .patch(
           "/api/stop/update/" + this.reorderedStop.id,
@@ -792,7 +794,7 @@ export default {
         .post(
           "/api/stop/create",
           {
-            name: "",
+            name: this.stopName,
             route: this.activeRouteID,
             latitude: event.latLng.lat(),
             longitude: event.latLng.lng(),
