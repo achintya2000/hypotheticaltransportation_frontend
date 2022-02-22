@@ -47,6 +47,7 @@
         :label="m.label"
         :draggable="true"
         @drag="moveCircle($event, index)"
+        @dragend="updateStopPosition($event, m)"
       />
       <GmapCircle
         :key="'circle_' + index"
@@ -225,6 +226,7 @@
               :disabled="!allowDrag"
               :move="onMoveCallback"
               :clone="onCloneCallback"
+              @end="onDropCallback"
             >
               <data-table-row-handler
                 v-for="(item, index) in props.items"
@@ -376,6 +378,7 @@ export default {
         description: "",
         routeNumStudent: 0,
       },
+      reorderedStop: null,
     };
   },
   methods: {
@@ -601,33 +604,76 @@ export default {
     isDraggable(is_school) {
       return is_school ? true : false;
     },
+    updateStopPosition(event, m) {
+      base_endpoint
+        .patch(
+          "/api/stop/update/" + m.id,
+          {
+            name: m.name,
+            order: m.order,
+            latitude: event.latLng.lat(),
+            longitude: event.latLng.lng(),
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
     moveCircle(event, index) {
       this.stops[index].position.lat = event.latLng.lat();
       this.stops[index].position.lng = event.latLng.lng();
     },
     onCloneCallback(item) {
       // Create a fresh copy of item
+      console.log("OnCloneCallback");
       const cloneMe = JSON.parse(JSON.stringify(item));
-
+      this.reorderedStop = cloneMe;
       return cloneMe;
     },
-    onMoveCallback(
-      evt //originalEvent
-    ) {
-      const item = evt.draggedContext.element;
-      //const itemIdx = evt.draggedContext.futureIndex;
-
+    onMoveCallback(evt) {
       console.log("onMoveCallback");
+      //const item = evt.draggedContext.element;
+      //const futIdx = evt.draggedContext.futureIndex;
 
-      if (item.locked) {
-        return false;
-      }
-
-      return true;
+      console.log(evt);
     },
-    //onDropCallback(evt, originalEvent) {
-    //  console.log("onDropCallback");
-    //},
+    onDropCallback(evt) {
+      console.log("onDropCallback");
+      console.log(evt);
+      console.log(this.reorderedStop);
+
+      base_endpoint
+        .patch(
+          "/api/stop/update/" + this.reorderedStop.id,
+          {
+            name: this.reorderedStop.name,
+            order: evt.newIndex + 1,
+            latitude: this.reorderedStop.position.lat,
+            longitude: this.reorderedStop.position.lng,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then(() => {
+          this.getRequestAllStops();
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
     editRouteItem(item) {
       this.editedRouteIndex = this.routes.indexOf(item);
       this.editedRoute = Object.assign({}, item);
@@ -643,7 +689,25 @@ export default {
         Object.assign(this.routes[this.editedRouteIndex], this.editedRoute);
       }
       this.closeRoute();
-      console.log(this.routes);
+
+      base_endpoint
+        .patch(
+          "/api/route/update/" + this.editedRoute.id,
+          {
+            name: this.editedRoute.name,
+            description: this.editedRoute.description,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then(() => {})
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
     },
     closeRoute() {
       setTimeout(() => {
@@ -678,6 +742,29 @@ export default {
         Object.assign(this.stops[this.editedStopIndex], this.editedStop);
       }
       this.closeStop();
+
+      base_endpoint
+        .patch(
+          "/api/stop/update/" + this.editedStop.id,
+          {
+            name: this.editedStop.name,
+            order: this.editedStop.order,
+            latitude: this.editedStop.position.lat,
+            longitude: this.editedStop.position.lng,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
     },
     closeStop() {
       setTimeout(() => {
@@ -716,9 +803,8 @@ export default {
             },
           }
         )
-        .then((response) => {
-          console.log(response);
-          this.getRequestAllStops()
+        .then(() => {
+          this.getRequestAllStops();
         })
         .catch((err) => {
           console.log(err);
