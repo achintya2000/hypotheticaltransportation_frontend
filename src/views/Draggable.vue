@@ -1,7 +1,6 @@
 <template>
   <div>
-    <v-switch v-model="allowDrag" label="Draggable">
-    </v-switch>
+    <v-switch v-model="allowDrag" label="Draggable"> </v-switch>
     <v-data-table
       ref="myTable"
       v-model="selected"
@@ -25,8 +24,7 @@
             :item="item"
             :headers="activeHeaders"
           >
-
-            <template  v-slot:[`item.carbs`]="{ item }">
+            <template v-slot:[`item.carbs`]="{ item }">
               {{ item.carbs }}
             </template>
           </data-table-row-handler>
@@ -174,7 +172,8 @@ export default {
 
       return cloneMe;
     },
-    onMoveCallback(evt, //originalEvent
+    onMoveCallback(
+      evt //originalEvent
     ) {
       const item = evt.draggedContext.element;
       //const itemIdx = evt.draggedContext.futureIndex;

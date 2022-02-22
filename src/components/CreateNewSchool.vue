@@ -1,7 +1,15 @@
 <template>
   <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn style="margin: 10px" input-value=null outlined v-bind="attrs" v-on="on"> Create New School </v-btn>
+      <v-btn
+        style="margin: 10px"
+        input-value="null"
+        outlined
+        v-bind="attrs"
+        v-on="on"
+      >
+        Create New School
+      </v-btn>
     </template>
 
     <v-card>
@@ -10,7 +18,7 @@
       </v-card-title>
 
       <v-card-text>
-        <v-form ref="form" v-model="valid" lazy-validation >
+        <v-form ref="form" v-model="valid" lazy-validation>
           <v-text-field
             v-model="name"
             append-icon="mdi-school"
@@ -19,7 +27,7 @@
             required
           ></v-text-field>
 
-          <gmap-autocomplete @place_changed="setPlace" >
+          <gmap-autocomplete @place_changed="setPlace">
             <template v-slot:input="slotProps">
               <v-text-field
                 v-model="address"
@@ -34,21 +42,21 @@
             </template>
           </gmap-autocomplete>
 
-<v-text-field
-  v-model="busArriveTime"
-  label="Bus Arrival Time"
-  type="time"
-  :rules="busArriveValidateArray"
-  required
-></v-text-field>
+          <v-text-field
+            v-model="busArriveTime"
+            label="Bus Arrival Time"
+            type="time"
+            :rules="busArriveValidateArray"
+            required
+          ></v-text-field>
 
-<v-text-field
-  v-model="busDepTime"
-  label="Bus Departure Time"
-  type="time"
-  :rules="busDepValidateArray"
-  required
-></v-text-field>
+          <v-text-field
+            v-model="busDepTime"
+            label="Bus Departure Time"
+            type="time"
+            :rules="busDepValidateArray"
+            required
+          ></v-text-field>
 
           <v-btn
             :disabled="!valid"
@@ -71,18 +79,15 @@
             Cancel
           </v-btn>
         </v-form>
-        <v-btn @click="showSnackBar()">
-          Show SnackBar!
-        </v-btn>
+        <v-btn @click="showSnackBar()"> Show SnackBar! </v-btn>
       </v-card-text>
     </v-card>
   </v-dialog>
-  
 </template>
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-import { mapActions} from "vuex";
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -98,7 +103,7 @@ export default {
       busArriveValidateArray: [this.busArriveValidate],
       busDepValidateArray: [this.busDepValidate],
       busArriveTime: "",
-      busDepTime: ""
+      busDepTime: "",
     };
   },
   methods: {
@@ -107,7 +112,9 @@ export default {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
     showSnackBarAddress() {
-      this.snackBar("Uh-Oh! Something Went Wrong! Make sure to click the Autofill result to complete your Address!");
+      this.snackBar(
+        "Uh-Oh! Something Went Wrong! Make sure to click the Autofill result to complete your Address!"
+      );
     },
     setPlace(place) {
       this.formatted_address = place.formatted_address;
@@ -115,8 +122,6 @@ export default {
       this.longitude = place.geometry.location.lng();
     },
     submitData() {
-      console.log(new Date("2021-01-01 " + this.busArriveTime + ":00").toUTCString());
-      console.log(new Date("2021-01-01 " + this.busDepTime + ":00").toUTCString());
       base_endpoint
         .post(
           "/api/school/create",
@@ -146,7 +151,16 @@ export default {
         });
     },
     validate() {
-      if (this.name != "" && this.name != null && this.address != "" && this.address != null && this.busArriveTime != "" && this.busArriveTime != null && this.busDepTime != "" && this.busDepTime != null) {
+      if (
+        this.name != "" &&
+        this.name != null &&
+        this.address != "" &&
+        this.address != null &&
+        this.busArriveTime != "" &&
+        this.busArriveTime != null &&
+        this.busDepTime != "" &&
+        this.busDepTime != null
+      ) {
         this.submitData();
         this.dialog = false;
         this.reset();
@@ -159,7 +173,6 @@ export default {
       this.$refs.form.resetValidation();
     },
     nameValidate() {
-      console.log(this.name);
       if (this.name == "" || this.name == null) {
         return "Name is required";
       } else {
@@ -167,7 +180,6 @@ export default {
       }
     },
     addressValidate() {
-      console.log(this.name);
       if (this.address == "" || this.address == null) {
         return "Address is required";
       } else {
@@ -175,7 +187,6 @@ export default {
       }
     },
     busArriveValidate() {
-      console.log(this.busArriveTime);
       if (this.busArriveTime == "" || this.busArriveTime == null) {
         return "Bus Arrival Time is required, remember to type AM or PM";
       } else {
@@ -183,7 +194,6 @@ export default {
       }
     },
     busDepValidate() {
-      console.log(this.busDepTime);
       if (this.busDepTime == "" || this.busDepTime == null) {
         return "Bus Departure Time is required, remember to type AM or PM";
       } else {
