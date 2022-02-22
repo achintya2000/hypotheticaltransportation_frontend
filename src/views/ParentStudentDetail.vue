@@ -8,26 +8,40 @@
 
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-card-subtitle> 
-      <span class="black--text font-weight-bold"> ID: </span><span class="black--text"> {{ studentId }} </span>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> ID: </span
+      ><span class="black--text"> {{ studentId }} </span>
     </v-card-subtitle>
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> School: </span><span class="black--text"> {{ studentSchool }} </span>
+      <span class="black--text font-weight-bold"> School: </span
+      ><span class="black--text"> {{ studentSchool }} </span>
     </v-card-subtitle>
 
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Route: </span><span class="black--text"> {{ studentRoute }} </span>
+      <span class="black--text font-weight-bold"> Route: </span
+      ><span class="black--text"> {{ studentRoute }} </span>
     </v-card-subtitle>
 
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Parent: </span><span class="black--text"> {{ studentParent }} </span>
+      <span class="black--text font-weight-bold"> Parent: </span
+      ><span class="black--text"> {{ studentParent }} </span>
     </v-card-subtitle>
+
+    <v-row>
+      <v-col width="50%">
+        <v-data-table> </v-data-table>
+      </v-col>
+      <v-col width="50%">
+        <GmapMap style="width: 100%; height: 400px" :center="center" :zoom="12">
+        </GmapMap>
+      </v-col>
+    </v-row>
   </v-card>
 </template>
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-import { mapActions} from "vuex";
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -36,7 +50,7 @@ export default {
       dialog2: false,
       name: "Old Name",
       nameRules: [(v) => !!v || "Name is required"],
-      studentId: "", 
+      studentId: "",
       studentIDRules: [(v) => !!v || "Student ID is required"],
       parentValue: "Old Parent",
       parentRules: [(v) => !!v || "Parent is required"],
@@ -65,6 +79,8 @@ export default {
       newStudentId: "",
       newStudentSchool: "",
       newStudentParent: "",
+      stopsInRange: [],
+      center: { lat: 36.001465, lng: -78.939133 },
     };
   },
   methods: {

@@ -57,6 +57,7 @@ export default new Vuex.Store({
           .then(response => {
 
             base_endpoint.post('/api/isotp', {
+              username: usercredentials.username,
             })
               .then(otpRes => {
                 if (otpRes.data.isotp == "otp") {
