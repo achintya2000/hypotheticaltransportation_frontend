@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <nav-bar />
+    <nav-bar v-if="!isResetPWRoute" />
     <v-main>
       <router-view />
     </v-main>
@@ -28,6 +28,9 @@ export default {
   
   computed: {
     ...mapState(["snackbar"]),
+    isResetPWRoute() {
+      return this.$route.name == "ResetPassword";
+    }
   },
 
   data: () => ({

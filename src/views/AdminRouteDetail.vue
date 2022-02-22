@@ -101,6 +101,10 @@
           </v-card-text>
         </v-card>
       </v-dialog>
+      <send-email :typeOfEmail="'routeGA'" :relevantID = this.$route.query.id
+      ></send-email>
+      <send-email :typeOfEmail="'routeRA'" :relevantID = this.$route.query.id
+      ></send-email>
     </v-card-title>
 
     <v-row>
@@ -161,8 +165,12 @@
 import { base_endpoint } from "../services/axios-api";
 import { mapMarker, schoolMapMarker } from "../assets/markers";
 import { gmapApi } from "vue2-google-maps-withscopedautocomp";
+import SendEmail from "../components/SendEmail.vue";
 
 export default {
+   components: { 
+    SendEmail 
+  },
   data() {
     return {
       mapMarker,

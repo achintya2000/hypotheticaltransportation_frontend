@@ -80,7 +80,6 @@
   
 </template>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.js"></script>
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { mapActions} from "vuex";
@@ -90,6 +89,7 @@ export default {
       name: "",
       dialog: false,
       valid: true,
+      address: "",
       latitude: 0,
       longitude: 0,
       formatted_address: "",
@@ -125,8 +125,8 @@ export default {
             address: this.formatted_address,
             latitude: this.latitude,
             longitude: this.longitude,
-            arrivalTime: new Date("2021-01-01 " + this.busArriveTime + ":00").toUTCString(),
-            departureTime: new Date("2021-01-01 " + this.busDepTime + ":00").toUTCString(),
+            arrivalTime: new Date("2021-01-01 " + this.busArriveTime + ":00"),
+            departureTime: new Date("2021-01-01 " + this.busDepTime + ":00"),
           },
           {
             headers: {

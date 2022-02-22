@@ -135,7 +135,7 @@
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Parent: </span>
       <v-btn text 
-        @click="viewSchool(studentParentId)"
+        @click="viewParent(studentParentId)"
         style="text-transform:none !important">
         {{ studentParent }} 
         </v-btn>

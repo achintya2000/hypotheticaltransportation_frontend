@@ -40,27 +40,22 @@
             dense
             required
           ></v-text-field>
-          <v-text-field
-            v-if="userCheckbox"
-            :rules="userPasswordValidateArray"
-            v-model="parentPassword"
-            append-icon="mdi-lock"
-            label="User Password"
-            :type="'password'"
-            dense
-            required
-          ></v-text-field>
-          <v-text-field
-            v-if="userCheckbox"
-            :rules="userPasswordValidateArray2"
-            v-model="parentPassword2"
-            append-icon="mdi-lock"
-            label="Confirm User Password"
-            :type="'password'"
-            dense
-            required
-          ></v-text-field>
-
+          <v-text v-if="userCheckbox">Password Type:</v-text>
+            <v-radio-group
+              v-model="passType2"
+              row
+              :rules="userPasswordTypeValidateArray"
+              v-if="userCheckbox"
+            >
+              <v-radio
+                label="One Time Password"
+                value="otp"
+              ></v-radio>
+              <v-radio
+                label="Link Based Password Creation"
+                value="link"
+              ></v-radio>
+            </v-radio-group>
           <gmap-autocomplete v-if="userCheckbox" @place_changed="setPlace">
             <template v-slot:input="slotProps">
               <v-text-field
@@ -130,7 +125,6 @@
             color="success"
             class="mr-4"
             @click="validate"
-            type="submit"
           >
             Submit
           </v-btn>
@@ -164,6 +158,7 @@ export default {
       schoolItems: [],
       dialog: false,
       valid: true,
+      passType2: "",
       parentName: "",
       parentEmail: "",
       parentPassword: "",
@@ -185,8 +180,7 @@ export default {
       //reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
       userNameValidateArray: [this.userNameValidate],
       userEmailValidateArray: [this.userEmailValidate],
-      userPasswordValidateArray: [this.userPasswordValidate],
-      userPasswordValidateArray2: [this.userPasswordValidate2],
+      userPasswordTypeValidateArray: [this.userPasswordTypeValidate],
       userAddressValidateArray: [this.userAddressValidate],
       studentNameValidateArray: [this.studentNameValidate],
       studentIDValidateArray: [this.studentIDValidate],
@@ -257,6 +251,7 @@ export default {
               email: this.parentEmail,
               password: this.parentPassword,
               is_superuser: this.userAdminCheckbox,
+              passwordType: this.passType2,
             },
             {
               headers: {
@@ -350,10 +345,8 @@ export default {
           this.parentName != "") &&
           (this.parentEmail != null &&
           this.parentEmail != "") &&
-          (this.parentPassword != null &&
-          this.parentPassword != "") &&
-          (this.parentPassword2 != null &&
-          this.parentPassword2 != "") &&
+          (this.passType2 != null &&
+          this.passType2 != "") &&
           (this.parentAddress != null && 
           this.parentAddress != "")) ||
         (this.studentCheckbox == true &&
@@ -410,23 +403,12 @@ export default {
         }
       }
     },
-    userPasswordValidate() {
+    userPasswordTypeValidate() {
       if (
         this.userCheckbox == true &&
-        (this.parentPassword == null || this.parentPassword == "")
+        (this.passType2 == null || this.passType2 == "")
       ) {
-        return "Parent password is required";
-      } else {
-        return true;
-      }
-    },
-    userPasswordValidate2() {
-      if (this.userCheckbox == true &&
-        (this.parentPassword2 == "" || this.parentPassword2 == null)) {
-        return "This field is required";
-      } else if (this.userCheckbox == true &&
-        (this.parentPassword != this.parentPassword2)) {
-        return "The passwords must match";
+        return "Parent type is required";
       } else {
         return true;
       }
