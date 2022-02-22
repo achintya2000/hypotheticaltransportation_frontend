@@ -44,6 +44,7 @@
             </v-alert>
             <v-col class="d-flex" cols="12" sm="6" xsm="12"> </v-col>
             <v-spacer></v-spacer>
+            <v-btn @click="forgetPassword"> Forget Password </v-btn>
             <v-btn type="submit" text :disabled="!valid"> Login </v-btn>
           </v-row>
         </v-form>
@@ -53,6 +54,7 @@
 </template>
 
 <script>
+import { base_endpoint } from "../services/axios-api";
 export default {
   name: "Login",
   data() {
@@ -78,6 +80,25 @@ export default {
     };
   },
   methods: {
+    forgetPassword() {
+      base_endpoint
+        .post(
+          "/api/forgotpassword",
+          {
+            email: this.username,
+          },
+        )
+        .then((response) => {
+          console.log(response);
+          this.$router.push({
+            name: "Home",
+          });
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
     login() {
       this.$store
         .dispatch("userLogin", {
