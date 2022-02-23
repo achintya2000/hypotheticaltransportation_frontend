@@ -106,39 +106,37 @@
       ><span class="black--text"> {{ studentId }} </span>
     </v-card-subtitle>
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> School: </span> 
-      <v-btn text 
-        @click="viewSchool(studentSchoolId)"
-        style="text-transform:none !important">
-        {{ studentSchool }} 
-        </v-btn>
-        
+      <span class="black--text font-weight-bold"> School: </span>
+      <span text 
+        @click="viewSchool(studentSchoolId)" class="txt blue--text text--darken-4">
+         {{ studentSchool }} 
+      </span>        
     </v-card-subtitle>
 
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Route: </span>
-      <v-btn text 
+      <span text 
         @click="viewRoute(studentRouteId)"
-        style="text-transform:none !important"
+        class="txt blue--text text--darken-4"
         v-if="studentRoute != 'No route assigned'">
         {{ studentRoute }} 
-        </v-btn>
+        </span>
         
-        <v-btn text 
-        style="text-transform:none !important"
+        <span text 
+        class="black--text"
         v-if="studentRoute == 'No route assigned'">
         No Route Assigned
-        </v-btn>
+        </span>
 
     </v-card-subtitle>
 
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Parent: </span>
-      <v-btn text 
+      <span text 
         @click="viewParent(studentParentId)"
-        style="text-transform:none !important">
+         class="txt blue--text text--darken-4">
         {{ studentParent }} 
-        </v-btn>
+        </span>
     </v-card-subtitle>
   </v-card>
 </template>
@@ -385,8 +383,11 @@ export default {
   created() {
     this.getStudentInfo();
   },
+  
 };
 </script>
 <style>
-
+.txt:hover {
+          text-decoration: underline;
+      }
 </style>

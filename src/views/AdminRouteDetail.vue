@@ -109,10 +109,13 @@
 
     <v-row>
       <v-col>
+        
         <v-card-subtitle>
-          <span class="black--text font-weight-bold"> School: </span
-          ><span class="black--text"> {{ routeSchool }} </span>
-          <v-icon small @click="viewSchool(routeSchoolID)"> mdi-eye </v-icon>
+          <span class="black--text font-weight-bold"> School: </span>
+          <span text 
+            @click="viewSchool(routeSchoolID)" class="txt blue--text text--darken-4">
+            {{ routeSchool }} 
+          </span>        
         </v-card-subtitle>
         <v-card-subtitle>
           <span class="black--text font-weight-bold"> Description: </span>
