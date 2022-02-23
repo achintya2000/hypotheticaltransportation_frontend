@@ -321,7 +321,8 @@ import draggable from "vuedraggable";
 import moment from "moment";
 import {
   mapMarker,
-  mapMarkerActive,
+  mapMarkerActiveInRange,
+  mapMarkerActiveNotInRange,
   mapMarkerUnassigned,
   schoolMapMarker,
   stopMapMarker,
@@ -332,7 +333,8 @@ export default {
   data() {
     return {
       mapMarker,
-      mapMarkerActive,
+      mapMarkerActiveInRange,
+      mapMarkerActiveNotInRange,
       mapMarkerUnassigned,
       schoolMapMarker,
       stopMapMarker,
@@ -451,7 +453,6 @@ export default {
         .then((response) => {
           this.stops = response.data.map(this.getDisplayStops);
           this.stops.sort((a, b) => (a.order > b.order ? 1 : -1));
-          console.log(this.stops);
         })
         .catch((err) => {
           this.showSnackBar();
@@ -509,6 +510,7 @@ export default {
         routeID: item.route,
         parentID: item.parent_id,
         isSchool: item.is_school,
+        isInRange: item.inRange,
       };
     },
     getRequestAllRoutes() {
@@ -543,8 +545,8 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
+          console.log(response.data);
           this.markers = response.data.map(this.getDisplayMarkers);
-
           var bounds = new this.google.maps.LatLngBounds();
           for (var i = 0; i < this.markers.length; i++) {
             bounds.extend(this.markers[i].position);
@@ -614,13 +616,23 @@ export default {
     getMarkerIcons(m) {
       if (m.isSchool == true) return this.schoolMapMarker.icon;
       if (m.routeID == null) return this.mapMarkerUnassigned.icon;
-      if (m.routeID == this.activeRouteID) return this.mapMarkerActive.icon;
+      if (m.routeID == this.activeRouteID && m.isInRange == true) {
+        return this.mapMarkerActiveInRange.icon;
+      }
+      if (m.routeID == this.activeRouteID && m.isInRange == false) {
+        return this.mapMarkerActiveNotInRange.icon;
+      }
       return this.mapMarker.icon;
     },
     getMarkerLabels(m) {
       if (m.isSchool == true) return this.schoolMapMarker.label;
       if (m.routeID == null) return this.mapMarkerUnassigned.label;
-      if (m.routeID == this.activeRouteID) return this.mapMarkerActive.label;
+      if (m.routeID == this.activeRouteID && m.isInRange == true) {
+        return this.mapMarkerActiveInRange.label;
+      }
+      if (m.routeID == this.activeRouteID && m.isInRange == false) {
+        return this.mapMarkerActiveNotInRange.label;
+      }
       return this.mapMarker.label;
     },
     nameValidate() {
@@ -659,9 +671,7 @@ export default {
             },
           }
         )
-        .then((res) => {
-          console.log(res);
-        })
+        .then(() => {})
         .catch((err) => {
           this.showSnackBar();
           console.log(err);
@@ -673,7 +683,6 @@ export default {
     },
     onCloneCallback(item) {
       // Create a fresh copy of item
-      console.log("OnCloneCallback");
       const cloneMe = JSON.parse(JSON.stringify(item));
       this.reorderedStop = cloneMe;
       return cloneMe;
@@ -756,7 +765,6 @@ export default {
 
     deleteStopItem(item) {
       const index = this.stops.indexOf(item);
-      console.log(item);
       this.stops.splice(index, 1);
       this.snackbar3 = true;
       this.snackbar2 = false;

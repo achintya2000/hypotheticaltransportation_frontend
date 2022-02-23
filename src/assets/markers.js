@@ -1,6 +1,6 @@
 export const mapMarker = {
     icon: {
-        url: require("@/assets/green-marker.png"),
+        url: require("@/assets/blue-marker.png"),
         scaledSize: { height: 25, width: 25 }
     },
     label: {
@@ -10,13 +10,25 @@ export const mapMarker = {
         fontSize: "18px",
     }
 }
-export const mapMarkerActive = {
+export const mapMarkerActiveInRange = {
     icon: {
-        url: require("@/assets/yellow-marker.png"),
+        url: require("@/assets/green-marker.png"),
         scaledSize: { height: 25, width: 25 }
     },
     label: {
-        text: "\ue88a",
+        text: "\ue7fd",
+        fontFamily: "Material Icons",
+        color: "#ffffff",
+        fontSize: "18px",
+    }
+}
+export const mapMarkerActiveNotInRange = {
+    icon: {
+        url: require("@/assets/red-marker.png"),
+        scaledSize: { height: 25, width: 25 }
+    },
+    label: {
+        text: "\ue7fd",
         fontFamily: "Material Icons",
         color: "#ffffff",
         fontSize: "18px",
@@ -24,11 +36,11 @@ export const mapMarkerActive = {
 }
 export const mapMarkerUnassigned = {
     icon: {
-        url: require("@/assets/red-marker.png"),
+        url: require("@/assets/blue-marker.png"),
         scaledSize: { height: 25, width: 25 }
     },
     label: {
-        text: "\ue5cd",
+        text: "\ueb8b",
         fontFamily: "Material Icons",
         color: "#ffffff",
         fontSize: "18px",
@@ -36,7 +48,7 @@ export const mapMarkerUnassigned = {
 }
 export const schoolMapMarker = {
     icon: {
-        url: require("@/assets/blue-marker.png"),
+        url: require("@/assets/brown-marker.png"),
         scaledSize: { height: 25, width: 25 }
     },
     label: {

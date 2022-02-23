@@ -23,7 +23,7 @@
     </v-card-subtitle>
 
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Route: </span
+      <span class="black--text font-weight-bold"> Route Description: </span
       ><span class="black--text"> {{ studentRouteDescription }} </span>
     </v-card-subtitle>
 
