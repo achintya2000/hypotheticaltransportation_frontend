@@ -724,16 +724,16 @@ export default {
     },
 
     deleteStopItem(item) {
-      // const index = this.stops.indexOf(item);
-      // console.log(item);
-      // confirm("Are you sure you want to delete this item?") &&
-      //   this.stops.splice(index, 1);
+      const index = this.stops.indexOf(item);
+      console.log(item);
+      this.stops.splice(index, 1);
+
       base_endpoint
         .delete("/api/stop/delete/" + item.id, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
-        .then((response) => {
-          console.log(response);
+        .then(() => {
+          this.stops = [];
           this.getRequestAllStops();
         })
         .catch((err) => {
@@ -776,42 +776,47 @@ export default {
       }, 300);
     },
     addStopMarker(event) {
-      // var newStop = {
-      //   name: "",
-      //   position: { lat: event.latLng.lat(), lng: event.latLng.lng() },
-      //   label: {
-      //     text: "Hello",
-      //     fontFamily: "Roboto",
-      //     color: "#ffffff",
-      //     fontSize: "18px",
-      //   },
-      // };
-      // if (this.canPlaceStopMarker) {
-      //   this.stops.push(newStop);
-      // }
-      this.canPlaceStopMarker = false;
+      var newStop = {
+        name: this.stopName,
+        position: { lat: event.latLng.lat(), lng: event.latLng.lng() },
+        label: {
+          text: null,
+          fontFamily: "Roboto",
+          color: "#ffffff",
+          fontSize: "18px",
+        },
+      };
+      if (this.canPlaceStopMarker) {
+        this.stops.push(newStop);
+      }
 
-      base_endpoint
-        .post(
-          "/api/stop/create",
-          {
-            name: this.stopName,
-            route: this.activeRouteID,
-            latitude: event.latLng.lat(),
-            longitude: event.latLng.lng(),
-          },
-          {
-            headers: {
-              Authorization: `Token ${this.$store.state.accessToken}`,
+      console.log(this.canPlaceStopMarker);
+
+      if (this.canPlaceStopMarker) {
+        base_endpoint
+          .post(
+            "/api/stop/create",
+            {
+              name: this.stopName,
+              route: this.activeRouteID,
+              latitude: event.latLng.lat(),
+              longitude: event.latLng.lng(),
             },
-          }
-        )
-        .then(() => {
-          this.getRequestAllStops();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+            {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
+              },
+            }
+          )
+          .then(() => {
+            this.stops = [];
+            this.getRequestAllStops();
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+      this.canPlaceStopMarker = false;
     },
     enableStopMarkerCreation() {
       this.canPlaceStopMarker = true;

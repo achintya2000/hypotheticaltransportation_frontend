@@ -23,6 +23,11 @@
     </v-card-subtitle>
 
     <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Route: </span
+      ><span class="black--text"> {{ studentRouteDescription }} </span>
+    </v-card-subtitle>
+
+    <v-card-subtitle>
       <span class="black--text font-weight-bold"> Parent: </span
       ><span class="black--text"> {{ studentParent }} </span>
     </v-card-subtitle>
@@ -74,6 +79,7 @@ export default {
       parent: null,
       studentSchool: "",
       studentRoute: "",
+      studentRouteDescription: "",
       studentParent: "",
       newStudentName: "",
       newStudentId: "",
@@ -101,6 +107,7 @@ export default {
           this.studentSchool = response.data.school;
           this.newStudentSchool = response.data.school;
           this.studentRoute = response.data.route;
+          this.studentRouteDescription = response.data.route_description;
           this.studentParent = response.data.parent;
           this.newStudentParent = response.data.parent;
           this.studentSchoolId = response.data.school_id;
@@ -112,13 +119,26 @@ export default {
           console.log(err);
         });
     },
-
+    getInRangeStops() {
+      base_endpoint
+        .get("/api/student/getinrangestops/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
     validate() {
       this.$refs.form.validate();
     },
   },
   created() {
     this.getStudentInfo();
+    this.getInRangeStops();
   },
 };
 </script>
