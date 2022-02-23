@@ -24,7 +24,96 @@
         ></v-img>
       </v-tooltip>
     </v-card-title>
+  <v-row>
+    
 
+    <v-col width="50%">
+        <v-card-subtitle>
+          <v-form ref="form" lazy-validation>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="stopName"
+                  label="Enter Stop Name (optional)"
+                  single-line
+                ></v-text-field>
+              </v-col>
+              <v-col>
+                <v-btn
+                  :disabled="!canCreateStops"
+                  outlined
+                  @click="enableStopMarkerCreation(); snackbar2=true"
+                  >Create Stop</v-btn
+                >
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-subtitle>
+
+        <v-data-table
+          :headers="headers_stops"
+          :items="stops"
+          item-key="id"
+          dense
+        >
+          <template #body="props">
+            <draggable
+              :list="props.items"
+              tag="tbody"
+              :disabled="!allowDrag"
+              :move="onMoveCallback"
+              :clone="onCloneCallback"
+              @end="onDropCallback"
+            >
+              <data-table-row-handler
+                v-for="(item, index) in props.items"
+                :key="index"
+                :item="item"
+                :headers="headers_stops"
+              >
+                <template v-slot:[`item.drag`]>
+                  <v-icon class="mr-3">
+                      mdi-reorder-horizontal
+                    </v-icon>
+                </template>
+                <template v-slot:[`item.name`]="{ item }">
+                  <v-text-field
+                    v-model="editedStop.name"
+                    :hide-details="true"
+                    dense
+                    single-line
+                    v-if="item.id === editedStop.id"
+                  ></v-text-field>
+                  <span v-else>{{ item.name }}</span>
+                </template>
+                <template v-slot:[`item.actions`]="{ item }">
+                  <div v-if="item.id === editedStop.id">
+                    <v-icon color="red" class="mr-3" @click="closeStop">
+                      mdi-window-close
+                    </v-icon>
+                    <v-icon color="green" @click="saveStop">
+                      mdi-content-save
+                    </v-icon>
+                  </div>
+                  <div v-else>
+                    <v-icon
+                      color="green"
+                      class="mr-3"
+                      @click="editStopItem(item)"
+                    >
+                      mdi-pencil
+                    </v-icon>
+                    <v-icon color="red" @click="deleteStopItem(item)">
+                      mdi-delete
+                    </v-icon>
+                  </div>
+                </template>
+              </data-table-row-handler>
+            </draggable>
+          </template>
+        </v-data-table>
+      </v-col>
+      <v-col width=50%>
     <GmapMap
       style="width: 100%; height: 400px"
       ref="mapRef"
@@ -64,6 +153,9 @@
         }"
       />
     </GmapMap>
+    </v-col>
+
+    </v-row>
 
     <v-row>
       <v-col width="50%">
@@ -190,87 +282,7 @@
         </v-data-table>
       </v-col>
 
-      <v-col width="50%">
-        <v-card-subtitle>
-          <v-form ref="form" lazy-validation>
-            <v-row>
-              <v-col>
-                <v-text-field
-                  v-model="stopName"
-                  label="Enter Stop Name (optional)"
-                  single-line
-                ></v-text-field>
-              </v-col>
-              <v-col>
-                <v-btn
-                  :disabled="!canCreateStops"
-                  outlined
-                  @click="enableStopMarkerCreation()"
-                  >Create Stop</v-btn
-                >
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-card-subtitle>
-
-        <v-data-table
-          :headers="headers_stops"
-          :items="stops"
-          item-key="id"
-          dense
-        >
-          <template #body="props">
-            <draggable
-              :list="props.items"
-              tag="tbody"
-              :disabled="!allowDrag"
-              :move="onMoveCallback"
-              :clone="onCloneCallback"
-              @end="onDropCallback"
-            >
-              <data-table-row-handler
-                v-for="(item, index) in props.items"
-                :key="index"
-                :item="item"
-                :headers="headers_stops"
-              >
-                <template v-slot:[`item.name`]="{ item }">
-                  <v-text-field
-                    v-model="editedStop.name"
-                    :hide-details="true"
-                    dense
-                    single-line
-                    v-if="item.id === editedStop.id"
-                  ></v-text-field>
-                  <span v-else>{{ item.name }}</span>
-                </template>
-                <template v-slot:[`item.actions`]="{ item }">
-                  <div v-if="item.id === editedStop.id">
-                    <v-icon color="red" class="mr-3" @click="closeStop">
-                      mdi-window-close
-                    </v-icon>
-                    <v-icon color="green" @click="saveStop">
-                      mdi-content-save
-                    </v-icon>
-                  </div>
-                  <div v-else>
-                    <v-icon
-                      color="green"
-                      class="mr-3"
-                      @click="editStopItem(item)"
-                    >
-                      mdi-pencil
-                    </v-icon>
-                    <v-icon color="red" @click="deleteStopItem(item)">
-                      mdi-delete
-                    </v-icon>
-                  </div>
-                </template>
-              </data-table-row-handler>
-            </draggable>
-          </template>
-        </v-data-table>
-      </v-col>
+      
     </v-row>
 
     <v-snackbar v-model="snackbar" outlines bottom color="success">
@@ -278,6 +290,28 @@
 
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="snackbar2" outlines color="blue" :timeout="-1">
+      Click anywhere on the map to place the new stop
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="snackbar2 = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="snackbar3" outlines color="blue" :timeout="-1">
+      The stop is being created
+      <v-progress-circular
+      indeterminate
+      color="black"
+    ></v-progress-circular>
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="snackbar3 = false">
           Close
         </v-btn>
       </template>
@@ -312,6 +346,8 @@ export default {
       center: { lat: 36.001465, lng: -78.939133 },
       stopName: "",
       snackbar: false,
+      snackbar2: false,
+      snackbar3: false,
       canCreateStops: false,
       canPlaceStopMarker: false,
       activeRouteID: null,
@@ -341,6 +377,8 @@ export default {
         { text: "Actions", value: "actions", sortable: false, width: "100px" },
       ],
       headers_stops: [
+         { text: " ", align: "start", value: "drag" },
+        { text: "Order", align: "start", value: "order" },
         {
           text: "Name",
           align: "start",
@@ -348,7 +386,7 @@ export default {
         },
         { text: "Pick Up Time", align: "start", value: "pickupTime" },
         { text: "Drop Off Time", align: "start", value: "dropoffTime" },
-        { text: "Order", align: "start", value: "order" },
+        
         { text: "Actions", value: "actions", sortable: false, width: "100px" },
       ],
       routes: [],
@@ -790,6 +828,8 @@ export default {
       //   this.stops.push(newStop);
       // }
       this.canPlaceStopMarker = false;
+      this.snackbar3 = true;
+      this.snackbar2 = false;
 
       base_endpoint
         .post(
@@ -808,6 +848,7 @@ export default {
         )
         .then(() => {
           this.getRequestAllStops();
+          this.snackbar3 = false;
         })
         .catch((err) => {
           console.log(err);

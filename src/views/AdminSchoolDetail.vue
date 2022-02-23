@@ -130,7 +130,7 @@
         </v-card>
       </v-dialog>
 
-      <v-btn style="margin: 10px" @click="planNewRoute" outlined>Plan New Route</v-btn>
+      <v-btn style="margin: 10px" @click="planNewRoute" outlined>Create/Edit Routes</v-btn>
       <send-email :typeOfEmail="'schoolGA'" :relevantID = this.$route.query.id
       ></send-email>
       <send-email :typeOfEmail="'schoolRA'" :relevantID = this.$route.query.id
