@@ -37,7 +37,12 @@
         <v-data-table :headers="headers" :items="stopsInRange"> </v-data-table>
       </v-col>
       <v-col width="50%">
-        <GmapMap style="width: 100%; height: 400px" :center="center" :zoom="12">
+        <GmapMap
+          ref="mapRef"
+          style="width: 100%; height: 400px"
+          :center="center"
+          :zoom="12"
+        >
           <GmapMarker
             :key="index"
             v-for="(m, index) in stopsInRange"
@@ -55,6 +60,8 @@
 import { base_endpoint } from "../services/axios-api";
 import { mapActions } from "vuex";
 import { stopMapMarker } from "../assets/markers";
+import { gmapApi } from "vue2-google-maps-withscopedautocomp";
+import moment from "moment";
 
 export default {
   data() {
@@ -80,6 +87,8 @@ export default {
           align: "start",
           value: "name",
         },
+        { text: "Pick Up Time", align: "start", value: "pickupTime" },
+        { text: "Drop Off Time", align: "start", value: "dropoffTime" },
       ],
       schoolItems: [],
       parentItems: [],
@@ -127,10 +136,15 @@ export default {
           console.log(err);
         });
     },
-    getDispalyStops(item) {
+    getDisplayStops(item) {
+      var pTime = moment.utc(item.pickupTime);
+      var dTime = moment.utc(item.dropoffTime);
+
       return {
         name: item.name,
         position: { lat: item.latitude, lng: item.longitude },
+        pickupTime: pTime.local().format("h:mm A"),
+        dropoffTime: dTime.local().format("h:mm A"),
       };
     },
     getInRangeStops() {
@@ -140,7 +154,15 @@ export default {
         })
         .then((response) => {
           console.log(response.data);
-          this.stopsInRange = response.data.map(this.getDispalyStops);
+          this.stopsInRange = response.data.map(this.getDisplayStops);
+
+          var bounds = new this.google.maps.LatLngBounds();
+          for (var i = 0; i < this.stopsInRange.length; i++) {
+            bounds.extend(this.stopsInRange[i].position);
+          }
+          this.$refs.mapRef.$mapPromise.then((map) => {
+            map.fitBounds(bounds);
+          });
         })
         .catch((err) => {
           this.showSnackBar();
@@ -154,6 +176,9 @@ export default {
   created() {
     this.getStudentInfo();
     this.getInRangeStops();
+  },
+  computed: {
+    google: gmapApi,
   },
 };
 </script>
