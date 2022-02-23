@@ -75,8 +75,6 @@
       :headers="headers"
       :items="students"
       :search="search"
-      :sort-by="['sid']"
-      :sort-desc="[false, true]"
       @click:row="viewItem"
     >
       <template v-slot:[`item.route`]="{ item }">
