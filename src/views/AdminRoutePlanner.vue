@@ -24,10 +24,8 @@
         ></v-img>
       </v-tooltip>
     </v-card-title>
-  <v-row>
-    
-
-    <v-col width="50%">
+    <v-row>
+      <v-col width="50%">
         <v-card-subtitle>
           <v-form ref="form" lazy-validation>
             <v-row>
@@ -42,7 +40,10 @@
                 <v-btn
                   :disabled="!canCreateStops"
                   outlined
-                  @click="enableStopMarkerCreation(); snackbar2=true"
+                  @click="
+                    enableStopMarkerCreation();
+                    snackbar2 = true;
+                  "
                   >Create Stop</v-btn
                 >
               </v-col>
@@ -72,9 +73,7 @@
                 :headers="headers_stops"
               >
                 <template v-slot:[`item.drag`]>
-                  <v-icon class="mr-3">
-                      mdi-reorder-horizontal
-                    </v-icon>
+                  <v-icon class="mr-3"> mdi-reorder-horizontal </v-icon>
                 </template>
                 <template v-slot:[`item.name`]="{ item }">
                   <v-text-field
@@ -113,48 +112,47 @@
           </template>
         </v-data-table>
       </v-col>
-      <v-col width=50%>
-    <GmapMap
-      style="width: 100%; height: 400px"
-      ref="mapRef"
-      :center="center"
-      @click="addStopMarker($event)"
-    >
-      <GmapMarker
-        :key="index"
-        v-for="(m, index) in markers"
-        :position="m.position"
-        @click="toggleInfo(m)"
-        :icon="getMarkerIcons(m)"
-        :label="getMarkerLabels(m)"
-      />
-      <GmapMarker
-        :key="'stop_' + index"
-        v-for="(m, index) in stops"
-        :position="m.position"
-        :icon="stopMapMarker.icon"
-        :label="m.label"
-        :draggable="true"
-        @drag="moveCircle($event, index)"
-        @dragend="updateStopPosition($event, m)"
-      />
-      <GmapCircle
-        :key="'circle_' + index"
-        v-for="(m, index) in stops"
-        :center="m.position"
-        :radius="483"
-        :visible="true"
-        :options="{
-          strokeColor: '#FF0000',
-          strokeOpacity: 0.8,
-          strokeWeight: 2,
-          fillColor: '#FF0000',
-          fillOpacity: 0.35,
-        }"
-      />
-    </GmapMap>
-    </v-col>
-
+      <v-col width="50%">
+        <GmapMap
+          style="width: 100%; height: 400px"
+          ref="mapRef"
+          :center="center"
+          @click="addStopMarker($event)"
+        >
+          <GmapMarker
+            :key="index"
+            v-for="(m, index) in markers"
+            :position="m.position"
+            @click="toggleInfo(m)"
+            :icon="getMarkerIcons(m)"
+            :label="getMarkerLabels(m)"
+          />
+          <GmapMarker
+            :key="'stop_' + index"
+            v-for="(m, index) in stops"
+            :position="m.position"
+            :icon="stopMapMarker.icon"
+            :label="m.label"
+            :draggable="true"
+            @drag="moveCircle($event, index)"
+            @dragend="updateStopPosition($event, m)"
+          />
+          <GmapCircle
+            :key="'circle_' + index"
+            v-for="(m, index) in stops"
+            :center="m.position"
+            :radius="483"
+            :visible="true"
+            :options="{
+              strokeColor: '#FF0000',
+              strokeOpacity: 0.8,
+              strokeWeight: 2,
+              fillColor: '#FF0000',
+              fillOpacity: 0.35,
+            }"
+          />
+        </GmapMap>
+      </v-col>
     </v-row>
 
     <v-row>
@@ -281,8 +279,6 @@
           </template>
         </v-data-table>
       </v-col>
-
-      
     </v-row>
 
     <v-snackbar v-model="snackbar" outlines bottom color="success">
@@ -305,10 +301,7 @@
     </v-snackbar>
     <v-snackbar v-model="snackbar3" outlines color="blue" :timeout="-1">
       The stop is being created
-      <v-progress-circular
-      indeterminate
-      color="black"
-    ></v-progress-circular>
+      <v-progress-circular indeterminate color="black"></v-progress-circular>
 
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="snackbar3 = false">
@@ -377,7 +370,7 @@ export default {
         { text: "Actions", value: "actions", sortable: false, width: "100px" },
       ],
       headers_stops: [
-         { text: " ", align: "start", value: "drag" },
+        { text: " ", align: "start", value: "drag" },
         { text: "Order", align: "start", value: "order" },
         {
           text: "Name",
@@ -386,7 +379,7 @@ export default {
         },
         { text: "Pick Up Time", align: "start", value: "pickupTime" },
         { text: "Drop Off Time", align: "start", value: "dropoffTime" },
-        
+
         { text: "Actions", value: "actions", sortable: false, width: "100px" },
       ],
       routes: [],
@@ -765,6 +758,8 @@ export default {
       const index = this.stops.indexOf(item);
       console.log(item);
       this.stops.splice(index, 1);
+      this.snackbar3 = true;
+      this.snackbar2 = false;
 
       base_endpoint
         .delete("/api/stop/delete/" + item.id, {
@@ -773,6 +768,7 @@ export default {
         .then(() => {
           this.stops = [];
           this.getRequestAllStops();
+          this.snackbar3 = false;
         })
         .catch((err) => {
           console.log(err);
@@ -827,12 +823,10 @@ export default {
       if (this.canPlaceStopMarker) {
         this.stops.push(newStop);
       }
-      
-      this.snackbar3 = true;
-      this.snackbar2 = false;
-      console.log(this.canPlaceStopMarker);
 
       if (this.canPlaceStopMarker) {
+        this.snackbar3 = true;
+        this.snackbar2 = false;
         base_endpoint
           .post(
             "/api/stop/create",
@@ -851,7 +845,7 @@ export default {
           .then(() => {
             this.stops = [];
             this.getRequestAllStops();
-            this.snackbar3 = false
+            this.snackbar3 = false;
           })
           .catch((err) => {
             console.log(err);
