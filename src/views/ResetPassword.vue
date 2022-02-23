@@ -28,7 +28,6 @@
                 color="success"
                 class="mr-4"
                 @click="validateForResetPassword"
-                type="submit"
               >
                 Save
               </v-btn>

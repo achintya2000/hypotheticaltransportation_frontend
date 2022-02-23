@@ -24,6 +24,10 @@
       :search="search"
       @click:row="viewItem"
     >
+    <template v-slot:[`item.studentInRange`]="{ item }">
+        <v-icon v-if="item.studentInRange==false"> mdi-close </v-icon>
+        <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
+      </template>
       
       <template v-slot:[`item.route`]="{ item }">
         <div v-if="item.route">{{item.route}}</div>
@@ -83,6 +87,7 @@ export default {
         { text: "Student ID", value: "sid" },
         { text: "School", value: "school" },
         { text: "Route", value: "route" },
+        { text: "In-Range Status", value: "studentInRange", sortable: false },
       ],
       students: [],
     };
@@ -102,6 +107,7 @@ export default {
         school: item.school,
         route: item.route,
         id: item.id,
+        studentInRange: item.inRange,
       };
     },
     getRequestAllStudents() {

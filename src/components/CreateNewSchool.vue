@@ -79,7 +79,6 @@
             Cancel
           </v-btn>
         </v-form>
-        <v-btn @click="showSnackBar()"> Show SnackBar! </v-btn>
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -104,6 +103,7 @@ export default {
       busDepValidateArray: [this.busDepValidate],
       busArriveTime: "",
       busDepTime: "",
+      schools: [],
     };
   },
   methods: {
@@ -175,6 +175,8 @@ export default {
     nameValidate() {
       if (this.name == "" || this.name == null) {
         return "Name is required";
+      } else if (this.schools.includes(this.name)) {
+        return "The school name must be unique";
       } else {
         return true;
       }
@@ -200,7 +202,26 @@ export default {
         return true;
       }
     },
+    getRequestAllSchools() {
+      base_endpoint
+        .get("/api/school/getall", {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          for (let i = 0; i < response.data.length; i++) {
+            this.schools.push(response.data[i].name);
+          }
+          console.log(this.schools);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
   },
+  created() {
+    this.getRequestAllSchools();
+  }
 };
 </script>
 

@@ -167,17 +167,9 @@
       :search="search"
       @click:row="viewStudent"
     >
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-btn
-          dense
-          small
-          dark
-          v-bind="attrs"
-          v-on="on"
-          @click="viewStudent(item)"
-        >
-          Details
-        </v-btn>
+    <template v-slot:[`item.studentInRange`]="{ item }">
+        <v-icon v-if="item.studentInRange==false"> mdi-close </v-icon>
+        <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
       </template>
     </v-data-table>
      <v-snackbar
@@ -254,6 +246,7 @@ export default {
         },
         { text: "Route", value: "studentRoute" },
         { text: "Parent", value: "studentParent" },
+        { text: "In-Range Status", value: "studentInRange", sortable: false },
       ],
     };
   },
@@ -304,6 +297,7 @@ export default {
         studentName: item.name,
         studentRoute: item.route,
         studentParent: item.parent,
+        studentInRange: item.inRange,
       };
     },
 
