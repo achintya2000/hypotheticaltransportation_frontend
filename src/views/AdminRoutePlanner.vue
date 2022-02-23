@@ -1,15 +1,11 @@
 <template>
   <v-card height="100%">
     <v-card-title>
-      <v-btn
-        text
-        @click="viewSchool(schoolID)"
-        style="text-transform: none !important"
-        class="black--text font-weight-bold"
-        size="6rem"
-      >
-        {{ schoolName }}
-      </v-btn>
+      
+      <span text 
+        @click="viewSchool(schoolID)" class="txt blue--text text--darken-4">
+         {{ schoolName }} 
+      </span>
       <v-spacer></v-spacer>
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
