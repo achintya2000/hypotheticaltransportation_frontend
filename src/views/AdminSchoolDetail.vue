@@ -403,7 +403,7 @@ export default {
     },
     validateForModify() {
       console.log("HERE" + this.busArriveTime + "HERE");
-      if (this.newSchoolName != "" && this.newSchoolName != null && this.newAddress != "" && this.newAddress != null && this.busArriveTime != "" && this.busArriveTime != null && this.busDepTime != "" && this.busDepTime != null) {
+      if (this.newSchoolName != "" && this.newSchoolName != null && this.newAddress != "" && this.newAddress != null && this.newBusArriveTime != "" && this.newBusArriveTime != null && this.newBusDepTime != "" && this.newBusDepTime != null) {
         console.log("Did it get here?");
         this.$refs.form.validate();
         this.submitDataForModify();
@@ -446,7 +446,7 @@ export default {
       }
     },
     busArriveValidate() {
-      if (this.busArriveTime == "" || this.busArriveTime == null) {
+      if (this.newBusArriveTime == "" || this.newBusArriveTime == null) {
         return "Bus Arrival Time is required, remember to type AM or PM";
       } else {
         return true;
@@ -454,7 +454,7 @@ export default {
     },
     busDepValidate() {
       console.log("Hello 2: " + this.busDepTime);
-      if (this.busDepTime == "" || this.busDepTime == null) {
+      if (this.newBusDepTime == "" || this.newBusDepTime == null) {
         return "Bus Departure Time is required, remember to type AM or PM";
       } else {
         return true;

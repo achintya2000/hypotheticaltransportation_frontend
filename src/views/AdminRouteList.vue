@@ -17,17 +17,9 @@
       :search="search"
       @click:row="viewItem"
     >
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-btn
-          dense
-          small
-          dark
-          v-bind="attrs"
-          v-on="on"
-          @click="viewItem(item)"
-        >
-          Details
-        </v-btn>
+      <template v-slot:[`item.routeComplete`]="{ item }">
+        <v-icon v-if="item.routeComplete==false"> mdi-close </v-icon>
+        <v-icon v-if="item.routeComplete==true"> mdi-check </v-icon>
       </template>
     </v-data-table>
   </v-card>
@@ -49,6 +41,7 @@ export default {
         { text: "School", value: "school" },
         { text: "Description", value: "description", sortable: false },
         { text: "# of Students", value: "student_count" },
+        { text: "Completion Status", value: "routeComplete", sortable: false },
       ],
       schools: [],
     };
@@ -68,6 +61,7 @@ export default {
         description: item.description,
         student_count: item.student_count,
         id: item.id,
+        routeComplete: item.complete,
       };
     },
     getRequestAllRoutes() {

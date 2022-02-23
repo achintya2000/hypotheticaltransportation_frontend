@@ -84,6 +84,7 @@ export default {
       subjectValidateArray: [this.subjectValidate],
       emailBodyValidateArray: [this.emailBodyValidate],
       dialog: false,
+      emails: [],
     };
   },
   methods: {
@@ -160,6 +161,29 @@ export default {
     this.routeBool = this.typeOfEmail.includes("route");
     this.GABool = this.typeOfEmail.includes("GA");
     this.relevantIDNum = this.$route.query.id;
+    base_endpoint
+        .post(
+          "/api/getemails",
+          {
+            all: this.allBool,
+            school: this.schoolBool,
+            route: this.routeBool,
+            ID: this.relevantIDNum,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then((response) => {
+          this.emails = response.data.map;
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+        
   },
 };
 </script>
