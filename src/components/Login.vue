@@ -46,7 +46,6 @@
             <v-spacer></v-spacer>
             <v-dialog
               v-model="dialog2"
-              persistent
               max-width="600px"
               @click:outside="dialog2 = false"
             >
@@ -60,15 +59,15 @@
                 <v-card-text>
                   <v-form
                     ref="forgetForm"
-                    v-model="valid"
+                    v-model="valid2"
                     lazy-validation
                     @submit.prevent="login"
                   >
                     <v-row>
                       <v-col cols="12">
                         <v-text-field
-                          v-model="username"
-                          :rules="loginEmailRules"
+                          v-model="username2"
+                          :rules="loginEmailRules2"
                           label="E-mail"
                           required
                         ></v-text-field>
@@ -81,7 +80,7 @@
                 </v-card-text>
               </v-card>
             </v-dialog>
-            <v-btn type="submit" text :disabled="!valid"> Login </v-btn>
+            <v-btn type="submit" text :disabled="!valid2"> Login </v-btn>
           </v-row>
         </v-form>
       </v-card-text>
@@ -107,12 +106,18 @@ export default {
     return {
       password: "",
       username: "",
+      username2: "",
       snackbar: false,
       dialog: false,
       incorrectAuth: false,
       valid: true,
+       valid2: true,
       show: false,
       loginEmailRules: [
+        (v) => !!v || "Required",
+        (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+      ],
+      loginEmailRules2: [
         (v) => !!v || "Required",
         (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
       ],

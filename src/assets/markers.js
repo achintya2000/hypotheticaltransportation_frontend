@@ -10,6 +10,18 @@ export const mapMarker = {
         fontSize: "18px",
     }
 }
+export const bluePerson = {
+    icon: {
+        url: require("@/assets/blue-marker.png"),
+        scaledSize: { height: 25, width: 25 }
+    },
+    label: {
+        text: "\ue7fd",
+        fontFamily: "Material Icons",
+        color: "#ffffff",
+        fontSize: "18px",
+    }
+}
 export const mapMarkerActiveInRange = {
     icon: {
         url: require("@/assets/green-marker.png"),

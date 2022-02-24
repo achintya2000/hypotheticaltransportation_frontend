@@ -230,6 +230,8 @@ export default {
           this.full_name = response.data.full_name;
           this.newFull_name = response.data.full_name;
           this.currentAddress = response.data.address;
+          this.longitude = response.data.longitude;
+          this.latitude = response.data.latitude;
           this.newCurrentAddress = response.data.address;
           this.administrator = response.data.is_superuser;
           this.newAdministrator = response.data.is_superuser;

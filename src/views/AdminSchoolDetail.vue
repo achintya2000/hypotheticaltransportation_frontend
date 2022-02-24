@@ -284,6 +284,8 @@ export default {
           this.newSchoolName = response.data.name;
           this.schoolAddress = response.data.address;
           this.newAddress = response.data.address;
+          this.latitude = response.data.latitude;
+          this.longitude = response.data.longitude;
           this.formatted_address = response.data.address;
           var arrTime = moment.utc(response.data.arrivalTime);
           this.busArriveTime = arrTime.local().format("h:mm A");
