@@ -134,8 +134,6 @@ export default {
     validate() {
       if (this.studentName != null &&
           this.studentName != "" &&
-          this.sid != null &&
-          this.sid != "" &&
           this.schoolSelected != null &&
           this.schoolSelected != "") {
         this.$refs.form.validate();
@@ -160,11 +158,7 @@ export default {
       }
     },
     studentIDValidate() {
-      if (
-        (this.sid == null || this.sid == "")
-      ) {
-        return "Student ID is required";
-      } else if (isNaN(this.sid) == true) {
+      if (isNaN(this.sid) == true) {
         return "Student ID must be a number";
       } else if (isNaN(this.sid) == false) {
         if (parseInt(this.sid) < 0) {

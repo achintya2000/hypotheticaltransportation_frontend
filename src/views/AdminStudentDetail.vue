@@ -26,7 +26,6 @@
                 v-model="newStudentId"
                 label="Student ID"
                 :rules="studentIDValidateArray"
-                required
               ></v-text-field>
 
               <v-autocomplete
@@ -371,9 +370,7 @@ export default {
       }
     },
     studentIDValidate() {
-      if (this.newStudentId == null || this.newStudentId == "") {
-        return "Student ID is required";
-      } else if (isNaN(this.newStudentId) == true) {
+      if (isNaN(this.newStudentId) == true) {
         return "Student ID must be a number";
       } else if (isNaN(this.newStudentId) == false) {
         if (parseInt(this.newStudentId) < 0) {
