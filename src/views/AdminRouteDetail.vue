@@ -374,4 +374,7 @@ export default {
 </script>
 
 <style>
+.txt:hover {
+          text-decoration: underline;
+      }
 </style>
