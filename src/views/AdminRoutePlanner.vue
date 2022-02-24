@@ -471,6 +471,8 @@ export default {
         .then((response) => {
           this.stops = response.data.map(this.getDisplayStops);
           this.stops.sort((a, b) => (a.order > b.order ? 1 : -1));
+
+          this.getMarkerData();
         })
         .catch((err) => {
           this.showSnackBar();
