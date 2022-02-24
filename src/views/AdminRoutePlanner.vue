@@ -774,6 +774,19 @@ export default {
       const index = this.routes.indexOf(item);
       confirm("Are you sure you want to delete this item?") &&
         this.routes.splice(index, 1);
+
+      base_endpoint
+        .delete("/api/route/delete/" + item.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log(response);
+          this.stops = [];
+          this.getRequestAllRoutes();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     saveRoute() {
       if (this.editedRouteIndex > -1) {

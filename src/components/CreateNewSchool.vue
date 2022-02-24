@@ -143,7 +143,6 @@ export default {
         )
         .then((response) => {
           this.postResponse = response.data;
-          
         })
         .catch((err) => {
           this.showSnackBarAddress();
@@ -221,7 +220,7 @@ export default {
   },
   created() {
     this.getRequestAllSchools();
-  }
+  },
 };
 </script>
 
