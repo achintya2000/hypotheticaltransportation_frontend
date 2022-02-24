@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
     <v-card-title class="font-weight-black">
       {{ full_name }}
       <v-spacer></v-spacer>
@@ -114,6 +114,10 @@
       :search="search"
       @click:row="viewStudent"
     >
+    <template v-slot:[`item.studentRoute`]="{ item }">
+        <div v-if="item.studentRoute">{{item.studentRoute}}</div>
+        <div v-if="!item.studentRoute" style="color:red;">No Route</div>
+      </template>
     <template v-slot:[`item.studentInRange`]="{ item }">
         <v-icon v-if="item.studentInRange==false" color="red"> mdi-close </v-icon>
         <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>

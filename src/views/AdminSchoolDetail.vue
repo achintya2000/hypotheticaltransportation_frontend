@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
     <v-card-title class="font-weight-black">
       {{ schoolName }}
       <v-spacer></v-spacer>
@@ -131,9 +131,7 @@
       </v-dialog>
 
       <v-btn style="margin: 10px" @click="planNewRoute" outlined>Create/Edit Routes</v-btn>
-      <send-email :typeOfEmail="'schoolGA'" :relevantID = this.$route.query.id
-      ></send-email>
-      <send-email :typeOfEmail="'schoolRA'" :relevantID = this.$route.query.id
+      <send-email :typeOfEmail="'schoolGA'" :relevantID = this.$route.query.id :relevantName = this.schoolName
       ></send-email>
 
     </v-card-title>

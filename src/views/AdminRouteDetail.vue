@@ -1,12 +1,12 @@
 <template>
-  <v-card height="100%">
+  <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
     <v-card-title class="font-weight-black">
       {{ routeName }}
       <v-spacer></v-spacer>
       <v-btn @click="planNewRoute" outlined>Modify Route</v-btn>
-      <v-dialog v-model="dialog2" width="80%">
+      <v-dialog v-model="dialog2" width="50%">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on" @click="newmethod">
             Modify Name and Description
           </v-btn>
         </template>
@@ -29,26 +29,8 @@
 
                   <v-textarea
                     v-model="newRouteDescription"
-                    :rules="desValidateArray"
                     label="Route Description"
-                    required
                   ></v-textarea>
-                </v-col>
-
-                <v-col>
-                  <GmapMap
-                    :center="center"
-                    :zoom="12"
-                    style="width: 90%; height: 400px"
-                    ref="mapRef"
-                  >
-                    <GmapMarker
-                      :key="index"
-                      v-for="(m, index) in markers"
-                      :position="m.position"
-                      :icon="getMarkers(m)"
-                    />
-                  </GmapMap>
                 </v-col>
               </v-row>
 
@@ -102,17 +84,14 @@
         </v-card>
       </v-dialog>
       <send-email
-        :typeOfEmail="'routeGA'"
-        :relevantID="this.$route.query.id"
-      ></send-email>
-      <send-email
         :typeOfEmail="'routeRA'"
         :relevantID="this.$route.query.id"
+        :relevantName = this.routeName
       ></send-email>
     </v-card-title>
 
     <v-row>
-      <v-col>
+      <v-col md=3>
         <v-card-subtitle>
           <span class="black--text font-weight-bold"> School: </span>
           <span
@@ -124,22 +103,31 @@
           </span>
         </v-card-subtitle>
         <v-card-subtitle>
+          <span class="black--text font-weight-bold">Status: </span>
+            <span text 
+            class="red--text"
+            v-if="routeStatus == false">
+            Not Complete
+            </span>
+            <span text 
+            class="black--text"
+            v-if="routeStatus == true">
+            Complete
+            </span>
+
+        </v-card-subtitle>
+        <v-card-subtitle>
           <span class="black--text font-weight-bold"> Description: </span>
           <br />
-          <span style="white-space: pre" class="black--text">{{
+          <span style="white-space: pre" class="black--text" v-if="routeDescription != ''">{{
             routeDescription
           }}</span>
+          <span style="white-space: pre" class="black--text" v-if="routeDescription == ''">No Route Descritpion</span>
         </v-card-subtitle>
-        <v-data-table :headers="headers" :items="students" :search="search" @click:row="viewItem">
-          <template v-slot:[`item.studentInRange`]="{ item }">
-        <v-icon v-if="item.studentInRange==false" color="red"> mdi-close </v-icon>
-        <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
-      </template>
-        </v-data-table>
       </v-col>
-      <v-col>
+      <v-col md=9>
         <GmapMap
-          style="width: 90%; height: 400px"
+          style="width: 100%; height: 400px"
           ref="mapRef"
           @click="handleMapClick($event)"
           :center="center"
@@ -173,13 +161,27 @@
             }"
           />
         </GmapMap>
-        <v-img
-          src="../assets/marker_key.jpeg"
-          max-height="200"
-          max-width="250"
-        ></v-img>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-card-title>Students: </v-card-title>
+        <v-data-table :headers="headers" :items="students" :search="search" @click:row="viewItem">
+          <template v-slot:[`item.studentInRange`]="{ item }">
+        <v-icon v-if="item.studentInRange==false" color="red"> mdi-close </v-icon>
+        <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
+      </template>
+        </v-data-table>
+      </v-col>
+      <v-col>
+        <v-card-title>Stops: </v-card-title>
+        <v-data-table
+      :headers="stopHeaders"
+      :items="stops"
+    >
+    </v-data-table>
+      </v-col>
+      </v-row>
   </v-card>
 </template>
 
@@ -209,6 +211,7 @@ export default {
       routeName: "",
       newRouteName: "",
       routeSchool: "",
+      routeStatus: "",
       routeSchoolID: "",
       newRouteSchool: null,
       routeDescription: "",
@@ -218,6 +221,8 @@ export default {
       dialog: false,
       dialog2: false,
       oldSchoolID: "",
+      busArriveTime: "",
+      busDepTime: "",
       headers: [
         {
           text: "Name",
@@ -227,13 +232,53 @@ export default {
         { text: "Parent", value: "studentParent" },
         { text: "In-Range Status", value: "studentInRange", sortable: false },
       ],
+       stopHeaders: [
+        { text: "Order", align: "start", value: "order" },
+        {
+          text: "Name",
+          align: "start",
+          value: "name",
+        },
+        { text: "Pick Up Time", align: "start", value: "pickupTime" },
+        { text: "Drop Off Time", align: "start", value: "dropoffTime" },
+      ],
       students: [],
+      stops: [],
       nameValidateArray: [this.nameValidate],
-      desValidateArray: [this.desValidate],
       markers: [],
     };
   },
   methods: {
+    getSchoolInfo() {
+       console.log("Here: " + this.busArriveTime);
+      base_endpoint
+        .get("/api/school/get/" + this.routeSchoolID, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        
+        .then((response) => {
+          var arrTime = moment.utc(response.data.arrivalTime);
+          this.busArriveTime = arrTime.local().format("h:mm A");
+          console.log("Here: " + this.busArriveTime);
+          var depTime = moment.utc(response.data.departureTime);
+          this.busDepTime = depTime.local().format("h:mm A");
+          console.log("Here 2: " + this.busDepTime);
+          this.getRequestAllStops();
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
+    newmethod() {
+      var bounds = new this.google.maps.LatLngBounds();
+      for (var i = 0; i < this.markers.length; i++) {
+        bounds.extend(this.markers[i].position);
+      }
+      this.$refs.mapRef2.$mapPromise.then((map) => {
+        map.fitBounds(bounds);
+      });
+    },
     handleMapClick(event) {
       console.log(event.latLng.lat());
       console.log(event.latLng.lng());
@@ -261,6 +306,8 @@ export default {
           this.routeDescription = response.data.description;
           this.newRouteDescription = response.data.description;
           this.oldSchoolID = response.data.school.id;
+          this.routeStatus = response.data.complete;
+          this.getSchoolInfo();
         })
         .catch((err) => {
           console.log(err);
@@ -315,6 +362,13 @@ export default {
         .then((response) => {
           this.stops = response.data.map(this.getDisplayStops);
           this.stops.sort((a, b) => (a.order > b.order ? 1 : -1));
+          this.dict = {
+            order: "School",
+            name: this.routeSchool,
+            pickupTime: this.busArriveTime,
+            dropoffTime: this.busDepTime
+          };
+          this.stops.push(this.dict);
         })
         .catch((err) => {
           this.showSnackBar();
@@ -413,13 +467,6 @@ export default {
         return true;
       }
     },
-    desValidate() {
-      if (this.newRouteDescription == "" || this.newRouteDescription == null) {
-        return "Description is required";
-      } else {
-        return true;
-      }
-    },
     viewItem(item) {
       this.$router.push({ name: "AdminStudentDetail", query: { id: item.id } });
     },
@@ -434,10 +481,13 @@ export default {
     },
   },
   created() {
+    
     this.getRouteInfo();
+    console.log("Here 3: " + this.routeSchoolID);
+    
     this.getStudentsInRoute();
     this.getRouteMarkers();
-    this.getRequestAllStops();
+    
   },
   computed: {
     google: gmapApi,

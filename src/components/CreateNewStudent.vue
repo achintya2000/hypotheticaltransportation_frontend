@@ -323,6 +323,7 @@ export default {
           .then(() => {
             this.$emit(
               "studentcreated",
+              "usercreated",
               "A new student has been created and sent to database"
             );
           })

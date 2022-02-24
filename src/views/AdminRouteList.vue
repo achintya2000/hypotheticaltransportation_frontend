@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
     <v-card-title>
       Your Routes
       <v-spacer></v-spacer>
