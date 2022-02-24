@@ -101,21 +101,27 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <send-email :typeOfEmail="'routeGA'" :relevantID = this.$route.query.id
+      <send-email
+        :typeOfEmail="'routeGA'"
+        :relevantID="this.$route.query.id"
       ></send-email>
-      <send-email :typeOfEmail="'routeRA'" :relevantID = this.$route.query.id
+      <send-email
+        :typeOfEmail="'routeRA'"
+        :relevantID="this.$route.query.id"
       ></send-email>
     </v-card-title>
 
     <v-row>
       <v-col>
-        
         <v-card-subtitle>
           <span class="black--text font-weight-bold"> School: </span>
-          <span text 
-            @click="viewSchool(routeSchoolID)" class="txt blue--text text--darken-4">
-            {{ routeSchool }} 
-          </span>        
+          <span
+            text
+            @click="viewSchool(routeSchoolID)"
+            class="txt blue--text text--darken-4"
+          >
+            {{ routeSchool }}
+          </span>
         </v-card-subtitle>
         <v-card-subtitle>
           <span class="black--text font-weight-bold"> Description: </span>
@@ -145,6 +151,27 @@
             :label="m.label"
             :icon="m.icon"
           />
+          <GmapMarker
+            :key="'stop_' + index"
+            v-for="(m, index) in stops"
+            :position="m.position"
+            :icon="stopMapMarker.icon"
+            :label="m.label"
+          />
+          <GmapCircle
+            :key="'circle_' + index"
+            v-for="(m, index) in stops"
+            :center="m.position"
+            :radius="483"
+            :visible="true"
+            :options="{
+              strokeColor: '#FF0000',
+              strokeOpacity: 0.8,
+              strokeWeight: 2,
+              fillColor: '#FF0000',
+              fillOpacity: 0.35,
+            }"
+          />
         </GmapMap>
         <v-img
           src="../assets/marker_key.jpeg"
@@ -158,18 +185,26 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-import { mapMarker, schoolMapMarker } from "../assets/markers";
+import {
+  mapMarkerActiveInRange,
+  mapMarkerActiveNotInRange,
+  schoolMapMarker,
+  stopMapMarker,
+} from "../assets/markers";
 import { gmapApi } from "vue2-google-maps-withscopedautocomp";
 import SendEmail from "../components/SendEmail.vue";
+import moment from "moment";
 
 export default {
-   components: { 
-    SendEmail 
+  components: {
+    SendEmail,
   },
   data() {
     return {
-      mapMarker,
+      mapMarkerActiveInRange,
+      mapMarkerActiveNotInRange,
       schoolMapMarker,
+      stopMapMarker,
       center: { lat: 36.001465, lng: -78.939133 },
       routeName: "",
       newRouteName: "",
@@ -251,6 +286,41 @@ export default {
           this.getStudentsInRoute();
         });
     },
+    getDisplayStops(item) {
+      var pTime = moment.utc(item.pickupTime);
+      var dTime = moment.utc(item.dropoffTime);
+
+      return {
+        id: item.id,
+        order: item.order,
+        name: item.name,
+        pickupTime: pTime.local().format("h:mm A"),
+        dropoffTime: dTime.local().format("h:mm A"),
+        position: { lat: item.latitude, lng: item.longitude },
+        label: {
+          text: item.order.toString(),
+          fontFamily: "Roboto",
+          color: "#ffffff",
+          fontSize: "18px",
+        },
+      };
+    },
+    getRequestAllStops() {
+      base_endpoint
+        .get("/api/stop/getallfromroute/" + this.$route.query.id, {
+          headers: {
+            Authorization: `Token ${this.$store.state.accessToken}`,
+          },
+        })
+        .then((response) => {
+          this.stops = response.data.map(this.getDisplayStops);
+          this.stops.sort((a, b) => (a.order > b.order ? 1 : -1));
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
     validateForModify() {
       this.$refs.form.validate();
       this.submitDataForModify();
@@ -272,10 +342,16 @@ export default {
       return {
         position: { lat: item.latitude, lng: item.longitude },
         isSchool: item.is_school,
-        icon: item.is_school ? this.schoolMapMarker.icon : this.mapMarker.icon,
+        icon: item.is_school
+          ? this.schoolMapMarker.icon
+          : item.inRange
+          ? this.mapMarkerActiveInRange.icon
+          : this.mapMarkerActiveNotInRange.icon,
         label: item.is_school
           ? this.schoolMapMarker.label
-          : this.mapMarker.label,
+          : item.inRange
+          ? this.mapMarkerActiveInRange.label
+          : this.mapMarkerActiveNotInRange.label,
       };
     },
     submitDataForDelete() {
@@ -310,7 +386,9 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
+          console.log(response.data);
           this.markers = response.data.map(this.getDisplayRouteMarkers);
+          console.log(this.markers);
 
           var bounds = new this.google.maps.LatLngBounds();
           for (var i = 0; i < this.markers.length; i++) {
@@ -329,7 +407,6 @@ export default {
       return this.mapMarker;
     },
     nameValidate() {
-      console.log(this.name);
       if (this.newRouteName == "" || this.newRouteName == null) {
         return "Name is required";
       } else {
@@ -337,7 +414,6 @@ export default {
       }
     },
     desValidate() {
-      console.log(this.name);
       if (this.newRouteDescription == "" || this.newRouteDescription == null) {
         return "Description is required";
       } else {
@@ -361,6 +437,7 @@ export default {
     this.getRouteInfo();
     this.getStudentsInRoute();
     this.getRouteMarkers();
+    this.getRequestAllStops();
   },
   computed: {
     google: gmapApi,
