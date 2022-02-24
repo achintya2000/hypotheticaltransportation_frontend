@@ -90,6 +90,9 @@
           Close
         </v-btn>
       </template>
+      <template v-slot:no-data>
+          You have no students assigned to you
+      </template>
     </v-snackbar>
   </v-card>
 </template>
@@ -100,6 +103,7 @@ import { mapActions } from "vuex";
 export default {
   data() {
     return {
+      enabled: null,
       dialog3: false,
       valid: true,
       reveal: false,
@@ -128,6 +132,9 @@ export default {
     };
   },
   methods: {
+    isEnabled (slot) {
+        return this.enabled === slot
+      },
     ...mapActions(["snackBar"]),
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");

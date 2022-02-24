@@ -123,7 +123,28 @@
         </span>
         
         <span text 
+        class="red--text"
+        v-if="studentRoute == 'No route assigned'">
+        No Route Assigned
+        </span>
+
+    </v-card-subtitle>
+
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Stop Status: </span>
+        <span text 
         class="black--text"
+        v-if="studentRoute != 'No route assigned' && studentInRangeStatus == true">
+        Stop(s) in Range
+        </span>
+        <span text 
+        class="red--text"
+        v-if="studentRoute != 'No route assigned' && studentInRangeStatus == false">
+        Stop(s) not in Range
+        </span>
+        
+        <span text 
+        class="red--text"
         v-if="studentRoute == 'No route assigned'">
         No Route Assigned
         </span>
@@ -177,6 +198,7 @@ export default {
       parent: null,
       studentSchool: "",
       studentRoute: "",
+      studentInRangeStatus: "",
       studentParent: "",
       newStudentName: "",
       newStudentId: "",
@@ -211,6 +233,7 @@ export default {
           this.studentSchoolId = response.data.school_id;
           this.studentRouteId = response.data.route_id;
           this.studentParentId = response.data.parent_id;
+          this.studentInRangeStatus = response.data.inRange;
 
           this.getSchools();
           this.getParents();
@@ -287,6 +310,7 @@ export default {
             school: this.school.id,
             route: this.studentRoute,
             parent: this.parent.id,
+
           },
           {
             headers: {

@@ -130,19 +130,11 @@
             routeDescription
           }}</span>
         </v-card-subtitle>
-        <v-data-table :headers="headers" :items="students" :search="search">
-          <template v-slot:[`item.actions`]="{ item }">
-            <v-btn
-              dense
-              small
-              dark
-              v-bind="attrs"
-              v-on="on"
-              @click="viewItem(item)"
-            >
-              Details
-            </v-btn>
-          </template>
+        <v-data-table :headers="headers" :items="students" :search="search" @click:row="viewItem">
+          <template v-slot:[`item.studentInRange`]="{ item }">
+        <v-icon v-if="item.studentInRange==false" color="red"> mdi-close </v-icon>
+        <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
+      </template>
         </v-data-table>
       </v-col>
       <v-col>
@@ -232,7 +224,8 @@ export default {
           align: "start",
           value: "name",
         },
-        { text: "Actions", value: "actions", sortable: false },
+        { text: "Parent", value: "studentParent" },
+        { text: "In-Range Status", value: "studentInRange", sortable: false },
       ],
       students: [],
       nameValidateArray: [this.nameValidate],
@@ -341,6 +334,8 @@ export default {
       return {
         name: item.name,
         id: item.id,
+        studentParent: item.parent,
+        studentInRange: item.inRange,
       };
     },
     getDisplayRouteMarkers(item) {

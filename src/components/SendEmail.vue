@@ -19,6 +19,21 @@
 
       <v-card-text>
         <v-form ref="form" v-model="valid" lazy-validation>
+            <v-radio-group
+                  v-model="emailType"
+                  row
+                  <!-- :rules="userPasswordTypeValidateArray"
+                  v-if="userCheckbox" -->
+                >
+                  <v-radio
+                    label="General Announcement"
+                    value="ga"
+                  ></v-radio>
+                  <v-radio
+                    label="Route Announcement"
+                    value="ga"
+                  ></v-radio>
+                </v-radio-group>
           <v-text-field
             v-model="subject"
             :rules="subjectValidateArray"

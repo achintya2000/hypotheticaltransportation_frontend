@@ -1,5 +1,5 @@
 <template>
-  <v-card height="100%">
+  <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
     <v-card-title>
       Your Schools
       <v-spacer></v-spacer>

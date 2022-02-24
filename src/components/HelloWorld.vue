@@ -7,6 +7,7 @@
         <h1 class="display-2 mb-3">Welcome to ConnectWise</h1>
       </v-col>
     </v-row>
+    
   </v-container>
 </template>
 

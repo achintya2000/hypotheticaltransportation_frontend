@@ -6,59 +6,6 @@
       <create-new-student-only
       @studentcreated="getStudents()"
       ></create-new-student-only>
-      <v-dialog v-model="dialog3" width="500">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Reset Password </v-btn>
-        </template>
-
-        <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
-            Reset Password
-          </v-card-title>
-
-          <v-card-text>
-            <v-form ref="form" v-model="valid" lazy-validation>
-              <v-text-field
-                v-model="newPassword"
-                :rules="resetPassword1ValidationArray"
-                label="New Password"
-                :type="'password'"
-                required
-              ></v-text-field>
-
-              <v-text-field
-                v-model="newPassword2"
-                :rules="resetPassword2ValidationArray"
-                label="Confirm New Password"
-                :type="'password'"
-                required
-              ></v-text-field>
-
-              <v-btn
-                :disabled="!valid"
-                color="success"
-                class="mr-4"
-                @click="validateForResetPassword"
-                type="submit"
-              >
-                Save
-              </v-btn>
-
-              <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
-
-              <v-btn
-                color="warning"
-                @click="
-                  dialog3 = false;
-                  reset();
-                "
-              >
-                Cancel
-              </v-btn>
-            </v-form>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Modify </v-btn>
@@ -168,7 +115,7 @@
       @click:row="viewStudent"
     >
     <template v-slot:[`item.studentInRange`]="{ item }">
-        <v-icon v-if="item.studentInRange==false"> mdi-close </v-icon>
+        <v-icon v-if="item.studentInRange==false" color="red"> mdi-close </v-icon>
         <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
       </template>
     </v-data-table>
@@ -213,8 +160,6 @@ export default {
       newFull_name: "",
       newCurrentAddress: "",
       newAdministrator: "",
-      resetPassword1ValidationArray: [this.resetPassword1Validation],
-      resetPassword2ValidationArray: [this.resetPassword2Validation],
       userNameValidateArray: [this.userNameValidate],
       userEmailValidateArray: [this.userEmailValidate],
       userAddressValidateArray: [this.userAddressValidate],
@@ -365,46 +310,6 @@ export default {
           console.log(err);
         });
     },
-    submitDataForResetPassword() {
-      console.log("THIS IS  THE ID");
-      console.log(this.$route.query.id);
-      base_endpoint
-        .patch(
-          "/api/profile/changepassword/" + this.$route.query.id,
-          {
-            new_password: this.newPassword2,
-          },
-          {
-            headers: {
-              Authorization: `Token ${this.$store.state.accessToken}`,
-            },
-          }
-        )
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((err) => {
-          this.showSnackBar();
-          console.log(err);
-        });
-    },
-    validateForResetPassword() {
-      if (
-        this.newPassword != "" &&
-        this.newPassword != null &&
-        this.newPassword2 != "" &&
-        this.newPassword2 != null
-      ) {
-        this.$refs.form.validate();
-        this.submitDataForResetPassword();
-        this.snackbar = true;
-        this.dialog3 = false;
-        this.$emit(
-          "schoolmodified",
-          "A school has been modified and sent to database"
-        );
-      }
-    },
 
     validate() {
       this.$refs.form.validate();
@@ -414,22 +319,6 @@ export default {
     },
     resetValidation() {
       this.$refs.form.resetValidation();
-    },
-    resetPassword1Validation() {
-      if (this.newPassword == "" || this.newPassword == null) {
-        return "This field is required";
-      } else {
-        return true;
-      }
-    },
-    resetPassword2Validation() {
-      if (this.newPassword2 == "" || this.newPassword2 == null) {
-        return "This field is required";
-      } else if (this.newPassword2 != this.newPassword) {
-        return "The passwords must match";
-      } else {
-        return true;
-      }
     },
     userNameValidate() {
       if (this.newFull_name == null || this.newFull_name == "") {
