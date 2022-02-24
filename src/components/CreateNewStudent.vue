@@ -268,8 +268,6 @@ export default {
             if (
               this.studentName != null &&
               this.studentName != "" &&
-              this.sid != null &&
-              this.sid != "" &&
               this.schoolSelected.id != null &&
               this.schoolSelected.id != "" &&
               this.newParentID != null &&
@@ -352,8 +350,6 @@ export default {
         (this.studentCheckbox == true &&
           this.studentName != null &&
           this.studentName != "" &&
-          this.sid != null &&
-          this.sid != "" &&
           this.schoolSelected != null &&
           this.schoolSelected != "" &&
           ((this.parentSelected != null && this.parentSelected != "") ||  this.userCheckbox == true))
@@ -435,12 +431,7 @@ export default {
       }
     },
     studentIDValidate() {
-      if (
-        this.studentCheckbox == true &&
-        (this.sid == null || this.sid == "")
-      ) {
-        return "Student ID is required";
-      } else if (isNaN(this.sid) == true) {
+      if (isNaN(this.sid) == true) {
         return "Student ID must be a number";
       } else if (isNaN(this.sid) == false) {
         if (parseInt(this.sid) < 0) {
