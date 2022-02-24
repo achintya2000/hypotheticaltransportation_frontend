@@ -45,10 +45,10 @@
         >
           <GmapMarker
             :key="index"
-            v-for="(m, index) in stopsInRange"
+            v-for="(m, index) in markers"
             :position="m.position"
-            :icon="stopMapMarker.icon"
-            :label="stopMapMarker.label"
+            :icon="m.icon"
+            :label="m.label"
           />
         </GmapMap>
       </v-col>
@@ -59,13 +59,14 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { mapActions } from "vuex";
-import { stopMapMarker } from "../assets/markers";
+import { stopMapMarker, mapMarker } from "../assets/markers";
 import { gmapApi } from "vue2-google-maps-withscopedautocomp";
 import moment from "moment";
 
 export default {
   data() {
     return {
+      mapMarker,
       stopMapMarker,
       studentName: "",
       dialog: false,
@@ -104,6 +105,7 @@ export default {
       newStudentParent: "",
       stopsInRange: [],
       center: { lat: 36.001465, lng: -78.939133 },
+      markers: [],
     };
   },
   methods: {
@@ -145,6 +147,8 @@ export default {
         position: { lat: item.latitude, lng: item.longitude },
         pickupTime: pTime.local().format("h:mm A"),
         dropoffTime: dTime.local().format("h:mm A"),
+        icon: this.stopMapMarker.icon,
+        label: this.stopMapMarker.label,
       };
     },
     getInRangeStops() {
@@ -153,7 +157,6 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-          console.log(response.data);
           this.stopsInRange = response.data.map(this.getDisplayStops);
 
           var bounds = new this.google.maps.LatLngBounds();
@@ -169,6 +172,51 @@ export default {
           console.log(err);
         });
     },
+    getUserInfo() {
+      base_endpoint
+        .get("/api/profile/get/" + this.$store.state.loggedInUserID, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((res) => {
+          base_endpoint
+            .get("/api/student/getinrangestops/" + this.$route.query.id, {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
+              },
+            })
+            .then((response) => {
+              this.markers = response.data.map(this.getDisplayStops);
+
+              var house = {
+                position: {
+                  lat: parseFloat(res.data.latitude),
+                  lng: parseFloat(res.data.longitude),
+                },
+                icon: this.mapMarker.icon,
+                label: this.mapMarker.label,
+              };
+              this.markers.push(house);
+
+              console.log(this.markers);
+
+              var bounds = new this.google.maps.LatLngBounds();
+              for (var i = 0; i < this.markers.length; i++) {
+                bounds.extend(this.markers[i].position);
+              }
+              this.$refs.mapRef.$mapPromise.then((map) => {
+                map.fitBounds(bounds);
+              });
+            })
+            .catch((err) => {
+              this.showSnackBar();
+              console.log(err);
+            });
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
     validate() {
       this.$refs.form.validate();
     },
@@ -176,6 +224,7 @@ export default {
   created() {
     this.getStudentInfo();
     this.getInRangeStops();
+    this.getUserInfo();
   },
   computed: {
     google: gmapApi,

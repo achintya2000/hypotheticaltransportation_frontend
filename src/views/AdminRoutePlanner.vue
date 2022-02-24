@@ -1,76 +1,78 @@
 <template>
   <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
     <v-card-title>
-      
-      <span text 
-        @click="viewSchool(schoolID)" class="txt blue--text text--darken-4">
-         {{ schoolName }} 
+      <span
+        text
+        @click="viewSchool(schoolID)"
+        class="txt blue--text text--darken-4"
+      >
+        {{ schoolName }}
       </span>
       <v-spacer></v-spacer>
       <v-img
-          src="../assets/may-key-flat.png"
-          max-height="200"
-          max-width="600"
-        ></v-img>
+        src="../assets/may-key-flat.png"
+        max-height="200"
+        max-width="600"
+      ></v-img>
       <v-dialog v-model="intDialog" width="500">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn outlined v-bind="attrs" v-on="on">
-                    Instructions
-                  </v-btn>
-                </template>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn outlined v-bind="attrs" v-on="on"> Instructions </v-btn>
+        </template>
 
-                <v-card>
-                  <v-card-title class="text-h5 grey lighten-2">
-                    Admin Route Planner Instructions
-                  </v-card-title>
+        <v-card>
+          <v-card-title class="text-h5 grey lighten-2">
+            Admin Route Planner Instructions
+          </v-card-title>
 
-                  <v-card-text>
-                    <p class="font-weight-medium">
-                      To begin editing, select a route at the bottom of the page. 
-                      This will populate the Stop Table with the stops for the chosen route.
-                    </p>
-                    <p class="font-weight-medium">
-                      To add and remove addresses from the route, simply click on the blue markers.
-                    </p>
-                    <p class="font-weight-medium">
-                      To create a new stop, type a stop name if desired and click the "Create Stop" button. 
-                      You will be prompted to click anywhere on the map to drop a marker.
-                    </p>
-                    <p class="font-weight-medium">
-                      You can move stop locations by dragging the orange markers around the map. 
-                      To modify the order of the stops, click and drag the rows in the Stop Table.
-                    </p>
-                    <p class="font-weight-medium">
-                      To delete or edit route and stop names/descritpions, use the action buttons in the rows.
-                    </p>
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
+          <v-card-text>
+            <p class="font-weight-medium">
+              To begin editing, select a route at the bottom of the page. This
+              will populate the Stop Table with the stops for the chosen route.
+            </p>
+            <p class="font-weight-medium">
+              To add and remove addresses from the route, simply click on the
+              blue markers.
+            </p>
+            <p class="font-weight-medium">
+              To create a new stop, type a stop name if desired and click the
+              "Create Stop" button. You will be prompted to click anywhere on
+              the map to drop a marker.
+            </p>
+            <p class="font-weight-medium">
+              You can move stop locations by dragging the orange markers around
+              the map. To modify the order of the stops, click and drag the rows
+              in the Stop Table.
+            </p>
+            <p class="font-weight-medium">
+              To delete or edit route and stop names/descritpions, use the
+              action buttons in the rows.
+            </p>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     </v-card-title>
-    <v-card-subtitle>
-      To begin editing, select a Route below
-    </v-card-subtitle>
+    <v-card-subtitle> To begin editing, select a Route below </v-card-subtitle>
 
     <v-row>
       <v-col width="50%">
         <v-card-title>
           Stops:
           <v-spacer></v-spacer>
-                <v-text-field
-                  v-model="stopName"
-                  label="Enter Stop Name (optional)"
-                  single-line
-                ></v-text-field>
-                <v-btn
-                style="margin-left: 15px;"
-                  :disabled="!canCreateStops"
-                  outlined
-                  @click="
-                    enableStopMarkerCreation();
-                    snackbar2 = true;
-                  "
-                  >Create Stop</v-btn
-                >
+          <v-text-field
+            v-model="stopName"
+            label="Enter Stop Name (optional)"
+            single-line
+          ></v-text-field>
+          <v-btn
+            style="margin-left: 15px"
+            :disabled="!canCreateStops"
+            outlined
+            @click="
+              enableStopMarkerCreation();
+              snackbar2 = true;
+            "
+            >Create Stop</v-btn
+          >
         </v-card-title>
 
         <v-data-table
@@ -183,64 +185,62 @@
           Routes:
           <v-spacer></v-spacer>
           <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-              ></v-text-field>
-              <v-spacer></v-spacer>
-              <v-dialog v-model="dialog" width="500">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn outlined v-bind="attrs" v-on="on">
-                    Add New Route
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+          ></v-text-field>
+          <v-spacer></v-spacer>
+          <v-dialog v-model="dialog" width="500">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn outlined v-bind="attrs" v-on="on"> Add New Route </v-btn>
+            </template>
+
+            <v-card>
+              <v-card-title class="text-h5 grey lighten-2">
+                Add New Route
+              </v-card-title>
+
+              <v-card-text>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                  <v-text-field
+                    v-model="name"
+                    :rules="nameValidateArray"
+                    label="Name"
+                    append-icon="mdi-bus"
+                    required
+                  ></v-text-field>
+
+                  <v-textarea
+                    v-model="description"
+                    label="Route Description"
+                    append-icon="mdi-message-text"
+                    required
+                  ></v-textarea>
+
+                  <v-btn
+                    :disabled="!valid"
+                    color="success"
+                    class="mr-4"
+                    @click="validate"
+                    type="submit"
+                  >
+                    Submit
                   </v-btn>
-                </template>
-
-                <v-card>
-                  <v-card-title class="text-h5 grey lighten-2">
-                    Add New Route
-                  </v-card-title>
-
-                  <v-card-text>
-                    <v-form ref="form" v-model="valid" lazy-validation>
-                      <v-text-field
-                        v-model="name"
-                        :rules="nameValidateArray"
-                        label="Name"
-                        append-icon="mdi-bus"
-                        required
-                      ></v-text-field>
-
-                      <v-textarea
-                        v-model="description"
-                        label="Route Description"
-                        append-icon="mdi-message-text"
-                        required
-                      ></v-textarea>
-
-                      <v-btn
-                        :disabled="!valid"
-                        color="success"
-                        class="mr-4"
-                        @click="validate"
-                        type="submit"
-                      >
-                        Submit
-                      </v-btn>
-                      <v-btn
-                        color="warning"
-                        @click="
-                          dialog = false;
-                          reset();
-                        "
-                      >
-                        Cancel
-                      </v-btn>
-                    </v-form>
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
+                  <v-btn
+                    color="warning"
+                    @click="
+                      dialog = false;
+                      reset();
+                    "
+                  >
+                    Cancel
+                  </v-btn>
+                </v-form>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
         </v-card-title>
         <v-data-table
           :headers="headers"
@@ -899,6 +899,7 @@ export default {
           .then(() => {
             this.stops = [];
             this.getRequestAllStops();
+            this.getMarkerData();
             this.snackbar3 = false;
           })
           .catch((err) => {
@@ -938,6 +939,6 @@ tr.v-data-table__selected {
   background: #add8e6 !important;
 }
 .txt:hover {
-          text-decoration: underline;
-      }
+  text-decoration: underline;
+}
 </style>

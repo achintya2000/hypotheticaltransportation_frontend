@@ -90,9 +90,7 @@
           Close
         </v-btn>
       </template>
-      <template v-slot:no-data>
-          You have no students assigned to you
-      </template>
+      <template v-slot:no-data> You have no students assigned to you </template>
     </v-snackbar>
   </v-card>
 </template>
@@ -132,9 +130,9 @@ export default {
     };
   },
   methods: {
-    isEnabled (slot) {
-        return this.enabled === slot
-      },
+    isEnabled(slot) {
+      return this.enabled === slot;
+    },
     ...mapActions(["snackBar"]),
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
@@ -142,7 +140,7 @@ export default {
     viewItem(row) {
       this.$router.push({
         name: "ParentStudentDetail",
-        query: { id: row.id },
+        query: { id: row.id, parentid: this.$store.state.loggedInUserID },
       });
     },
     getUserInfo() {
