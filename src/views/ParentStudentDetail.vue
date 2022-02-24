@@ -8,6 +8,8 @@
 
       <v-spacer></v-spacer>
     </v-card-title>
+    <v-row>
+      <v-col width="50%">
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> ID: </span
       ><span class="black--text"> {{ studentId }} </span>
@@ -32,8 +34,8 @@
       ><span class="black--text"> {{ studentParent }} </span>
     </v-card-subtitle>
 
-    <v-row>
-      <v-col width="50%">
+    
+      
         <v-data-table :headers="headers" :items="stopsInRange"> </v-data-table>
       </v-col>
       <v-col width="50%">
@@ -59,14 +61,14 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { mapActions } from "vuex";
-import { stopMapMarker, mapMarker } from "../assets/markers";
+import { stopMapMarker, bluePerson } from "../assets/markers";
 import { gmapApi } from "vue2-google-maps-withscopedautocomp";
 import moment from "moment";
 
 export default {
   data() {
     return {
-      mapMarker,
+      bluePerson,
       stopMapMarker,
       studentName: "",
       dialog: false,
@@ -192,8 +194,8 @@ export default {
                   lat: parseFloat(res.data.latitude),
                   lng: parseFloat(res.data.longitude),
                 },
-                icon: this.mapMarker.icon,
-                label: this.mapMarker.label,
+                icon: this.bluePerson.icon,
+                label: this.bluePerson.label,
               };
               this.markers.push(house);
 

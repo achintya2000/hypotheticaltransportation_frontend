@@ -104,6 +104,8 @@ export default {
       busArriveTime: "",
       busDepTime: "",
       schools: [],
+      postResponse: "",
+      showAddressError: false,
     };
   },
   methods: {
@@ -139,11 +141,9 @@ export default {
             },
           }
         )
-        .then(() => {
-          this.$emit(
-            "schoolcreated",
-            "A new school has been created and sent to database"
-          );
+        .then((response) => {
+          this.postResponse = response.data;
+          
         })
         .catch((err) => {
           this.showSnackBarAddress();
