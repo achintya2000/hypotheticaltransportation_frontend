@@ -4,11 +4,13 @@
       {{ full_name }}
       <v-spacer></v-spacer>
       <create-new-student-only
-      @studentcreated="getStudents()"
+        @studentcreated="getStudents()"
       ></create-new-student-only>
       <v-dialog v-model="dialog2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Modify </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
+            Modify
+          </v-btn>
         </template>
 
         <v-card>
@@ -49,7 +51,12 @@
                 :label="'Admin Status'"
               ></v-checkbox>
 
-              <v-btn color="success" class="mr-4" @click="updateUser" type="submit">
+              <v-btn
+                color="success"
+                class="mr-4"
+                @click="updateUser"
+                type="submit"
+              >
                 Save
               </v-btn>
 
@@ -73,7 +80,9 @@
       </v-dialog>
       <v-dialog v-model="dialog" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Delete </v-btn>
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
+            Delete
+          </v-btn>
         </template>
 
         <v-card>
@@ -95,17 +104,20 @@
         </v-card>
       </v-dialog>
     </v-card-title>
-    <v-card-subtitle v-if="currentAddress != ''" >
-      <span class="black--text font-weight-bold"> Address: </span><span class="black--text"> {{ currentAddress }} </span>
+    <v-card-subtitle v-if="currentAddress != ''">
+      <span class="black--text font-weight-bold"> Address: </span
+      ><span class="black--text"> {{ currentAddress }} </span>
     </v-card-subtitle>
     <v-card-subtitle v-if="currentAddress == ''" class="black--text">
       No address has been assigned
     </v-card-subtitle>
-    <v-card-subtitle> 
-      <span class="black--text font-weight-bold"> Email: </span><span class="black--text"> {{ email }} </span>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Email: </span
+      ><span class="black--text"> {{ email }} </span>
     </v-card-subtitle>
-    <v-card-subtitle> 
-      <span class="black--text font-weight-bold"> Admin: </span><span class="black--text"> {{ administrator }} </span>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Admin: </span
+      ><span class="black--text"> {{ administrator }} </span>
     </v-card-subtitle>
     <v-card-title> Students </v-card-title>
     <v-data-table
@@ -114,30 +126,22 @@
       :search="search"
       @click:row="viewStudent"
     >
-    <template v-slot:[`item.studentRoute`]="{ item }">
-        <div v-if="item.studentRoute">{{item.studentRoute}}</div>
-        <div v-if="!item.studentRoute" style="color:red;">No Route</div>
+      <template v-slot:[`item.studentRoute`]="{ item }">
+        <div v-if="item.studentRoute">{{ item.studentRoute }}</div>
+        <div v-if="!item.studentRoute" style="color: red">No Route</div>
       </template>
-    <template v-slot:[`item.studentInRange`]="{ item }">
-        <v-icon v-if="item.studentInRange==false" color="red"> mdi-close </v-icon>
-        <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
+      <template v-slot:[`item.studentInRange`]="{ item }">
+        <v-icon v-if="item.studentInRange == false" color="red">
+          mdi-close
+        </v-icon>
+        <v-icon v-if="item.studentInRange == true"> mdi-check </v-icon>
       </template>
     </v-data-table>
-     <v-snackbar
-      v-model="snackbar"
-      outlines
-      bottom
-      color="success"
-    >
+    <v-snackbar v-model="snackbar" outlines bottom color="success">
       Password has been changed
 
       <template v-slot:action="{ attrs }">
-        <v-btn
-          color="white"
-          text
-          v-bind="attrs"
-          @click="snackbar = false"
-        >
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
           Close
         </v-btn>
       </template>
@@ -146,9 +150,9 @@
 </template>
 
 <script>
-import CreateNewStudentOnly from '../components/CreateNewStudentOnly.vue';
+import CreateNewStudentOnly from "../components/CreateNewStudentOnly.vue";
 import { base_endpoint } from "../services/axios-api";
-import { mapActions} from "vuex";
+import { mapActions } from "vuex";
 export default {
   components: { CreateNewStudentOnly },
   data() {
@@ -205,7 +209,9 @@ export default {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
     showSnackBarAddress() {
-      this.snackBar("Uh-Oh! Something Went Wrong! Make sure to click the Autofill result to complete your Address!");
+      this.snackBar(
+        "Uh-Oh! Something Went Wrong! Make sure to click the Autofill result to complete your Address!"
+      );
     },
     setPlace(place) {
       this.formatted_address = place.formatted_address;
@@ -236,6 +242,7 @@ export default {
           this.administrator = response.data.is_superuser;
           this.newAdministrator = response.data.is_superuser;
           this.formatted_address = response.data.address;
+          this.$forceUpdate();
         })
         .catch((err) => {
           this.showSnackBar();
@@ -293,6 +300,7 @@ export default {
           this.address = this.newCurrentAddress;
           this.administrator = this.newAdministrator;
           this.email = this.newEmail;
+          this.getUserInfo();
           this.$forceUpdate();
         })
         .catch((err) => {
