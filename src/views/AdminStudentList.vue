@@ -1,5 +1,5 @@
 <template>
-  <v-card height=100%>
+  <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
     <v-card-title>
       Your Students
       <v-spacer></v-spacer>
@@ -31,7 +31,7 @@
       
       <template v-slot:[`item.route`]="{ item }">
         <div v-if="item.route">{{item.route}}</div>
-        <div v-if="!item.route">No Route</div>
+        <div v-if="!item.route" style="color:red;">No Route</div>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-btn

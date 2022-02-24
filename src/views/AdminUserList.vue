@@ -1,5 +1,5 @@
 <template>
-  <v-card height=100%>
+  <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
     <v-card-title>
       Your Users
       <v-spacer></v-spacer>
@@ -7,8 +7,6 @@
         @usercreated="getRequestAllUsers(); snackbar = true"
       ></create-new-student>
       <send-email :typeOfEmail="'allGA'"
-      ></send-email>
-      <send-email :typeOfEmail="'allRA'"
       ></send-email>
       <v-spacer></v-spacer>
       <v-text-field
