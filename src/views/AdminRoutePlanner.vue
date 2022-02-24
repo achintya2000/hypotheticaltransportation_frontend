@@ -296,7 +296,7 @@
       </template>
     </v-snackbar>
     <v-snackbar v-model="snackbar3" outlines color="blue" :timeout="-1">
-      The stop is being created
+      Loading
       <v-progress-circular indeterminate color="black"></v-progress-circular>
 
       <template v-slot:action="{ attrs }">
@@ -510,12 +510,15 @@ export default {
       };
     },
     getRequestAllRoutes() {
+      this.snackbar3 = true;
+      this.snackbar2 = false;
       base_endpoint
         .get("/api/route/getallfromschool/" + this.$route.query.id, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
           this.routes = response.data.map(this.getDisplayRoute);
+          this.snackbar3 = false;
         })
         .catch((err) => {
           this.showSnackBar();
@@ -535,12 +538,13 @@ export default {
           console.log(err);
         });
     },
-    getMarkerData() {
+    getMarkerDataInitial() {
       base_endpoint
         .get("/api/school/getalladdresses/" + this.$route.query.id, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
+          console.log("initial");
           console.log(response.data);
           this.markers = response.data.map(this.getDisplayMarkers);
           var bounds = new this.google.maps.LatLngBounds();
@@ -550,6 +554,24 @@ export default {
           this.$refs.mapRef.$mapPromise.then((map) => {
             map.fitBounds(bounds);
           });
+
+          this.getRequestAllRoutes();
+        })
+        .catch((err) => {
+          this.showSnackBarMapError();
+          console.log(err);
+        });
+    },
+    getMarkerData() {
+      this.snackbar3 = true;
+      this.snackbar2 = false;
+      base_endpoint
+        .get("/api/school/getalladdresses/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.snackbar3 = false;
+          this.markers = response.data.map(this.getDisplayMarkers);
 
           this.getRequestAllRoutes();
         })
@@ -652,6 +674,8 @@ export default {
       return is_school ? true : false;
     },
     updateStopPosition(event, m) {
+      this.snackbar3 = true;
+      this.snackbar2 = false;
       base_endpoint
         .patch(
           "/api/stop/update/" + m.id,
@@ -667,7 +691,11 @@ export default {
             },
           }
         )
-        .then(() => {})
+        .then(() => {
+          this.routes = [];
+          this.getMarkerData();
+          this.snackbar3 = false;
+        })
         .catch((err) => {
           this.showSnackBar();
           console.log(err);
@@ -864,7 +892,7 @@ export default {
   created() {
     this.getRequestAllRoutes();
     this.getSchoolInfo();
-    this.getMarkerData();
+    this.getMarkerDataInitial();
   },
   mounted() {
     //this.geolocate();
