@@ -159,7 +159,7 @@
       @click:row="viewRoute"
     >
       <template v-slot:[`item.routeComplete`]="{ item }">
-        <v-icon v-if="item.routeComplete==false"> mdi-close </v-icon>
+        <v-icon v-if="item.routeComplete==false" color="red"> mdi-close </v-icon>
         <v-icon v-if="item.routeComplete==true"> mdi-check </v-icon>
       </template>
     </v-data-table>
@@ -174,10 +174,10 @@
     >
       <template v-slot:[`item.studentRoute`]="{ item }">
         <div v-if="item.studentRoute">{{ item.studentRoute }}</div>
-        <div v-if="!item.studentRoute">No Route</div>
+        <div v-if="!item.studentRoute" style="color:red;">No Route</div>
       </template>
       <template v-slot:[`item.studentInRange`]="{ item }">
-        <v-icon v-if="item.studentInRange==false"> mdi-close </v-icon>
+        <v-icon v-if="item.studentInRange==false" color="red"> mdi-close </v-icon>
         <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
       </template>
     </v-data-table>

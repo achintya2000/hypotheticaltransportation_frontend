@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" width="50%">
+  <v-dialog v-model="dialog" width="75%">
     <template v-slot:activator="{ on, attrs }">
       <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Create New Student/User </v-btn>
     </template>
@@ -11,115 +11,109 @@
 
       <v-card-text>
         <v-form ref="form" v-model="valid" lazy-validation>
-          <v-checkbox
-            v-model="userCheckbox"
-            :label="'Create a New User'"
-            dense
-          ></v-checkbox>
-          <v-checkbox
-            v-model="studentCheckbox"
-            :label="'Create a New Student'"
-            dense
-          ></v-checkbox>
-
-          <v-text-field
-            v-if="userCheckbox"
-            v-model="parentName"
-            :rules="userNameValidateArray"
-            label="Full Name for User"
-            append-icon="mdi-account"
-            dense
-            required
-          ></v-text-field>
-          <v-text-field
-            v-if="userCheckbox"
-            v-model="parentEmail"
-            :rules="userEmailValidateArray"
-            label="User Email"
-            append-icon="mdi-email"
-            dense
-            required
-          ></v-text-field>
-          <v-text v-if="userCheckbox">Password Type:</v-text>
-            <v-radio-group
-              v-model="passType2"
-              row
-              :rules="userPasswordTypeValidateArray"
-              v-if="userCheckbox"
-            >
-              <v-radio
-                label="One Time Password"
-                value="otp"
-              ></v-radio>
-              <v-radio
-                label="Link Based Password Creation"
-                value="link"
-              ></v-radio>
-            </v-radio-group>
-          <gmap-autocomplete v-if="userCheckbox" @place_changed="setPlace">
-            <template v-slot:input="slotProps">
+          <v-row>
+            <v-col>
+              <v-checkbox
+                v-model="userCheckbox"
+                :label="'Create a New User'"
+              ></v-checkbox>
               <v-text-field
-                v-model="parentAddress"
-                label="Enter a location address"
-                :rules="userAddressValidateArray"
-                dense
-                append-icon="mdi-map-marker"
-                ref="input"
-                v-on:listeners="slotProps.listeners"
-                v-on:attrs="slotProps.attrs"
+                v-if="userCheckbox"
+                v-model="parentName"
+                :rules="userNameValidateArray"
+                label="Full Name for User"
+                append-icon="mdi-account"
+                required
               ></v-text-field>
-            </template>
-          </gmap-autocomplete>
+              <v-text-field
+                v-if="userCheckbox"
+                v-model="parentEmail"
+                :rules="userEmailValidateArray"
+                label="User Email"
+                append-icon="mdi-email"
+                required
+              ></v-text-field>
+              <gmap-autocomplete v-if="userCheckbox" @place_changed="setPlace">
+                <template v-slot:input="slotProps">
+                  <v-text-field
+                    v-model="parentAddress"
+                    label="Enter a location address"
+                    :rules="userAddressValidateArray"
+                    append-icon="mdi-map-marker"
+                    ref="input"
+                    v-on:listeners="slotProps.listeners"
+                    v-on:attrs="slotProps.attrs"
+                  ></v-text-field>
+                </template>
+              </gmap-autocomplete>
+              <v-text v-if="userCheckbox">Password Type:</v-text>
+                <v-radio-group
+                  v-model="passType2"
+                  row
+                  :rules="userPasswordTypeValidateArray"
+                  v-if="userCheckbox"
+                >
+                  <v-radio
+                    label="One Time Password"
+                    value="otp"
+                  ></v-radio>
+                  <v-radio
+                    label="Link Based Password Creation"
+                    value="link"
+                  ></v-radio>
+                </v-radio-group>
+              
 
-          <v-checkbox
-            v-if="userCheckbox"
-            v-model="userAdminCheckbox"
-            :label="'Make User Admin?'"
-            dense
-          ></v-checkbox>
-          <v-divider></v-divider>
+              <v-checkbox
+                v-if="userCheckbox"
+                v-model="userAdminCheckbox"
+                :label="'Make User Admin?'"
+              ></v-checkbox>
+            </v-col>
+            <v-col>
+              <v-checkbox
+                v-model="studentCheckbox"
+                :label="'Create a New Student'"
+              ></v-checkbox>
+              <v-text-field
+                v-model="studentName"
+                :rules="studentNameValidateArray"
+                v-if="studentCheckbox"
+                append-icon="mdi-account"
+                label="Student Name"
+              ></v-text-field>
 
-          <v-text-field
-            v-model="studentName"
-            :rules="studentNameValidateArray"
-            v-if="studentCheckbox"
-            append-icon="mdi-account"
-            dense
-            label="Student Name"
-          ></v-text-field>
+              <v-text-field
+                v-model="sid"
+                v-if="studentCheckbox"
+                :rules="studentIDValidateArray"
+                append-icon="mdi-numeric-0-box"
+                label="Student ID"
+              ></v-text-field>
+              <v-autocomplete
+                v-model="parentSelected"
+                v-if="userAndStudentCheckbox"
+                :rules="studentParentValidateArray"
+                item-text="name"
+                label="Student's Parent"
+                :items="parents"
+                hint="If you can not find the user account you are looking for, please make sure it has been assigned an address"
+                persistent-hint
+                return-object
+              ></v-autocomplete>
 
-          <v-text-field
-            v-model="sid"
-            v-if="studentCheckbox"
-            :rules="studentIDValidateArray"
-            dense
-            append-icon="mdi-numeric-0-box"
-            label="Student ID"
-          ></v-text-field>
-          <v-autocomplete
-            v-model="parentSelected"
-            v-if="userAndStudentCheckbox"
-            :rules="studentParentValidateArray"
-            dense
-            item-text="name"
-            label="Student's Parent"
-            :items="parents"
-            hint="If you can not find the user account you are looking for, please make sure it has been assigned an address"
-            persistent-hint
-            return-object
-          ></v-autocomplete>
+              <v-autocomplete
+                v-model="schoolSelected"
+                item-text="name"
+                :rules="studentSchoolValidateArray"
+                v-if="studentCheckbox"
+                label="Student School"
+                :items="schools"
+                return-object
+              ></v-autocomplete>
+            </v-col>
 
-          <v-autocomplete
-            v-model="schoolSelected"
-            item-text="name"
-            :rules="studentSchoolValidateArray"
-            dense
-            v-if="studentCheckbox"
-            label="Student School"
-            :items="schools"
-            return-object
-          ></v-autocomplete>
-
+          </v-row>
           <v-btn
             :disabled="!valid"
             color="success"

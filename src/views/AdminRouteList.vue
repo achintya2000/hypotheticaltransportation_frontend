@@ -18,7 +18,7 @@
       @click:row="viewItem"
     >
       <template v-slot:[`item.routeComplete`]="{ item }">
-        <v-icon v-if="item.routeComplete==false"> mdi-close </v-icon>
+        <v-icon v-if="item.routeComplete==false" color="red"> mdi-close </v-icon>
         <v-icon v-if="item.routeComplete==true"> mdi-check </v-icon>
       </template>
     </v-data-table>

@@ -44,13 +44,59 @@
             </v-alert>
             <v-col class="d-flex" cols="12" sm="6" xsm="12"> </v-col>
             <v-spacer></v-spacer>
-            <v-btn @click="forgetPassword"> Forget Password </v-btn>
+            <v-dialog
+              v-model="dialog2"
+              persistent
+              max-width="600px"
+              @click:outside="dialog2 = false"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn v-bind="attrs" v-on="on">Forget Password</v-btn>
+              </template>
+              <v-card>
+                <v-card-title>
+                  <span class="text-h5">Forget Password</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-form
+                    ref="forgetForm"
+                    v-model="valid"
+                    lazy-validation
+                    @submit.prevent="login"
+                  >
+                    <v-row>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="username"
+                          :rules="loginEmailRules"
+                          label="E-mail"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col class="d-flex" cols="12" sm="6" xsm="12"> </v-col>
+                      <v-spacer></v-spacer>
+                      <v-btn @click="forgetPassword"> Forget Password </v-btn>
+                    </v-row>
+                  </v-form>
+                </v-card-text>
+              </v-card>
+            </v-dialog>
             <v-btn type="submit" text :disabled="!valid"> Login </v-btn>
           </v-row>
         </v-form>
       </v-card-text>
     </v-card>
+    <v-snackbar v-model="snackbar" outlines color="success">
+      A new school has been created
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-dialog>
+  
 </template>
 
 <script>
@@ -61,6 +107,7 @@ export default {
     return {
       password: "",
       username: "",
+      snackbar: false,
       dialog: false,
       incorrectAuth: false,
       valid: true,
@@ -93,6 +140,9 @@ export default {
           this.$router.push({
             name: "Home",
           });
+          this.dialog = false;
+          this.dialog2 = false;
+          this.snackbar = true;
         })
         .catch((err) => {
           this.showSnackBar();

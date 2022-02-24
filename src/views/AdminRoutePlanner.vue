@@ -1,5 +1,5 @@
 <template>
-  <v-card height="100%">
+  <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
     <v-card-title>
       
       <span text 
@@ -7,33 +7,62 @@
          {{ schoolName }} 
       </span>
       <v-spacer></v-spacer>
-      <v-tooltip left>
-        <template v-slot:activator="{ on, attrs }">
-          <v-icon color="primary" dark v-bind="attrs" v-on="on">
-            mdi-information-outline
-          </v-icon>
-        </template>
-        <v-img
-          src="../assets/marker_key.jpeg"
+      <v-img
+          src="../assets/may-key-flat.png"
           max-height="200"
-          max-width="250"
+          max-width="600"
         ></v-img>
-      </v-tooltip>
+      <v-dialog v-model="intDialog" width="500">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn outlined v-bind="attrs" v-on="on">
+                    Instructions
+                  </v-btn>
+                </template>
+
+                <v-card>
+                  <v-card-title class="text-h5 grey lighten-2">
+                    Admin Route Planner Instructions
+                  </v-card-title>
+
+                  <v-card-text>
+                    <p class="font-weight-medium">
+                      To begin editing, select a route at the bottom of the page. 
+                      This will populate the Stop Table with the stops for the chosen route.
+                    </p>
+                    <p class="font-weight-medium">
+                      To add and remove addresses from the route, simply click on the blue markers.
+                    </p>
+                    <p class="font-weight-medium">
+                      To create a new stop, type a stop name if desired and click the "Create Stop" button. 
+                      You will be prompted to click anywhere on the map to drop a marker.
+                    </p>
+                    <p class="font-weight-medium">
+                      You can move stop locations by dragging the orange markers around the map. 
+                      To modify the order of the stops, click and drag the rows in the Stop Table.
+                    </p>
+                    <p class="font-weight-medium">
+                      To delete or edit route and stop names/descritpions, use the action buttons in the rows.
+                    </p>
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
     </v-card-title>
+    <v-card-subtitle>
+      To begin editing, select a Route below
+    </v-card-subtitle>
+
     <v-row>
       <v-col width="50%">
-        <v-card-subtitle>
-          <v-form ref="form" lazy-validation>
-            <v-row>
-              <v-col>
+        <v-card-title>
+          Stops:
+          <v-spacer></v-spacer>
                 <v-text-field
                   v-model="stopName"
                   label="Enter Stop Name (optional)"
                   single-line
                 ></v-text-field>
-              </v-col>
-              <v-col>
                 <v-btn
+                style="margin-left: 15px;"
                   :disabled="!canCreateStops"
                   outlined
                   @click="
@@ -42,10 +71,7 @@
                   "
                   >Create Stop</v-btn
                 >
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-card-subtitle>
+        </v-card-title>
 
         <v-data-table
           :headers="headers_stops"
@@ -153,18 +179,17 @@
 
     <v-row>
       <v-col width="50%">
-        <v-card-subtitle>
-          <v-row>
-            <v-col>
-              <v-text-field
+        <v-card-title>
+          Routes:
+          <v-spacer></v-spacer>
+          <v-text-field
                 v-model="search"
                 append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
               ></v-text-field>
-            </v-col>
-            <v-col>
+              <v-spacer></v-spacer>
               <v-dialog v-model="dialog" width="500">
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn outlined v-bind="attrs" v-on="on">
@@ -216,10 +241,7 @@
                   </v-card-text>
                 </v-card>
               </v-dialog>
-            </v-col>
-          </v-row>
-        </v-card-subtitle>
-
+        </v-card-title>
         <v-data-table
           :headers="headers"
           :items="routes"
@@ -297,7 +319,7 @@
     </v-snackbar>
     <v-snackbar v-model="snackbar3" outlines color="blue" :timeout="-1">
       The stop is being created
-      <v-progress-circular indeterminate color="black"></v-progress-circular>
+      <v-progress-circular indeterminate color="white"></v-progress-circular>
 
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="snackbar3 = false">
