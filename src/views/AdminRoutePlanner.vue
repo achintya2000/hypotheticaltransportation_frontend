@@ -887,4 +887,7 @@ export default {
 tr.v-data-table__selected {
   background: #add8e6 !important;
 }
+.txt:hover {
+          text-decoration: underline;
+      }
 </style>
