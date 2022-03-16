@@ -779,8 +779,7 @@ export default {
 
     deleteRouteItem(item) {
       const index = this.routes.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.routes.splice(index, 1);
+      this.routes.splice(index, 1);
 
       base_endpoint
         .delete("/api/route/delete/" + item.id, {
