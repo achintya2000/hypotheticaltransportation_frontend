@@ -96,6 +96,8 @@ export default {
       address: "",
       latitude: 0,
       longitude: 0,
+      userType: "",
+      userID: "",
       formatted_address: "",
       nameValidateArray: [this.nameValidate],
       addressValidateArray: [this.addressValidate],
@@ -124,6 +126,7 @@ export default {
       this.longitude = place.geometry.location.lng();
     },
     submitData() {
+      console.log("This: " + this.busArriveTime);
       base_endpoint
         .post(
           "/api/school/create",
@@ -203,7 +206,7 @@ export default {
     },
     getRequestAllSchools() {
       base_endpoint
-        .get("/api/school/getall", {
+        .get("/api/school/getall/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -219,6 +222,8 @@ export default {
     },
   },
   created() {
+    this.userType = window.localStorage.getItem("userType");
+    this.userID = window.localStorage.getItem("userID");
     this.getRequestAllSchools();
   },
 };

@@ -3,7 +3,7 @@
     <v-card-title class="font-weight-black">
       {{ schoolName }}
       <v-spacer></v-spacer>
-      <v-dialog v-model="dialog2" width="500">
+      <v-dialog v-model="dialog2" width="500" v-if="this.userType!='busDriver'">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Modify
@@ -20,9 +20,10 @@
                 :rules="nameValidateArray"
                 label="Name"
                 required
+                v-if="this.userType=='admin'"
               ></v-text-field>
 
-              <gmap-autocomplete @place_changed="setPlace">
+              <gmap-autocomplete @place_changed="setPlace" v-if="this.userType=='admin'">
                 <template v-slot:input="slotProps">
                   <v-text-field
                     v-model="newAddress"
@@ -32,6 +33,7 @@
                     v-on:listeners="slotProps.listeners"
                     v-on:attrs="slotProps.attrs"
                     required
+                    
                   ></v-text-field>
                 </template>
               </gmap-autocomplete>
@@ -45,7 +47,7 @@
               ></v-text-field>
 
               <v-text-field
-              v-model="newBusDepTime"
+                v-model="newBusDepTime"
                 label="Bus Departure Time"
                 type="time"
                 :rules="busDepValidateArray"
@@ -78,7 +80,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="dialog" width="500">
+      <v-dialog v-model="dialog" width="500" v-if="this.userType=='admin'">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Delete
@@ -130,8 +132,8 @@
         </v-card>
       </v-dialog>
 
-      <v-btn style="margin: 10px" @click="planNewRoute" outlined>Create/Edit Routes</v-btn>
-      <send-email :typeOfEmail="'schoolGA'" :relevantID = this.$route.query.id :relevantName = this.schoolName
+      <v-btn style="margin: 10px" @click="planNewRoute" outlined v-if="this.userType!='busDriver'">Create/Edit Routes</v-btn>
+      <send-email v-if="this.userType!='busDriver'" :typeOfEmail="'schoolGA'" :relevantID = this.$route.query.id :relevantName = this.schoolName
       ></send-email>
 
     </v-card-title>
@@ -155,6 +157,7 @@
       :items="busRoutes"
       :search="search"
       @click:row="viewRoute"
+      class="row-pointer"
     >
       <template v-slot:[`item.routeComplete`]="{ item }">
         <v-icon v-if="item.routeComplete==false" color="red"> mdi-close </v-icon>
@@ -169,6 +172,7 @@
       :items="students"
       :search="search"
       @click:row="viewStudent"
+      class="row-pointer"
     >
       <template v-slot:[`item.studentRoute`]="{ item }">
         <div v-if="item.studentRoute">{{ item.studentRoute }}</div>
@@ -209,6 +213,8 @@ export default {
       longitude: 0,
       formatted_address: "",
       newSchoolName: "",
+      userType: "",
+      userID: "",
       newAddress: "",
       deleteName: "",
       routeHeaders: [
@@ -292,9 +298,9 @@ export default {
           var depTime = moment.utc(response.data.departureTime);
           this.busDepTime = depTime.local().format("h:mm A");
           var newarrTime = moment.utc(response.data.arrivalTime);
-          this.newBusArriveTime = newarrTime.local().format("hh:mm");
+          this.newBusArriveTime = newarrTime.local().format("HH:mm");
           var newdepTime = moment.utc(response.data.departureTime);
-          this.newBusDepTime = newdepTime.local().format("hh:mm");
+          this.newBusDepTime = newdepTime.local().format("HH:mm");
         })
         .catch((err) => {
           this.showSnackBar();
@@ -463,6 +469,8 @@ export default {
   },
 
   created() {
+    this.userType = window.localStorage.getItem("userType");
+    this.userID = window.localStorage.getItem("userID");
     this.getSchoolInfo();
     this.getSchoolRoutes();
     this.getStudents();
@@ -471,4 +479,7 @@ export default {
 </script>
 
 <style>
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+  cursor: pointer;
+}
 </style>

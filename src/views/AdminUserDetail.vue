@@ -5,8 +5,9 @@
       <v-spacer></v-spacer>
       <create-new-student-only
         @studentcreated="getStudents()"
+        v-if="this.userType!='busDriver'"
       ></create-new-student-only>
-      <v-dialog v-model="dialog2" width="500">
+      <v-dialog v-model="dialog2" width="500" v-if="this.userType!='busDriver'">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Modify
@@ -32,6 +33,14 @@
                 required
               ></v-text-field>
 
+              <v-text-field
+                v-model="newPhone"
+                :rules="userPhoneValidateArray"
+                label="User Phone Number"
+                append-icon="mdi-phone"
+                required
+              ></v-text-field>
+
               <gmap-autocomplete @place_changed="setPlace">
                 <template v-slot:input="slotProps">
                   <v-text-field
@@ -46,10 +55,46 @@
                 </template>
               </gmap-autocomplete>
 
-              <v-checkbox
-                v-model="newAdministrator"
-                :label="'Admin Status'"
-              ></v-checkbox>
+              <v-text v-if="this.userType=='admin'">User Role Type:</v-text>
+              <v-radio-group
+                  v-model="newUserRoleType"
+                  v-if="this.userType=='admin'"
+                  row
+                  :rules="userRoleTypeValidateArray"
+                  dense
+                  @focus="console.log(this.newUserRoleType)"
+                >
+                  <v-radio
+                    label="Admin"
+                    value="admin"
+                    v-if="this.userType=='admin'"
+                  ></v-radio>
+                  <v-radio
+                    label="Parent"
+                    value="parent"
+                  ></v-radio>
+                  <v-radio
+                    label="Bus Driver"
+                    value="busDriver"
+                    v-if="this.userType=='admin'"
+                  ></v-radio>
+                  <v-radio
+                    label="School Staff"
+                    value="schoolStaff"
+                    v-if="this.userType=='admin'"
+                  ></v-radio>
+                </v-radio-group>
+                <v-select
+                  v-model="newManagedSchools"
+                  :items="schools"
+                  :menu-props="{ maxHeight: '400' }"
+                  label="Select"
+                  v-if="newUserRoleType=='schoolStaff'"
+                  multiple
+                  item-text="name"
+                  hint="Pick the schools for them to manage"
+                  persistent-hint
+                ></v-select>
 
               <v-btn
                 color="success"
@@ -78,7 +123,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="dialog" width="500">
+      <v-dialog v-model="dialog" width="500" v-if="this.userType!='busDriver'">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Delete
@@ -116,8 +161,21 @@
       ><span class="black--text"> {{ email }} </span>
     </v-card-subtitle>
     <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Phone: </span>
+      <span v-if="userPhone != ''" class="black--text"> {{ userPhone }} </span>
+      <span v-if="userPhone == ''" class="black--text">No phone number</span>
+    </v-card-subtitle>
+    <v-card-subtitle>
       <span class="black--text font-weight-bold"> Admin: </span
       ><span class="black--text"> {{ administrator }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> User Type: </span
+      ><span class="black--text"> {{ userRoleType }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Managed Schools: </span
+      ><span class="black--text"> {{ managedSchools }} </span>
     </v-card-subtitle>
     <v-card-title> Students </v-card-title>
     <v-data-table
@@ -125,6 +183,7 @@
       :items="students"
       :search="search"
       @click:row="viewStudent"
+      class="row-pointer"
     >
       <template v-slot:[`item.studentRoute`]="{ item }">
         <div v-if="item.studentRoute">{{ item.studentRoute }}</div>
@@ -164,20 +223,27 @@ export default {
       userName: "",
       userAddress: "",
       administrator: "",
+      userPhone: "",
+      newPhone: "",
       newEmail: "",
       newFull_name: "",
       newCurrentAddress: "",
       newAdministrator: "",
+      userRoleType: "",
+      newUserRoleType: "",
       userNameValidateArray: [this.userNameValidate],
       userEmailValidateArray: [this.userEmailValidate],
+      userPhoneValidateArray: [this.userPhoneValidate],
       userAddressValidateArray: [this.userAddressValidate],
+      userRoleTypeValidateArray: [this.userRoleTypeValidate],
       students: [],
       dialog: false,
       dialog2: false,
       dialog3: false,
       newPassword: "",
       newPassword2: "",
-
+      userType: "",
+      userID: "",
       name2: "Old Name",
       name2Rules: [(v) => !!v || "Name is required"],
       address: "Old Address",
@@ -191,6 +257,9 @@ export default {
       longitude: 0,
       formatted_address: "",
       adminCheckbox: false,
+      managedSchools: [],
+      newManagedSchools: [],
+      schools: [],
       headers: [
         {
           text: "Name",
@@ -208,9 +277,27 @@ export default {
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
+    getRequestAllSchools() {
+      base_endpoint
+        .get("/api/school/getall/" + this.userID, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.schools = response.data.map(this.getDisplaySchool);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
     showSnackBarAddress() {
       this.snackBar(
         "Uh-Oh! Something Went Wrong! Make sure to click the Autofill result to complete your Address!"
+      );
+    },
+    showSnackBarNoDelete() {
+      this.snackBar(
+        "Uh-Oh! You can not delete this user becuase they have students who go to a school you do not manage!"
       );
     },
     setPlace(place) {
@@ -224,6 +311,13 @@ export default {
         name: "AdminStudentDetail",
         query: { id: row.studentId },
       });
+    },
+    getDisplaySchool(item) {
+      return {
+        id: item.id,
+        name: item.name,
+        address: item.address
+      };
     },
     getUserInfo() {
       base_endpoint
@@ -239,9 +333,15 @@ export default {
           this.longitude = response.data.longitude;
           this.latitude = response.data.latitude;
           this.newCurrentAddress = response.data.address;
+          this.userPhone = response.data.phone;
+          this.newPhone = response.data.phone;
           this.administrator = response.data.is_superuser;
           this.newAdministrator = response.data.is_superuser;
           this.formatted_address = response.data.address;
+          this.userRoleType = response.data.type;
+          this.newUserRoleType = response.data.type;
+          this.managedSchools = response.data.managed_schools.map(this.getDisplaySchool);
+          this.newManagedSchools = response.data.managed_schools.map(this.getDisplaySchool);
           this.$forceUpdate();
         })
         .catch((err) => {
@@ -261,7 +361,7 @@ export default {
 
     getStudents() {
       base_endpoint
-        .get("/api/student/getallfromprofile/" + this.$route.query.id, {
+        .get("/api/student/getallfromprofile/" + this.$route.query.id + "/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -276,6 +376,7 @@ export default {
 
     updateUser() {
       this.dialog2 = false;
+      console.log(this.newUserRoleType);
       base_endpoint
         .patch(
           "/api/profile/update/" + this.$route.query.id,
@@ -285,7 +386,10 @@ export default {
             address: this.formatted_address,
             latitude: this.latitude,
             longitude: this.longitude,
+            phone: this.newPhone,
+            type: this.newUserRoleType,
             is_superuser: this.newAdministrator,
+            managed_schools: this.newManagedSchools,
           },
           {
             headers: {
@@ -308,11 +412,20 @@ export default {
           console.log(err);
         });
     },
-
+    userPhoneValidate() {
+      if (
+        this.userCheckbox == true &&
+        (this.parentPhone == null || this.parentPhone == "")
+      ) {
+        return "Parent phone number is required";
+      } else {
+        return true;
+      }
+    },
     submitDataForDelete() {
       this.dialog = false;
       base_endpoint
-        .delete("/api/profile/delete/" + this.$route.query.id, {
+        .delete("/api/profile/delete/" + this.$route.query.id + "/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -320,7 +433,7 @@ export default {
           this.$router.push({ name: "AdminUserList" });
         })
         .catch((err) => {
-          this.showSnackBar();
+          this.showSnackBarNoDelete();
           console.log(err);
         });
     },
@@ -373,11 +486,17 @@ export default {
     },
   },
   created() {
+    this.userType = window.localStorage.getItem("userType");
+    this.userID = window.localStorage.getItem("userID");
     this.getUserInfo();
     this.getStudents();
+    this.getRequestAllSchools();
   },
 };
 </script>
 
 <style>
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+  cursor: pointer;
+}
 </style>

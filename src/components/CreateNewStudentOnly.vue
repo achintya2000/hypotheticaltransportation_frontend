@@ -78,6 +78,8 @@ export default {
       schools: [],
       parents: [],
       schoolSelected: null,
+      userType: "",
+      userID: "",
       latitude: 0,
       longitude: 0,
       formatted_address: "",
@@ -97,7 +99,7 @@ export default {
     },
     getRequestAllSchools() {
       base_endpoint
-        .get("/api/school/getall", {
+        .get("/api/school/getall/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -179,6 +181,8 @@ export default {
     },
   },
   created() {
+    this.userType = window.localStorage.getItem("userType");
+    this.userID = window.localStorage.getItem("userID");
     this.getRequestAllSchools();
     this.getRequestAllParents();
   },

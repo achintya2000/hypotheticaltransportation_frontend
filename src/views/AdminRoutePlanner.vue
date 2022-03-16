@@ -30,6 +30,10 @@
               will populate the Stop Table with the stops for the chosen route.
             </p>
             <p class="font-weight-medium">
+              If a route does not exist yet or you want to add a new route, use
+              the "Add New Route" button below the map interface.
+            </p>
+            <p class="font-weight-medium">
               To add and remove addresses from the route, simply click on the
               blue markers.
             </p>
@@ -51,7 +55,8 @@
         </v-card>
       </v-dialog>
     </v-card-title>
-    <v-card-subtitle> To begin editing, select a Route below </v-card-subtitle>
+    <v-card-subtitle v-if="this.activeRouteID==null"> To begin editing, select a route below </v-card-subtitle>
+    <v-card-subtitle v-if="this.activeRouteID!=null"> You can now add houses to the route and create and modify stops </v-card-subtitle>
 
     <v-row>
       <v-col width="50%">
@@ -142,6 +147,7 @@
           ref="mapRef"
           :center="center"
           @click="addStopMarker($event)"
+          
         >
           <GmapMarker
             :key="index"
@@ -250,6 +256,7 @@
           dense
           :single-select="true"
           @click:row="selectRow"
+          class="row-pointer"
         >
           <template v-slot:[`item.name`]="{ item }">
             <v-text-field
@@ -954,5 +961,9 @@ tr.v-data-table__selected {
 }
 .txt:hover {
   text-decoration: underline;
+  cursor: pointer;
+}
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+  cursor: pointer;
 }
 </style>

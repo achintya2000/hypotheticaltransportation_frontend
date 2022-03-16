@@ -16,6 +16,7 @@
       :items="schools"
       :search="search"
       @click:row="viewItem"
+      class="row-pointer"
     >
       <template v-slot:[`item.routeComplete`]="{ item }">
         <v-icon v-if="item.routeComplete==false" color="red"> mdi-close </v-icon>
@@ -32,6 +33,8 @@ export default {
   data() {
     return {
       search: "",
+      userType: "",
+      userID: "",
       headers: [
         {
           text: "Name",
@@ -66,7 +69,7 @@ export default {
     },
     getRequestAllRoutes() {
       base_endpoint
-        .get("/api/route/getall", {
+        .get("/api/route/getall/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -81,10 +84,15 @@ export default {
   },
   //computed: mapState(["APIData"]),
   created() {
+    this.userType = window.localStorage.getItem("userType");
+    this.userID = window.localStorage.getItem("userID");
     this.getRequestAllRoutes();
   },
 };
 </script>
 
 <style>
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+  cursor: pointer;
+}
 </style>
