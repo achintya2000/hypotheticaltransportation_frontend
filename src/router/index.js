@@ -130,6 +130,14 @@ const routes = [
       requiresLogin: true,
       adminLocked: true
     }
+  },
+  {
+    path: '/bulkimport',
+    name: 'BulkImport',
+    component: () => import('../views/BulkImport.vue'),
+    meta: {
+      requiresLogin: true,
+    }
   }
 ]
 

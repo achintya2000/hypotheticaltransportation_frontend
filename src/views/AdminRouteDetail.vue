@@ -6,7 +6,13 @@
       <v-btn @click="planNewRoute" outlined>Modify Route</v-btn>
       <v-dialog v-model="dialog2" width="50%">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on" @click="newmethod">
+          <v-btn
+            style="margin: 10px"
+            outlined
+            v-bind="attrs"
+            v-on="on"
+            @click="newmethod"
+          >
             Modify Name and Description
           </v-btn>
         </template>
@@ -86,12 +92,12 @@
       <send-email
         :typeOfEmail="'routeRA'"
         :relevantID="this.$route.query.id"
-        :relevantName = this.routeName
+        :relevantName="this.routeName"
       ></send-email>
     </v-card-title>
 
     <v-row>
-      <v-col md=3>
+      <v-col md="3">
         <v-card-subtitle>
           <span class="black--text font-weight-bold"> School: </span>
           <span
@@ -104,28 +110,31 @@
         </v-card-subtitle>
         <v-card-subtitle>
           <span class="black--text font-weight-bold">Status: </span>
-            <span text 
-            class="red--text"
-            v-if="routeStatus == false">
+          <span text class="red--text" v-if="routeStatus == false">
             Not Complete
-            </span>
-            <span text 
-            class="black--text"
-            v-if="routeStatus == true">
+          </span>
+          <span text class="black--text" v-if="routeStatus == true">
             Complete
-            </span>
-
+          </span>
         </v-card-subtitle>
         <v-card-subtitle>
           <span class="black--text font-weight-bold"> Description: </span>
           <br />
-          <span style="white-space: pre" class="black--text" v-if="routeDescription != ''">{{
-            routeDescription
-          }}</span>
-          <span style="white-space: pre" class="black--text" v-if="routeDescription == ''">No Route Descritpion</span>
+          <span
+            style="white-space: pre"
+            class="black--text"
+            v-if="routeDescription != ''"
+            >{{ routeDescription }}</span
+          >
+          <span
+            style="white-space: pre"
+            class="black--text"
+            v-if="routeDescription == ''"
+            >No Route Descritpion</span
+          >
         </v-card-subtitle>
       </v-col>
-      <v-col md=9>
+      <v-col md="9">
         <GmapMap
           style="width: 100%; height: 400px"
           ref="mapRef"
@@ -166,22 +175,25 @@
     <v-row>
       <v-col>
         <v-card-title>Students: </v-card-title>
-        <v-data-table :headers="headers" :items="students" :search="search" @click:row="viewItem">
+        <v-data-table
+          :headers="headers"
+          :items="students"
+          :search="search"
+          @click:row="viewItem"
+        >
           <template v-slot:[`item.studentInRange`]="{ item }">
-        <v-icon v-if="item.studentInRange==false" color="red"> mdi-close </v-icon>
-        <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
-      </template>
+            <v-icon v-if="item.studentInRange == false" color="red">
+              mdi-close
+            </v-icon>
+            <v-icon v-if="item.studentInRange == true"> mdi-check </v-icon>
+          </template>
         </v-data-table>
       </v-col>
       <v-col>
         <v-card-title>Stops: </v-card-title>
-        <v-data-table
-      :headers="stopHeaders"
-      :items="stops"
-    >
-    </v-data-table>
+        <v-data-table :headers="stopHeaders" :items="stops"> </v-data-table>
       </v-col>
-      </v-row>
+    </v-row>
   </v-card>
 </template>
 
@@ -232,7 +244,7 @@ export default {
         { text: "Parent", value: "studentParent" },
         { text: "In-Range Status", value: "studentInRange", sortable: false },
       ],
-       stopHeaders: [
+      stopHeaders: [
         { text: "Order", align: "start", value: "order" },
         {
           text: "Name",
@@ -250,12 +262,12 @@ export default {
   },
   methods: {
     getSchoolInfo() {
-       console.log("Here: " + this.busArriveTime);
+      console.log("Here: " + this.busArriveTime);
       base_endpoint
         .get("/api/school/get/" + this.routeSchoolID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
-        
+
         .then((response) => {
           var arrTime = moment.utc(response.data.arrivalTime);
           this.busArriveTime = arrTime.local().format("h:mm A");
@@ -366,7 +378,7 @@ export default {
             order: "School",
             name: this.routeSchool,
             pickupTime: this.busArriveTime,
-            dropoffTime: this.busDepTime
+            dropoffTime: this.busDepTime,
           };
           this.stops.push(this.dict);
         })
@@ -481,13 +493,11 @@ export default {
     },
   },
   created() {
-    
     this.getRouteInfo();
     console.log("Here 3: " + this.routeSchoolID);
-    
+
     this.getStudentsInRoute();
     this.getRouteMarkers();
-    
   },
   computed: {
     google: gmapApi,
