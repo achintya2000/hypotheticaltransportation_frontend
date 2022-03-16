@@ -5,6 +5,7 @@
       <v-spacer></v-spacer>
       <create-new-student
         @studentcreated="getRequestAllStudents(); snackbar = true"
+        v-if="this.userType!='busDriver'"
       ></create-new-student>
 
       <v-spacer></v-spacer>
@@ -23,6 +24,7 @@
       :items="students"
       :search="search"
       @click:row="viewItem"
+      class="row-pointer"
     >
     <template v-slot:[`item.studentInRange`]="{ item }">
         <v-icon v-if="item.studentInRange==false" color="red"> mdi-close </v-icon>
@@ -32,18 +34,6 @@
       <template v-slot:[`item.route`]="{ item }">
         <div v-if="item.route">{{item.route}}</div>
         <div v-if="!item.route" style="color:red;">No Route</div>
-      </template>
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-btn
-          dense
-          small
-          dark
-          v-bind="attrs"
-          v-on="on"
-          @click="viewItem(item)"
-        >
-          Details
-        </v-btn>
       </template>
     </v-data-table>
     <v-snackbar
@@ -78,6 +68,8 @@ export default {
     return {
       search: "",
       snackbar: false,
+      userType: "",
+      userID: "",
       headers: [
         {
           text: "Name",
@@ -86,6 +78,8 @@ export default {
         },
         { text: "Student ID", value: "sid" },
         { text: "School", value: "school" },
+        { text: "Parent Name", value: "parentName", sortable: false  },
+        { text: "Parent Phone", value: "parentPhone", sortable: false  },
         { text: "Route", value: "route" },
         { text: "In-Range Status", value: "studentInRange", sortable: false },
       ],
@@ -108,11 +102,13 @@ export default {
         route: item.route,
         id: item.id,
         studentInRange: item.inRange,
+        parentName: item.parent,
+        parentPhone: item.phone,
       };
     },
     getRequestAllStudents() {
       base_endpoint
-        .get("/api/student/getall", {
+        .get("/api/student/getall/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -127,6 +123,8 @@ export default {
   },
   //computed: mapState(["APIData"]),
   created() {
+    this.userType = window.localStorage.getItem("userType");
+    this.userID = window.localStorage.getItem("userID");
     this.getRequestAllStudents();
   },
 };
@@ -139,5 +137,8 @@ export default {
   bottom: 50px;
   transform: translate(-50%, -50%);
   margin: 0 auto; 
+}
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+  cursor: pointer;
 }
 </style>

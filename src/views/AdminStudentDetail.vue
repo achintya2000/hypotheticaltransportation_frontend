@@ -3,7 +3,7 @@
     <v-card-title class="font-weight-black">
       {{ studentName }}
       <v-spacer></v-spacer>
-      <v-dialog v-model="dialog2" width="500">
+      <v-dialog v-model="dialog2" width="500" v-if="this.userType!='busDriver'">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Modify
@@ -74,7 +74,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="dialog" width="500">
+      <v-dialog v-model="dialog" width="500" v-if="this.userType!='busDriver'">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Delete
@@ -101,8 +101,9 @@
       </v-dialog>
     </v-card-title>
     <v-card-subtitle>
-      <span class="black--text font-weight-bold"> ID: </span
-      ><span class="black--text"> {{ studentId }} </span>
+      <span class="black--text font-weight-bold"> ID: </span>
+      <span class="black--text" v-if="studentId!=null"> {{ studentId }} </span>
+      <span class="black--text" v-if="studentId==null || studentId==''"> None </span>
     </v-card-subtitle>
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> School: </span>
@@ -203,6 +204,8 @@ export default {
       newStudentId: "",
       newStudentSchool: "",
       newStudentParent: "",
+      userType: "",
+      userID: "",
       studentNameValidateArray: [this.studentNameValidate],
       studentIDValidateArray: [this.studentIDValidate],
       studentSchoolValidateArray: [this.studentSchoolValidate],
@@ -252,7 +255,7 @@ export default {
     },
     getSchools() {
       base_endpoint
-        .get("/api/school/getall", {
+        .get("/api/school/getall/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -278,7 +281,7 @@ export default {
     },
     getParents() {
       base_endpoint
-        .get("/api/profile/getallwithaddress", {
+        .get("/api/profile/getallwithaddress/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -402,6 +405,8 @@ export default {
     },
   },
   created() {
+    this.userType = window.localStorage.getItem("userType");
+    this.userID = window.localStorage.getItem("userID");
     this.getStudentInfo();
   },
   

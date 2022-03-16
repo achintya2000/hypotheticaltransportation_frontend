@@ -76,6 +76,7 @@
       :items="students"
       :search="search"
       @click:row="viewItem"
+      class="row-pointer"
     >
       <template v-slot:[`item.route`]="{ item }">
         <div v-if="item.route">{{ item.route }}</div>
@@ -173,7 +174,7 @@ export default {
     getRequestAllStudents() {
       base_endpoint
         .get(
-          "/api/student/getallfromprofile/" + this.$store.state.loggedInUserID,
+          "/api/student/getallfromprofile/" + this.$store.state.loggedInUserID + "/" + this.$store.state.loggedInUserID,
           {
             headers: {
               Authorization: `Token ${this.$store.state.accessToken}`,
@@ -268,5 +269,8 @@ export default {
   opacity: 1 !important;
   position: absolute;
   width: 100%;
+}
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+  cursor: pointer;
 }
 </style>

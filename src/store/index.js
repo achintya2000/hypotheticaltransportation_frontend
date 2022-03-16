@@ -9,6 +9,7 @@ export default new Vuex.Store({
     accessToken: window.localStorage.getItem('token'),
     isAdmin: window.localStorage.getItem('isAdmin'),
     loggedInUserID: window.localStorage.getItem('userID'),
+    loggedInUserType: window.localStorage.getItem('userType'),
     snackbar: { active: false, color: "", message: "", },
   },
   mutations: {
@@ -16,16 +17,20 @@ export default new Vuex.Store({
       state.accessToken = access
       window.localStorage.setItem('token', access)
     },
-    updateAdminStatus(state, { isAdmin, userID }) {
+    updateAdminStatus(state, { isAdmin, userID, userType }) {
+      console.log("GOT HERE" + userType)
       state.isAdmin = isAdmin
       state.loggedInUserID = userID
+      state.loggedInUserType = userType
       window.localStorage.setItem('isAdmin', isAdmin)
       window.localStorage.setItem('userID', userID)
+      window.localStorage.setItem('userType', userType)
     },
     destroyToken(state) {
       state.accessToken = null
       state.isAdmin = "false"
       state.loggedInUserID = null
+      state.loggedInUserType = null
     },
     SET_SNACKBAR(state, snackbar) {
       state.snackbar = snackbar;
@@ -46,6 +51,7 @@ export default new Vuex.Store({
         window.localStorage.removeItem('token')
         window.localStorage.removeItem('isAdmin')
         window.localStorage.removeItem('userID')
+        window.localStorage.removeItem('userType')
       }
     },
     userLogin(context, usercredentials) {
@@ -81,7 +87,7 @@ export default new Vuex.Store({
           headers: { Authorization: `Token ${credentials.token}` },
         })
           .then(response => {
-            context.commit('updateAdminStatus', { isAdmin: response.data.is_superuser.toString(), userID: response.data.id })
+            context.commit('updateAdminStatus', { isAdmin: response.data.is_superuser.toString(), userID: response.data.id, userType: response.data.type })
             resolve()
           })
           .catch((err) => {

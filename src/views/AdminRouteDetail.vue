@@ -3,8 +3,8 @@
     <v-card-title class="font-weight-black">
       {{ routeName }}
       <v-spacer></v-spacer>
-      <v-btn @click="planNewRoute" outlined>Modify Route</v-btn>
-      <v-dialog v-model="dialog2" width="50%">
+      <v-btn @click="planNewRoute" outlined v-if="this.userType!='busDriver'">Modify Route</v-btn>
+      <v-dialog v-model="dialog2" width="50%" v-if="this.userType!='busDriver'">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on" @click="newmethod">
             Modify Name and Description
@@ -60,7 +60,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-dialog style="margin: 10px" v-model="dialog" width="500">
+      <v-dialog style="margin: 10px" v-model="dialog" width="500" v-if="this.userType!='busDriver'">
         <template v-slot:activator="{ on, attrs }">
           <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
         </template>
@@ -87,6 +87,7 @@
         :typeOfEmail="'routeRA'"
         :relevantID="this.$route.query.id"
         :relevantName = this.routeName
+        v-if="this.userType!='busDriver'"
       ></send-email>
     </v-card-title>
 
@@ -166,7 +167,7 @@
     <v-row>
       <v-col>
         <v-card-title>Students: </v-card-title>
-        <v-data-table :headers="headers" :items="students" :search="search" @click:row="viewItem">
+        <v-data-table :headers="headers" :items="students" :search="search" @click:row="viewItem" class="row-pointer">
           <template v-slot:[`item.studentInRange`]="{ item }">
         <v-icon v-if="item.studentInRange==false" color="red"> mdi-close </v-icon>
         <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
@@ -218,6 +219,8 @@ export default {
       newRouteDescription: "",
       search: "",
       valid: true,
+      userType: "",
+      userID: "",
       dialog: false,
       dialog2: false,
       oldSchoolID: "",
@@ -481,7 +484,8 @@ export default {
     },
   },
   created() {
-    
+    this.userType = window.localStorage.getItem("userType");
+    this.userID = window.localStorage.getItem("userID");
     this.getRouteInfo();
     console.log("Here 3: " + this.routeSchoolID);
     
@@ -496,4 +500,7 @@ export default {
 </script>
 
 <style>
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+  cursor: pointer;
+}
 </style>

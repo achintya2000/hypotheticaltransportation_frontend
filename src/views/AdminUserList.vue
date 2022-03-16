@@ -5,8 +5,10 @@
       <v-spacer></v-spacer>
       <create-new-student
         @usercreated="getRequestAllUsers(); snackbar = true"
+        v-if="this.userType!='busDriver'"
       ></create-new-student>
       <send-email :typeOfEmail="'allGA'"
+       v-if="this.userType!='busDriver'"
       ></send-email>
       <v-spacer></v-spacer>
       <v-text-field
@@ -22,22 +24,17 @@
       :items="profiles"
       :search="search"
       @click:row="viewItem"
+      class="row-pointer"
     >
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-btn
-          dense
-          small
-          dark
-          v-bind="attrs"
-          v-on="on"
-          @click="viewItem(item)"
-        >
-          Details
-        </v-btn>
-      </template>
-      <template v-slot:[`item.administrator`]="{ item }">
+      <!-- <template v-slot:[`item.administrator`]="{ item }">
         <v-icon v-if="item.administrator==false"> mdi-close </v-icon>
         <v-icon v-if="item.administrator==true"> mdi-badge-account-horizontal </v-icon>
+      </template> -->
+      <template v-slot:[`item.userType`]="{ item }">
+        <div v-if="item.userType=='admin'"> Admin </div>
+        <div v-if="item.userType=='busDriver'"> Bus Driver </div>
+        <div v-if="item.userType=='parent'"> Parent </div>
+        <div v-if="item.userType=='schoolStaff'"> School Staff </div>
       </template>
     </v-data-table>
     <v-snackbar
@@ -75,6 +72,8 @@ export default {
     return {
       search: "",
       snackbar: false,
+      userType: "",
+      userID: "",
       headers: [
         {
           text: "Name",
@@ -83,8 +82,10 @@ export default {
         },
         { text: "Email", value: "email" },
         { text: "Address", value: "address", sortable: false },
+        { text: "Phone #", value: "phone", sortable: false },
         { text: "Students", value: "student_count", sortable: false },
         { text: "Administrator", value: "administrator", sortable: false },
+        { text: "User Role", value: "userType", sortable: true },
       ],
       profiles: [],
     };
@@ -105,12 +106,14 @@ export default {
         address: item.address,
         student_count: item.student_count,
         administrator: item.administrator,
+        userType: item.type,
         id: item.id,
+        phone: item.phone,
       };
     },
     getRequestAllUsers() {
       base_endpoint
-        .get("/api/profile/getall", {
+        .get("/api/profile/getall/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -124,10 +127,15 @@ export default {
   },
   //computed: mapState(["APIData"]),
   created() {
+    this.userType = window.localStorage.getItem("userType");
+    this.userID = window.localStorage.getItem("userID");
     this.getRequestAllUsers();
   },
 };
 </script>
 
 <style>
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+  cursor: pointer;
+}
 </style>

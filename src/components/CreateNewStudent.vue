@@ -33,6 +33,14 @@
                 append-icon="mdi-email"
                 required
               ></v-text-field>
+              <v-text-field
+                v-if="userCheckbox"
+                v-model="parentPhone"
+                :rules="userPhoneValidateArray"
+                label="User Phone Number"
+                append-icon="mdi-phone"
+                required
+              ></v-text-field>
               <gmap-autocomplete v-if="userCheckbox" @place_changed="setPlace">
                 <template v-slot:input="slotProps">
                   <v-text-field
@@ -52,6 +60,7 @@
                   row
                   :rules="userPasswordTypeValidateArray"
                   v-if="userCheckbox"
+                  dense
                 >
                   <v-radio
                     label="One Time Password"
@@ -64,11 +73,52 @@
                 </v-radio-group>
               
 
-              <v-checkbox
+<!--               <v-checkbox
                 v-if="userCheckbox"
                 v-model="userAdminCheckbox"
                 :label="'Make User Admin?'"
-              ></v-checkbox>
+              ></v-checkbox> -->
+              <v-text v-if="userCheckbox">User Role Type:</v-text>
+              <v-radio-group
+                  v-model="userRoleType"
+                  row
+                  :rules="userRoleTypeValidateArray"
+                  v-if="userCheckbox"
+                  dense
+                >
+                  <v-radio
+                    label="Admin"
+                    value="admin"
+                    v-if="this.userType=='admin'"
+                  ></v-radio>
+                  <v-radio
+                    label="Parent"
+                    value="parent"
+                    
+                  ></v-radio>
+                  <v-radio
+                    label="Bus Driver"
+                    value="busDriver"
+                    v-if="this.userType=='admin'"
+                  ></v-radio>
+                  <v-radio
+                    label="School Staff"
+                    value="schoolStaff"
+                    v-if="this.userType=='admin'"
+                  ></v-radio>
+                </v-radio-group>
+                <v-select
+                  v-model="selectedSchoolsForSchoolStaff"
+                  :items="schools"
+                  :menu-props="{ maxHeight: '400' }"
+                  label="Select"
+                  multiple
+                  item-text="name"
+                  v-if="userRoleType=='schoolStaff'"
+                  hint="Pick the schools for them to manage"
+                  persistent-hint
+                ></v-select>
+
             </v-col>
             <v-col>
               <v-checkbox
@@ -157,6 +207,8 @@ export default {
       parentEmail: "",
       parentPassword: "",
       parentPassword2: "",
+      userType: "",
+      userID: "",
       parentAddress: "",
       userAdminCheckbox: false,
       parentSelected: null,
@@ -169,12 +221,15 @@ export default {
       parents: [],
       schoolSelected: null,
       latitude: 0,
+      selectedSchoolsForSchoolStaff: [],
       longitude: 0,
       formatted_address: "",
       //reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
       userNameValidateArray: [this.userNameValidate],
       userEmailValidateArray: [this.userEmailValidate],
+      userPhoneValidateArray: [this.userPhoneValidate],
       userPasswordTypeValidateArray: [this.userPasswordTypeValidate],
+      userRoleTypeValidateArray: [this.userRoleTypeValidate],
       userAddressValidateArray: [this.userAddressValidate],
       studentNameValidateArray: [this.studentNameValidate],
       studentIDValidateArray: [this.studentIDValidate],
@@ -206,7 +261,7 @@ export default {
     },
     getRequestAllSchools() {
       base_endpoint
-        .get("/api/school/getall", {
+        .get("/api/school/getall/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -225,7 +280,7 @@ export default {
     },
     getRequestAllParents() {
       base_endpoint
-        .get("/api/profile/getallwithaddress", {
+        .get("/api/profile/getallwithaddress/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -249,8 +304,10 @@ export default {
               latitude: this.latitude,
               email: this.parentEmail,
               password: this.parentPassword,
-              is_superuser: this.userAdminCheckbox,
+              type: this.userRoleType,
               passwordType: this.passType2,
+              managed_schools: this.selectedSchoolsForSchoolStaff,
+              phone: this.parentPhone,
             },
             {
               headers: {
@@ -345,6 +402,10 @@ export default {
           this.parentEmail != "") &&
           (this.passType2 != null &&
           this.passType2 != "") &&
+          (this.userRoleType != null &&
+          this.userRoleType != "") &&
+          (this.parentPhone != null &&
+          this.parentPhone != "") &&
           (this.parentAddress != null && 
           this.parentAddress != "")) ||
         (this.studentCheckbox == true &&
@@ -372,6 +433,16 @@ export default {
         (this.parentName == null || this.parentName == "")
       ) {
         return "Parent name is required";
+      } else {
+        return true;
+      }
+    },
+    userPhoneValidate() {
+      if (
+        this.userCheckbox == true &&
+        (this.parentPhone == null || this.parentPhone == "")
+      ) {
+        return "Parent phone number is required";
       } else {
         return true;
       }
@@ -405,6 +476,16 @@ export default {
         (this.passType2 == null || this.passType2 == "")
       ) {
         return "Parent type is required";
+      } else {
+        return true;
+      }
+    },
+    userRoleTypeValidate() {
+      if (
+        this.userCheckbox == true &&
+        (this.userRoleType == null || this.userRoleType == "")
+      ) {
+        return "User type is required";
       } else {
         return true;
       }
@@ -464,10 +545,14 @@ export default {
     },
   },
   created() {
+    this.userType = window.localStorage.getItem("userType");
+    this.userID = window.localStorage.getItem("userID");
     this.getRequestAllSchools();
     this.getRequestAllParents();
   },
   computed: {
+    
+    //...mapGetters(["loggedIn", "isAdmin", "loggedInUserID","loggedInUserType"]),
     userAndStudentCheckbox() {
       return !this.userCheckbox && this.studentCheckbox;
     },

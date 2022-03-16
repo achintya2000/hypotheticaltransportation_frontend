@@ -9,6 +9,7 @@
           getRequestAllSchools();
           snackbar = true;
         "
+        v-if="this.userType=='admin'"
       ></create-new-school>
 
       <v-spacer></v-spacer>
@@ -26,6 +27,7 @@
       :items="addresses"
       :search="search"
       @click:row="viewItem"
+      class="row-pointer"
     >
     </v-data-table>
     <v-snackbar v-model="snackbar" outlines color="success">
@@ -53,6 +55,8 @@ export default {
     return {
       snackbar: false,
       search: "",
+      userType: "",
+      userID: "",
       headers: [
         {
           text: "Name",
@@ -91,7 +95,7 @@ export default {
     },
     getRequestAllSchools() {
       base_endpoint
-        .get("/api/school/getall", {
+        .get("/api/school/getall/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -105,10 +109,15 @@ export default {
   },
   //computed: mapState(["APIData"]),
   created() {
+    this.userType = window.localStorage.getItem("userType");
+    this.userID = window.localStorage.getItem("userID");
     this.getRequestAllSchools();
   },
 };
 </script>
 
 <style>
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+  cursor: pointer;
+}
 </style>
