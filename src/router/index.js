@@ -138,6 +138,15 @@ const routes = [
     meta: {
       requiresLogin: true,
     }
+  },
+  {
+    path: '/printableroster',
+    name: 'PrintableRoster',
+    component: () => import('../views/PrintableRoster.vue'),
+    meta: {
+      requiresLogin: true,
+      adminLocked: true
+    }
   }
 ]
 

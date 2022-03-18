@@ -84,7 +84,7 @@ export default {
         { text: "Address", value: "address", sortable: false },
         { text: "Phone #", value: "phone", sortable: false },
         { text: "Students", value: "student_count", sortable: false },
-        { text: "Administrator", value: "administrator", sortable: false },
+        //{ text: "Administrator", value: "administrator", sortable: false },
         { text: "User Role", value: "userType", sortable: true },
       ],
       profiles: [],
