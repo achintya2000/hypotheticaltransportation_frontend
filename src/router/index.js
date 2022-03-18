@@ -132,6 +132,14 @@ const routes = [
     }
   },
   {
+    path: '/bulkimport',
+    name: 'BulkImport',
+    component: () => import('../views/BulkImport.vue'),
+    meta: {
+      requiresLogin: true,
+    }
+  },
+  {
     path: '/printableroster',
     name: 'PrintableRoster',
     component: () => import('../views/PrintableRoster.vue'),

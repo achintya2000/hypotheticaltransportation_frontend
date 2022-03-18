@@ -75,6 +75,11 @@ export default {
           to: "/parentdetails",
           show: this.loggedIn,
         },
+        {
+          title: "Import",
+          to: "/bulkimport",
+          show: this.loggedIn,
+        },
       ];
     },
   },
