@@ -3,128 +3,6 @@
     <v-card-title class="font-weight-black">
       {{ routeName }}
       <v-spacer></v-spacer>
-      <v-dialog v-model="linkDialog" width="500">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Navigation Links </v-btn>
-        </template>
-
-        <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
-            Navigation Links
-          </v-card-title>
-
-          <v-card-text><template>
-            <v-row>
-              <v-col>
-                <v-card-title width=100%>Pick-Up</v-card-title>
-              </v-col>
-              <v-col>
-                <v-card-title>Drop-Off</v-card-title>
-              </v-col>
-            </v-row>
-            <v-divider></v-divider>
-            <div v-for="index in pickUpLinks.length" :key="index">
-                <v-row>
-                  <v-col>
-                    <v-btn outlined v-bind="attrs" v-on="on" :href="`${pickUpLinks[index-1].link}`" target="_blank">{{pickUpLinks[index-1].name}} </v-btn>
-                  </v-col>
-                  <v-divider vertical></v-divider>
-                  <v-col>
-                    <v-btn outlined v-bind="attrs" v-on="on" :href="`${dropOffLinks[index-1].link}`" target="_blank"> {{dropOffLinks[index-1].name}} </v-btn>
-                  </v-col>
-                </v-row>
-                <v-divider></v-divider>
-            </div>
-          </template></v-card-text>
-        </v-card>
-      </v-dialog>
-      <v-btn @click="planNewRoute" outlined v-if="this.userType!='busDriver'">Modify Route</v-btn>
-      <v-btn style="margin: 10px" @click="seeRouteRoster" outlined>Print Roster</v-btn>
-      <v-dialog v-model="dialog2" width="50%" v-if="this.userType!='busDriver'">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on" @click="newmethod">
-            Modify Name and Description
-          </v-btn>
-        </template>
-
-        <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
-            Modify Name and Description
-          </v-card-title>
-
-          <v-card-text>
-            <v-form ref="form" v-model="valid" lazy-validation>
-              <v-row>
-                <v-col>
-                  <v-text-field
-                    v-model="newRouteName"
-                    :rules="nameValidateArray"
-                    label="Route Name"
-                    required
-                  ></v-text-field>
-
-                  <v-textarea
-                    v-model="newRouteDescription"
-                    label="Route Description"
-                  ></v-textarea>
-                </v-col>
-              </v-row>
-
-              <v-btn
-                :disabled="!valid"
-                color="success"
-                class="mr-4"
-                @click="validateForModify"
-                type="submit"
-              >
-                Save
-              </v-btn>
-
-              <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
-
-              <v-btn
-                color="warning"
-                @click="
-                  dialog2 = false;
-                  newRouteName = routeName;
-                  newRouteDescription = routeDescription;
-                "
-              >
-                Cancel
-              </v-btn>
-            </v-form>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-      <v-dialog style="margin: 10px" v-model="dialog" width="500" v-if="this.userType!='busDriver'">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
-        </template>
-
-        <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
-            Please Confirm
-          </v-card-title>
-
-          <v-card-text>
-            <v-form ref="form">
-              <v-spacer></v-spacer>
-
-              <v-btn color="error" class="mr-4" @click="submitDataForDelete">
-                Yes, Delete
-              </v-btn>
-
-              <v-btn color="success" @click="dialog = false"> Cancel </v-btn>
-            </v-form>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-      <send-email
-        :typeOfEmail="'routeRA'"
-        :relevantID="this.$route.query.id"
-        :relevantName = this.routeName
-        v-if="this.userType!='busDriver'"
-      ></send-email>
     </v-card-title>
 
     <v-row>
@@ -133,8 +11,7 @@
           <span class="black--text font-weight-bold"> School: </span>
           <span
             text
-            @click="viewSchool(routeSchoolID)"
-            class="txt blue--text text--darken-4"
+            class="black--text"
           >
             {{ routeSchool }}
           </span>
@@ -162,61 +39,16 @@
           <span style="white-space: pre" class="black--text" v-if="routeDescription == ''">No Route Descritpion</span>
         </v-card-subtitle>
       </v-col>
-      <v-col md=9>
-        <GmapMap
-          style="width: 100%; height: 400px"
-          ref="mapRef"
-          @click="handleMapClick($event)"
-          :center="center"
-        >
-          <GmapMarker
-            :key="index"
-            v-for="(m, index) in markers"
-            :position="m.position"
-            :label="m.label"
-            :icon="m.icon"
-          />
-          <GmapMarker
-            :key="'stop_' + index"
-            v-for="(m, index) in stops"
-            :position="m.position"
-            :icon="stopMapMarker.icon"
-            :label="m.label"
-          />
-          <GmapCircle
-            :key="'circle_' + index"
-            v-for="(m, index) in stops"
-            :center="m.position"
-            :radius="483"
-            :visible="true"
-            :options="{
-              strokeColor: '#FF0000',
-              strokeOpacity: 0.8,
-              strokeWeight: 2,
-              fillColor: '#FF0000',
-              fillOpacity: 0.35,
-            }"
-          />
-        </GmapMap>
-      </v-col>
     </v-row>
     <v-row>
       <v-col>
         <v-card-title>Students: </v-card-title>
-        <v-data-table :headers="headers" :items="students" :search="search" @click:row="viewItem" class="row-pointer">
+        <v-data-table :headers="headers" :items="students" disable-pagination hide-default-footer>
           <template v-slot:[`item.studentInRange`]="{ item }">
         <v-icon v-if="item.studentInRange==false" color="red"> mdi-close </v-icon>
         <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
       </template>
         </v-data-table>
-      </v-col>
-      <v-col>
-        <v-card-title>Stops: </v-card-title>
-        <v-data-table
-      :headers="stopHeaders"
-      :items="stops"
-    >
-    </v-data-table>
       </v-col>
       </v-row>
   </v-card>
@@ -231,13 +63,9 @@ import {
   stopMapMarker,
 } from "../assets/markers";
 import { gmapApi } from "vue2-google-maps-withscopedautocomp";
-import SendEmail from "../components/SendEmail.vue";
 import moment from "moment";
 
 export default {
-  components: {
-    SendEmail,
-  },
   data() {
     return {
       mapMarkerActiveInRange,
@@ -250,13 +78,10 @@ export default {
       routeSchool: "",
       routeStatus: "",
       routeSchoolID: "",
-      pickUpLinks: [],
-      dropOffLinks: [],
       newRouteSchool: null,
       routeDescription: "",
       newRouteDescription: "",
       search: "",
-      linkDialog: "",
       valid: true,
       userType: "",
       userID: "",
@@ -271,8 +96,12 @@ export default {
           align: "start",
           value: "name",
         },
+        { text: "Student ID", value: "studentID" },
         { text: "Parent", value: "studentParent" },
-        { text: "In-Range Status", value: "studentInRange", sortable: false },
+        { text: "Address", value: "parentAddress" },
+        
+        { text: "Parent Email", value: "parentEmail" },
+        { text: "Parent Phone", value: "parentPhone"},
       ],
        stopHeaders: [
         { text: "Order", align: "start", value: "order" },
@@ -292,6 +121,7 @@ export default {
   },
   methods: {
     getSchoolInfo() {
+       console.log("Here: " + this.busArriveTime);
       base_endpoint
         .get("/api/school/get/" + this.routeSchoolID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
@@ -300,8 +130,10 @@ export default {
         .then((response) => {
           var arrTime = moment.utc(response.data.arrivalTime);
           this.busArriveTime = arrTime.local().format("h:mm A");
+          console.log("Here: " + this.busArriveTime);
           var depTime = moment.utc(response.data.departureTime);
           this.busDepTime = depTime.local().format("h:mm A");
+          console.log("Here 2: " + this.busDepTime);
           this.getRequestAllStops();
         })
         .catch((err) => {
@@ -331,12 +163,6 @@ export default {
         query: { id: this.routeSchoolID },
       });
     },
-    seeRouteRoster() {
-      this.$router.push({
-        name: "PrintableRoster",
-        query: { id: this.$route.query.id },
-      });
-    },
     getRouteInfo() {
       base_endpoint
         .get("/api/route/get/" + this.$route.query.id, {
@@ -358,30 +184,6 @@ export default {
           console.log(err);
         });
     },
-    getRouteDirInfo() {
-      base_endpoint
-        .get("/api/route/getdirections/" + this.$route.query.id, {
-          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
-        })
-        .then((response) => {
-          console.log("THE LINKS: ");
-          this.pickUpLinks = response.data[0].map(this.getDisplayLink);
-          this.dropOffLinks = response.data[1].map(this.getDisplayLink);
-          console.log(this.pickUpLinks[0].name);
-          console.log(this.dropOffLinks);
-          this.$forceUpdate();
-          this.getSchoolInfo();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    getDisplayLink(item) {
-      return {
-        name: item.name,
-        link: item.link,
-      };
-    },
     submitDataForModify() {
       base_endpoint
         .patch(
@@ -399,7 +201,6 @@ export default {
         .then((response) => {
           console.log(response);
           this.getRouteInfo();
-          this.getRouteDirInfo();
           this.getStudentsInRoute();
         });
     },
@@ -460,6 +261,11 @@ export default {
         id: item.id,
         studentParent: item.parent,
         studentInRange: item.inRange,
+        studentID: item.sid,
+        parentAddress: item.address,
+        parentEmail: item.email,
+        parentPhone: item.phone,
+
       };
     },
     getDisplayRouteMarkers(item) {
@@ -554,7 +360,7 @@ export default {
     this.userType = window.localStorage.getItem("userType");
     this.userID = window.localStorage.getItem("userID");
     this.getRouteInfo();
-    this.getRouteDirInfo();
+    console.log("Here 3: " + this.routeSchoolID);
     
     this.getStudentsInRoute();
     this.getRouteMarkers();

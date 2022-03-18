@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <nav-bar v-if="!isResetPWRoute" />
+    <nav-bar v-if="!(isResetPWRoute || isPrintableRoster)" />
     <v-main>
       <router-view />
     </v-main>
@@ -30,6 +30,9 @@ export default {
     ...mapState(["snackbar"]),
     isResetPWRoute() {
       return this.$route.name == "ResetPassword";
+    },
+    isPrintableRoster() {
+      return this.$route.name == "PrintableRoster";
     }
   },
 

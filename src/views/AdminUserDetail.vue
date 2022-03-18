@@ -55,10 +55,10 @@
                 </template>
               </gmap-autocomplete>
 
-              <v-text v-if="this.userType=='admin'">User Role Type:</v-text>
+              <v-text v-if="this.userType=='admin' && this.userID!=this.$route.query.id">User Role Type:</v-text>
               <v-radio-group
                   v-model="newUserRoleType"
-                  v-if="this.userType=='admin'"
+                  v-if="this.userType=='admin' && this.userID!=this.$route.query.id"
                   row
                   :rules="userRoleTypeValidateArray"
                   dense
@@ -89,7 +89,7 @@
                   :items="schools"
                   :menu-props="{ maxHeight: '400' }"
                   label="Select"
-                  v-if="newUserRoleType=='schoolStaff'"
+                  v-if="newUserRoleType=='schoolStaff' && this.userType=='admin'"
                   multiple
                   item-text="name"
                   hint="Pick the schools for them to manage"
@@ -100,7 +100,6 @@
                 color="success"
                 class="mr-4"
                 @click="updateUser"
-                type="submit"
               >
                 Save
               </v-btn>
@@ -165,17 +164,21 @@
       <span v-if="userPhone != ''" class="black--text"> {{ userPhone }} </span>
       <span v-if="userPhone == ''" class="black--text">No phone number</span>
     </v-card-subtitle>
-    <v-card-subtitle>
+    <!-- <v-card-subtitle>
       <span class="black--text font-weight-bold"> Admin: </span
       ><span class="black--text"> {{ administrator }} </span>
-    </v-card-subtitle>
+    </v-card-subtitle> -->
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> User Type: </span
-      ><span class="black--text"> {{ userRoleType }} </span>
+      >
+      <span class="black--text" v-if="this.userRoleType=='schoolStaff'">School Staff</span>
+      <span class="black--text" v-if="this.userRoleType=='admin'">Admin</span>
+      <span class="black--text" v-if="this.userRoleType=='busDriver'">Bus Driver</span>
+      <span class="black--text" v-if="this.userRoleType=='parent'">Parent</span>
     </v-card-subtitle>
-    <v-card-subtitle>
+    <v-card-subtitle v-if="this.userRoleType=='schoolStaff'">
       <span class="black--text font-weight-bold"> Managed Schools: </span
-      ><span class="black--text"> {{ managedSchools }} </span>
+      ><span class="black--text"> {{ formattedSchools }} </span>
     </v-card-subtitle>
     <v-card-title> Students </v-card-title>
     <v-data-table
@@ -260,6 +263,7 @@ export default {
       managedSchools: [],
       newManagedSchools: [],
       schools: [],
+      formattedSchools: "",
       headers: [
         {
           text: "Name",
@@ -325,6 +329,7 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
+          this.formattedSchools = "";
           this.email = response.data.email;
           this.newEmail = response.data.email;
           this.full_name = response.data.full_name;
@@ -342,6 +347,13 @@ export default {
           this.newUserRoleType = response.data.type;
           this.managedSchools = response.data.managed_schools.map(this.getDisplaySchool);
           this.newManagedSchools = response.data.managed_schools.map(this.getDisplaySchool);
+          for (let i = 0; i < this.managedSchools.length; i++) {
+            this.formattedSchools = this.formattedSchools + this.managedSchools[i].name;
+            if (this.managedSchools[i+1] != null) {
+              this.formattedSchools = this.formattedSchools + ", ";
+            }
+            
+          }
           this.$forceUpdate();
         })
         .catch((err) => {

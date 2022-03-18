@@ -159,6 +159,18 @@
         {{ studentParent }} 
         </span>
     </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Parent Email: </span>
+      <span class="black--text"> {{ studentParentEmail }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Parent Address: </span>
+      <span class="black--text"> {{ studentParentAddress }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Parent Phone: </span>
+      <span class="black--text"> {{ studentParentPhone }} </span>
+    </v-card-subtitle>
   </v-card>
 </template>
 
@@ -200,6 +212,9 @@ export default {
       studentRoute: "",
       studentInRangeStatus: "",
       studentParent: "",
+      studentParentEmail: "",
+      studentParentAddress: "",
+      studentParentPhone: "",
       newStudentName: "",
       newStudentId: "",
       newStudentSchool: "",
@@ -232,6 +247,9 @@ export default {
           this.studentRoute = response.data.route;
           this.studentParent = response.data.parent;
           this.newStudentParent = response.data.parent;
+          this.studentParentEmail = response.data.email;
+          this.studentParentAddress = response.data.address;
+          this.studentParentPhone = response.data.phone;
           this.studentSchoolId = response.data.school_id;
           this.studentRouteId = response.data.route_id;
           this.studentParentId = response.data.parent_id;

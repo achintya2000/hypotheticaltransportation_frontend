@@ -124,6 +124,8 @@
               <v-checkbox
                 v-model="studentCheckbox"
                 :label="'Create a New Student'"
+                :disabled="this.userType=='schoolStaff'"
+                input-value="1"
               ></v-checkbox>
               <v-text-field
                 v-model="studentName"
@@ -219,11 +221,13 @@ export default {
       sidRules: [(v) => !!v || "Student ID is required"],
       schools: [],
       parents: [],
+      allParents: [],
       schoolSelected: null,
       latitude: 0,
       selectedSchoolsForSchoolStaff: [],
       longitude: 0,
       formatted_address: "",
+      allParentEmails: [],
       //reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
       userNameValidateArray: [this.userNameValidate],
       userEmailValidateArray: [this.userEmailValidate],
@@ -276,15 +280,35 @@ export default {
       return {
         id: item.id,
         name: item.full_name,
+        email: item.email,
       };
     },
-    getRequestAllParents() {
+    getRequestAllParentsWithAddress() {
       base_endpoint
         .get("/api/profile/getallwithaddress/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
           this.parents = response.data.map(this.getDisplayParent);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
+    getRequestAllParents() {
+      base_endpoint
+        .get("/api/profile/getallextreme", {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          
+
+          this.allParents = response.data.map(this.getDisplayParent);
+          for (let i = 0; i < this.parents.length; i++) {
+            this.allParentEmails.push(this.allParents[i].email);
+          }
+          console.log("All Emails:" + this.allParentEmails);
         })
         .catch((err) => {
           this.showSnackBar();
@@ -454,18 +478,22 @@ export default {
       ) {
         return "Parent email is required";
       } else {
-        const splitStringAt = this.parentEmail.split("@");
-        if (splitStringAt.length != 2) {
-          return "Please enter a valid email address";
+        if (this.allParentEmails.includes(this.parentEmail)) {
+          return "A email is already assigned to a user, try creating a new student";
         } else {
-          const splitStringPeriod = splitStringAt[1].split(".");
-          if (
-            splitStringPeriod.length != 2 ||
-            splitStringPeriod[1].length == 0
-          ) {
+          const splitStringAt = this.parentEmail.split("@");
+          if (splitStringAt.length != 2) {
             return "Please enter a valid email address";
           } else {
-            return true;
+            const splitStringPeriod = splitStringAt[1].split(".");
+            if (
+              splitStringPeriod.length != 2 ||
+              splitStringPeriod[1].length == 0
+            ) {
+              return "Please enter a valid email address";
+            } else {
+              return true;
+            }
           }
         }
       }
@@ -548,7 +576,9 @@ export default {
     this.userType = window.localStorage.getItem("userType");
     this.userID = window.localStorage.getItem("userID");
     this.getRequestAllSchools();
+    this.getRequestAllParentsWithAddress();
     this.getRequestAllParents();
+    this.studentCheckbox = this.userType=='schoolStaff';
   },
   computed: {
     

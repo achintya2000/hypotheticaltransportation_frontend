@@ -121,6 +121,7 @@ export default {
         (v) => !!v || "Required",
         (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
       ],
+      
       emailRules: [
         (v) => !!v || "Required",
         (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
@@ -137,7 +138,7 @@ export default {
         .post(
           "/api/forgotpassword",
           {
-            email: this.username,
+            email: this.username2,
           },
         )
         .then((response) => {
