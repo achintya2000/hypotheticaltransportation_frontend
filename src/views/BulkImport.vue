@@ -63,9 +63,11 @@
     </v-dialog>
 
     <v-data-table
+      v-model="parentSelected"
       :headers="headerParent"
       :items="indexedParentCSV"
       item-key="id"
+      show-select
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon color="green" class="mr-3" @click.stop="editParent(item)">
@@ -73,11 +75,11 @@
         </v-icon>
       </template>
     </v-data-table>
-    <br />
-    <v-btn v-on:click="submitFile()">Submit File</v-btn>
-    <v-btn v-on:click="submitUpdates()">Submit Updates</v-btn>
+    <v-btn v-on:click="validateFile()">Validate Parent CSV</v-btn>
+    <v-btn v-on:click="submitFile()">Submit Updates</v-btn>
 
     <p></p>
+    <!-- STUDENT STUFF STARTS BELOW --->
 
     <h2>Students CSV File</h2>
     <label
@@ -90,20 +92,72 @@
     </label>
     <br />
 
+    <v-dialog v-model="studentDialog" width="50%">
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2"> Modify </v-card-title>
+
+        <v-card-text>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-text-field
+              v-model="editedStudent.name"
+              label="Student Name"
+              :rules="studentNameValidateArray"
+              required
+            ></v-text-field>
+
+            <v-text-field
+              v-model="editedStudent.parent_email"
+              label="Parent Email"
+              :rules="studentParentValidateArray"
+            ></v-text-field>
+
+            <v-text-field
+              v-model="editedStudent.student_id"
+              label="Student ID"
+              :rules="studentIDValidateArray"
+            ></v-text-field>
+
+            <v-autocomplete
+              v-model="editedStudent.school_name"
+              :items="schoolItems"
+              item-text="name"
+              label="School Name"
+              :rules="studentSchoolValidateArray"
+            ></v-autocomplete>
+
+            <v-btn
+              color="success"
+              class="mr-4"
+              @click="saveStudentItem"
+              :disabled="!valid"
+              type="submit"
+            >
+              Save
+            </v-btn>
+
+            <v-btn color="error" class="mr-4" @click="reset"> Clear </v-btn>
+
+            <v-btn color="warning" @click="studentDialog = false">
+              Cancel
+            </v-btn>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     <v-data-table
       :headers="headerStudent"
       :items="indexedStudentCSV"
       item-key="id"
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon color="green" class="mr-3" @click.stop="editParent(item)">
+        <v-icon color="green" class="mr-3" @click.stop="editStudent(item)">
           mdi-pencil
         </v-icon>
       </template>
     </v-data-table>
-    <br />
-    <v-btn v-on:click="submitFile()">Submit File</v-btn>
-    <v-btn v-on:click="submitUpdates()">Submit Updates</v-btn>
+    <v-btn v-on:click="validateFile()">Submit File</v-btn>
+    <v-btn v-on:click="submitFile()">Submit Updates</v-btn>
   </v-card>
 </template>
 
@@ -119,13 +173,17 @@ export default {
       typeParent: "parent",
       typeStudent: "student",
       parentDialog: false,
+      studentDialog: false,
       csvTaskId: "",
       parentCSVData: [],
+      parentSelected: [],
       headerParent: [
         { text: "Name", value: "name" },
         { text: "Email", value: "email" },
         { text: "Address", value: "address" },
         { text: "Phone", value: "phone_number" },
+        { text: "Duplicate", value: "is_duplicate_of" },
+        { text: "Errors", value: "error" },
         { text: "Edit", value: "actions", sortable: false, width: "100px" },
       ],
       parsed: false,
@@ -145,6 +203,15 @@ export default {
         { text: "School Name", value: "school_name" },
         { text: "Edit", value: "actions", sortable: false, width: "100px" },
       ],
+      editedStudentIndex: -1,
+      editedStudent: {
+        id: "",
+        name: "",
+        parent_email: "",
+        student_id: "",
+        school_name: "",
+      },
+      schoolItems: [],
     };
   },
   methods: {
@@ -168,7 +235,7 @@ export default {
         }.bind(this),
       });
     },
-    submitFile() {
+    validateFile() {
       let formData = new FormData();
       formData.append("file", this.file);
       base_endpoint
@@ -195,11 +262,10 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((res) => {
-          console.log("hi");
-          console.log(res);
-          console.log(res.data.state);
           if (res.data.state == "SUCCESS") {
             console.log("done");
+            console.log(res.data);
+            this.parentCSVData = res.data.res;
             return;
           }
           setTimeout(this.pollStatus, 3000);
@@ -208,7 +274,8 @@ export default {
           console.log(err);
         });
     },
-    submitUpdates() {
+    submitFile() {
+      console.log(this.parentSelected);
       //   base_endpoint
       //     .post("/preview-file-changes", this.content.data)
       //     .then(function () {
@@ -234,13 +301,45 @@ export default {
           this.editedParent
         );
       }
-      this.closeParentItem();
     },
-    closeParentItem() {
-      setTimeout(() => {
-        this.editedParent = Object.assign({}, this.defaultParent);
-        this.editedParentIndex = -1;
-      }, 300);
+    editStudent(item) {
+      this.studentDialog = true;
+      this.editedStudentIndex = item.id;
+      this.editedStudent = Object.assign({}, item);
+    },
+    saveStudentItem() {
+      if (this.editedStudentIndex > -1) {
+        Object.assign(
+          this.studentCSVData[this.editedStudentIndex],
+          this.editedStudent
+        );
+      }
+    },
+    getDisplaySchools(item) {
+      return {
+        name: item.name,
+        address: item.address,
+        id: item.id,
+      };
+    },
+    getSchools() {
+      base_endpoint
+        .get("/api/school/getall/" + window.localStorage.getItem("userID"), {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.schoolItems = response.data.map(this.getDisplaySchools);
+
+          this.schoolItems.forEach((item) => {
+            if (this.studentSchoolId == item.id) {
+              this.school = item;
+            }
+          });
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
     },
   },
   computed: {
@@ -256,6 +355,9 @@ export default {
         ...item,
       }));
     },
+  },
+  created() {
+    this.getSchools();
   },
 };
 </script>
