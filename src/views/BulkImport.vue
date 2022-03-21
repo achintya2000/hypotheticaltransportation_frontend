@@ -38,6 +38,15 @@
             </template>
           </gmap-autocomplete>
 
+          <GmapMap
+            style="width: 100%; height: 400px"
+            ref="mapRef"
+            :center="markerPos"
+            :zoom="12"
+          >
+            <GmapMarker :key="index" :position="markerPos" />
+          </GmapMap>
+
           <v-text-field
             label="Phone"
             :rules="userAddressValidateArray"
@@ -70,6 +79,8 @@
       :items="indexedParentCSV"
       item-key="id"
       show-select
+      hide-default-footer
+      disable-pagination
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon color="green" class="mr-3" @click.stop="editParent(item)">
@@ -77,8 +88,8 @@
         </v-icon>
       </template>
     </v-data-table>
-    <v-btn v-on:click="validateFile()">Validate Parent CSV</v-btn>
-    <v-btn v-on:click="submitFile()">Submit Updates</v-btn>
+    <v-btn v-on:click="validateFile(typeParent)">Validate Parent CSV</v-btn>
+    <v-btn v-on:click="submitFile(typeParent)">Submit Validated File</v-btn>
 
     <p></p>
     <!-- STUDENT STUFF STARTS BELOW --->
@@ -147,9 +158,13 @@
     </v-dialog>
 
     <v-data-table
+      :v-model="studentSelected"
       :headers="headerStudent"
       :items="indexedStudentCSV"
       item-key="id"
+      show-select
+      hide-default-footer
+      disable-pagination
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon color="green" class="mr-3" @click.stop="editStudent(item)">
@@ -157,8 +172,10 @@
         </v-icon>
       </template>
     </v-data-table>
-    <v-btn v-on:click="validateFile()">Submit File</v-btn>
-    <v-btn v-on:click="submitFile()">Submit Updates</v-btn>
+    <v-btn v-on:click="validateFile(typeStudent)">Submit Student CSV</v-btn>
+    <v-btn :disabled="!studentCSVReady" v-on:click="submitFile(typeStudent)"
+      >Submit Validated File</v-btn
+    >
     <v-snackbar v-model="loadingSnackbar" outlines color="blue" :timeout="-1">
       Validation In Progress
       <v-progress-circular indeterminate color="black"></v-progress-circular>
@@ -173,6 +190,9 @@ import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
     return {
+      test: "YEET",
+      center: { lat: 36.001465, lng: -78.939133 },
+      markerPos: { lat: 0, lng: 0 },
       file: "",
       content: [],
       valid: true,
@@ -192,6 +212,7 @@ export default {
       csvTaskId: "",
       parentCSVData: [],
       parentSelected: [],
+      studentSelected: [],
       headerParent: [
         { text: "Name", value: "name" },
         { text: "Email", value: "email" },
@@ -216,6 +237,8 @@ export default {
         { text: "Parent Email", value: "parent_email" },
         { text: "Student Id", value: "student_id" },
         { text: "School Name", value: "school_name" },
+        { text: "Duplicate", value: "is_duplicate_of" },
+        { text: "Errors", value: "error" },
         { text: "Edit", value: "actions", sortable: false, width: "100px" },
       ],
       editedStudentIndex: -1,
@@ -227,6 +250,9 @@ export default {
         school_name: "",
       },
       schoolItems: [],
+      parentCSVReady: false,
+      studentCSVReady: false,
+      badAddressSnackbar: "",
     };
   },
   methods: {
@@ -250,66 +276,194 @@ export default {
         }.bind(this),
       });
     },
-    validateFile() {
+    validateFile(type) {
+      // let formData = new FormData();
+      // formData.append("file", this.file);
       this.loadingSnackbar = true;
-      let formData = new FormData();
-      formData.append("file", this.file);
+      if (type == "parent") {
+        base_endpoint
+          .post(
+            "/api/bulkimportvalidate",
+            {
+              headers: ["email", "name", "address", "phone_number"],
+              csvdata: this.parentCSVData,
+            },
+            {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
+              },
+            }
+          )
+          .then((res) => {
+            console.log(res);
+            this.csvTaskId = res.data.id;
+            this.pollStatus(this.typeParent);
+          })
+          .catch(function () {
+            console.log("FAILURE!!");
+          });
+      } else {
+        base_endpoint
+          .post(
+            "/api/bulkimportvalidate",
+            {
+              headers: ["name", "parent_email", "student_id", "school_name"],
+              csvdata: this.studentCSVData,
+            },
+            {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
+              },
+            }
+          )
+          .then((res) => {
+            this.csvTaskId = res.data.id;
+            this.pollStatus(this.typeStudent);
+          })
+          .catch(function () {
+            console.log("FAILURE!!");
+          });
+      }
+    },
+    pollStatus(type) {
+      if (type == "parent") {
+        base_endpoint
+          .get("/api/gettaskprogress/" + this.csvTaskId, {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          })
+          .then((res) => {
+            if (res.data.state == "SUCCESS") {
+              console.log("done");
+              console.log(res.data);
+              this.parentCSVData = res.data.res.csvdata;
+              this.parentCSVReady = res.data.res.valid;
+
+              this.indexedParentCSV.forEach((e) => {
+                if (e.exclude == true) {
+                  this.parentSelected.push(e);
+                }
+              });
+
+              return;
+            }
+            setTimeout(this.pollStatus(this.typeParent), 3000);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        base_endpoint
+          .get("/api/gettaskprogress/" + this.csvTaskId, {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          })
+          .then((res) => {
+            if (res.data.state == "SUCCESS") {
+              console.log("done");
+              console.log(res.data);
+              this.studentCSVData = res.data.res.csvdata;
+              this.studentCSVReady = res.data.res.valid;
+
+              this.indexedStudentCSV.forEach((e) => {
+                if (e.exclude == true) {
+                  this.studentSelected.push(e);
+                }
+              });
+
+              return;
+            }
+            setTimeout(this.pollStatus(this.typeStudent), 3000);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    },
+    submitFile(type) {
+      if (type == "parent") {
+        // console.log(this.parentSelected);
+        // let removalIds = []
+        // let parentCSVSubmisson = []
+
+        // this.parentSelected.forEach(e => {
+        //   removalIds.push(e.id)
+        // })
+
+        // for (let i = 0; this.indexedParentCSV.length; i++) {
+        //   if (removalIds.includes(this.indexedParentCSV[i].id)) {
+        //     parentCSVSubmisson.push(this.indexedParentCSV[i])
+        //   }
+        // }
+        base_endpoint
+          .post(
+            "/api/bulkimportsubmit",
+            {
+              headers: ["email", "name", "address", "phone_number"],
+              csvdata: this.parentCSVData,
+            },
+            {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
+              },
+            }
+          )
+          .then((res) => {
+            console.log(res);
+          })
+          .catch(function () {
+            console.log("FAILURE!!");
+          });
+      } else {
+        base_endpoint
+          .post(
+            "/api/bulkimportsubmit",
+            {
+              headers: ["name", "parent_email", "student_id", "school_name"],
+              csvdata: this.studentCSVData,
+            },
+            {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
+              },
+            }
+          )
+          .then((res) => {
+            console.log(res);
+          })
+          .catch(function () {
+            console.log("FAILURE!!");
+          });
+      }
+    },
+    setPlaceParent(place) {
+      this.editedParent.address = place.formatted_address;
+      this.markerPos = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      };
+    },
+    editParent(item) {
       base_endpoint
-        .post("/api/bulkimportvalidate", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Token ${this.$store.state.accessToken}`,
-          },
+        .post("/api/getaddress", {
+          address: item.address,
         })
         .then((res) => {
-          console.log(res.data);
-          this.parentCSVData = res.data.csv;
-          this.csvTaskId = res.data.id;
+          console.log(res);
+          if (res.err != "") {
+            this.badAddressSnackbar = res.err;
 
-          this.pollStatus();
-          
+          this.loadingSnackbar = false;
+          this.markerPos = { lat: res.data.lat, lng: res.data.lng };
+          this.parentDialog = true;
+          this.editedParentIndex = item.id;
+          this.editedParent = Object.assign({}, item);
         })
         .catch(function () {
           console.log("FAILURE!!");
         });
-    },
-    pollStatus() {
-      base_endpoint
-        .get("/api/gettaskprogress/" + this.csvTaskId, {
-          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
-        })
-        .then((res) => {
-          if (res.data.state == "SUCCESS") {
-            console.log("done");
-            console.log(res.data);
-            this.parentCSVData = res.data.res;
-            this.loadingSnackbar = false;
-            return;
-          }
-          setTimeout(this.pollStatus, 3000);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    submitFile() {
-      console.log(this.parentSelected);
-      //   base_endpoint
-      //     .post("/preview-file-changes", this.content.data)
-      //     .then(function () {
-      //       console.log("SUCCESS!!");
-      //     })
-      //     .catch(function () {
-      //       console.log("FAILURE!!");
-      //     });
-    },
-    setPlaceParent(place) {
-      this.editedParent.address = place.formatted_address;
-    },
-    editParent(item) {
-      this.parentDialog = true;
-      this.editedParentIndex = item.id;
-      this.editedParent = Object.assign({}, item);
     },
     saveParentItem() {
       console.log("YEET");
