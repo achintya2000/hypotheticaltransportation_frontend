@@ -351,6 +351,7 @@ export default {
               this.indexedParentCSV.forEach((e) => {
                 if (e.exclude == true) {
                   this.parentSelected.push(e);
+                  this.loadingSnackbar = false;
                 }
               });
               this.loadingSnackbar = false;
@@ -378,6 +379,7 @@ export default {
               this.indexedStudentCSV.forEach((e) => {
                 if (e.exclude == true) {
                   this.studentSelected.push(e);
+                  this.loadingSnackbar = false;
                 }
               });
               this.loadingSnackbar = false;
