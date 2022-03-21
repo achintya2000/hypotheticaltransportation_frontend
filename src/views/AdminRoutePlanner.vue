@@ -142,6 +142,7 @@
         </v-data-table>
       </v-col>
       <v-col width="50%">
+        <div class="map" id="map">
         <GmapMap
           style="width: 100%; height: 400px"
           ref="mapRef"
@@ -182,6 +183,7 @@
             }"
           />
         </GmapMap>
+        </div>
       </v-col>
     </v-row>
 
@@ -230,7 +232,6 @@
                     color="success"
                     class="mr-4"
                     @click="validate"
-                    type="submit"
                   >
                     Submit
                   </v-btn>
@@ -637,6 +638,7 @@ export default {
         )
         .then(() => {
           this.getRequestAllRoutes();
+          this.description = "";
         })
         .catch((err) => {
           this.showSnackBar();
@@ -965,5 +967,12 @@ tr.v-data-table__selected {
 }
 .row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
   cursor: pointer;
+}
+#map {
+    background-color: black;
+    padding-top: 2px;
+    padding-right: 2px;
+    padding-bottom: 2px;
+    padding-left: 2px;
 }
 </style>

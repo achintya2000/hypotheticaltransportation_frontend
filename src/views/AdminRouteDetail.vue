@@ -172,6 +172,7 @@
         </v-card-subtitle>
       </v-col>
       <v-col md="9">
+        <div class="map" id="map">
         <GmapMap
           style="width: 100%; height: 400px"
           ref="mapRef"
@@ -207,6 +208,7 @@
             }"
           />
         </GmapMap>
+        </div>
       </v-col>
     </v-row>
     <v-row>
@@ -583,5 +585,12 @@ export default {
 <style>
 .row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
   cursor: pointer;
+}
+#map {
+    background-color: black;
+    padding-top: 2px;
+    padding-right: 2px;
+    padding-bottom: 2px;
+    padding-left: 2px;
 }
 </style>

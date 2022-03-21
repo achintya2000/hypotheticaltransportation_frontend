@@ -78,17 +78,19 @@
                 v-model="userAdminCheckbox"
                 :label="'Make User Admin?'"
               ></v-checkbox> -->
-              <v-text v-if="userCheckbox">User Role Type:</v-text>
+              <v-text v-if="userCheckbox">User Role Type: {{this.userRoleType}}</v-text> 
               <v-radio-group
                   v-model="userRoleType"
                   row
                   :rules="userRoleTypeValidateArray"
                   v-if="userCheckbox"
+                  @click="console.log(this.userRoleType)"
                   dense
                 >
                   <v-radio
                     label="Admin"
                     value="admin"
+                    @click="console.log(this.userRoleType)"
                     v-if="this.userType=='admin'"
                   ></v-radio>
                   <v-radio
@@ -207,6 +209,7 @@ export default {
       passType2: "",
       parentName: "",
       parentEmail: "",
+      userRoleType: null,
       parentPassword: "",
       parentPassword2: "",
       userType: "",
@@ -571,6 +574,9 @@ export default {
         return true;
       }
     },
+    updateUserRole() {
+
+    }
   },
   created() {
     this.userType = window.localStorage.getItem("userType");
@@ -587,6 +593,9 @@ export default {
       return !this.userCheckbox && this.studentCheckbox;
     },
   },
+  watch: {
+    userRoleType: 'updateUserRole'
+  }
 };
 </script>
 

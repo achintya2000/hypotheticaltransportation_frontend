@@ -38,7 +38,6 @@
                 :rules="userPhoneValidateArray"
                 label="User Phone Number"
                 append-icon="mdi-phone"
-                required
               ></v-text-field>
 
               <gmap-autocomplete @place_changed="setPlace">
@@ -229,8 +228,11 @@ export default {
       userPhone: "",
       newPhone: "",
       newEmail: "",
+      email: "",
       newFull_name: "",
+      full_name: "",
       newCurrentAddress: "",
+      currentAddress: "",
       newAdministrator: "",
       userRoleType: "",
       newUserRoleType: "",

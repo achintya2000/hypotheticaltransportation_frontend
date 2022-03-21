@@ -39,6 +39,7 @@
         <v-data-table :headers="headers" :items="stopsInRange"> </v-data-table>
       </v-col>
       <v-col width="50%">
+        <div class="map" id="map">
         <GmapMap
           ref="mapRef"
           style="width: 100%; height: 400px"
@@ -53,6 +54,7 @@
             :label="m.label"
           />
         </GmapMap>
+        </div>
       </v-col>
     </v-row>
   </v-card>
@@ -235,4 +237,11 @@ export default {
 </script>
 
 <style>
+#map {
+    background-color: black;
+    padding-top: 2px;
+    padding-right: 2px;
+    padding-bottom: 2px;
+    padding-left: 2px;
+}
 </style>

@@ -97,6 +97,7 @@ export default {
       emailBody: "",
       allBool: false,
       schoolBool: false,
+      emailType: "",
       valid: "",
       routeBool: false,
       GABool: false,

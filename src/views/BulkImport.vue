@@ -16,9 +16,11 @@
         <v-card-title class="text-h5 grey lighten-2"> Edit Row </v-card-title>
 
         <v-card-text>
-          <v-text-field label="Name" v-model="editedParent.name"></v-text-field>
+          <v-form ref="form" v-model="valid" lazy-validation>
+          <v-text-field label="Name" v-model="editedParent.name" :rules="userNameValidateArray"></v-text-field>
           <v-text-field
             label="Email"
+            :rules="userEmailValidateArray"
             v-model="editedParent.email"
           ></v-text-field>
 
@@ -28,6 +30,7 @@
                 v-model="editedParent.address"
                 label="Enter a location address"
                 append-icon="mdi-map-marker"
+                :rules="userPhoneValidateArray"
                 ref="input"
                 v-on:listeners="slotProps.listeners"
                 v-on:attrs="slotProps.attrs"
@@ -37,20 +40,18 @@
 
           <v-text-field
             label="Phone"
+            :rules="userAddressValidateArray"
             v-model="editedParent.phone_number"
           ></v-text-field>
-        </v-card-text>
+        
 
-        <v-divider></v-divider>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="parentDialog = false">
+          <v-btn color="warning" class="mr-4" @click="parentDialog = false">
             Close
           </v-btn>
           <v-btn
-            color="primary"
-            text
+            color="success"
+            class="mr-4"
+            :disabled = !valid
             @click="
               parentDialog = false;
               saveParentItem();
@@ -58,7 +59,8 @@
           >
             Save
           </v-btn>
-        </v-card-actions>
+          </v-form>
+          </v-card-text>
       </v-card>
     </v-dialog>
 
@@ -128,9 +130,8 @@
             <v-btn
               color="success"
               class="mr-4"
-              @click="saveStudentItem"
+              @click="saveStudentItem(); studentDialog = false"
               :disabled="!valid"
-              type="submit"
             >
               Save
             </v-btn>
@@ -158,6 +159,10 @@
     </v-data-table>
     <v-btn v-on:click="validateFile()">Submit File</v-btn>
     <v-btn v-on:click="submitFile()">Submit Updates</v-btn>
+    <v-snackbar v-model="loadingSnackbar" outlines color="blue" :timeout="-1">
+      Validation In Progress
+      <v-progress-circular indeterminate color="black"></v-progress-circular>
+    </v-snackbar>
   </v-card>
 </template>
 
@@ -170,10 +175,20 @@ export default {
     return {
       file: "",
       content: [],
+      valid: true,
       typeParent: "parent",
       typeStudent: "student",
       parentDialog: false,
       studentDialog: false,
+      loadingSnackbar: false,
+      userNameValidateArray: [this.userNameValidate],
+      userEmailValidateArray: [this.userEmailValidate],
+      userPhoneValidateArray: [this.userPhoneValidate],
+      userAddressValidateArray: [this.userAddressValidate],
+      studentNameValidateArray: [this.studentNameValidate],
+      studentIDValidateArray: [this.studentIDValidate],
+      studentSchoolValidateArray: [this.studentSchoolValidate],
+      studentParentValidateArray: [this.studentParentValidate],
       csvTaskId: "",
       parentCSVData: [],
       parentSelected: [],
@@ -236,6 +251,7 @@ export default {
       });
     },
     validateFile() {
+      this.loadingSnackbar = true;
       let formData = new FormData();
       formData.append("file", this.file);
       base_endpoint
@@ -251,6 +267,7 @@ export default {
           this.csvTaskId = res.data.id;
 
           this.pollStatus();
+          
         })
         .catch(function () {
           console.log("FAILURE!!");
@@ -266,6 +283,7 @@ export default {
             console.log("done");
             console.log(res.data);
             this.parentCSVData = res.data.res;
+            this.loadingSnackbar = false;
             return;
           }
           setTimeout(this.pollStatus, 3000);
@@ -340,6 +358,90 @@ export default {
           this.showSnackBar();
           console.log(err);
         });
+    },
+    userNameValidate() {
+      if (this.editedParent.name == null || this.editedParent.name == "") {
+        return "Parent name is required";
+      } else {
+        return true;
+      }
+    },
+    userEmailValidate() {
+      if (this.editedParent.email == null || this.editedParent.email == "") {
+        return "Parent email is required";
+      } else {
+        const splitStringAt = this.editedParent.email.split("@");
+        if (splitStringAt.length != 2) {
+          return "Please enter a valid email address";
+        } else {
+          const splitStringPeriod = splitStringAt[1].split(".");
+          if (
+            splitStringPeriod.length != 2 ||
+            splitStringPeriod[1].length == 0
+          ) {
+            return "Please enter a valid email address";
+          } else {
+            return true;
+          }
+        }
+      }
+    },
+    userAddressValidate() {
+      if (this.editedParent.address == null || this.editedParent.address == "")
+      {
+        return "Parent address is required";
+      } else {
+        return true;
+      }
+    },
+    userPhoneValidate() {
+      if (this.editedParent.phone_number == null || this.editedParent.phone_number == "")
+      {
+        return "Parent phone number is required";
+      } else {
+        return true;
+      }
+    },
+    studentNameValidate() {
+      if (this.editedStudent.name == null || this.editedStudent.name == "") {
+        return "Student Name is required";
+      } else {
+        return true;
+      }
+    },
+    studentIDValidate() {
+      if (isNaN(this.editedStudent.student_id) == true) {
+        return "Student ID must be a number";
+      } else if (isNaN(this.editedStudent.student_id) == false) {
+        if (parseInt(this.editedStudent.student_id) < 0) {
+          return "Student ID must be a postive number";
+        }
+      } else {
+        return true;
+      }
+    },
+    studentSchoolValidate() {
+      if (this.editedStudent.school_name == null || this.editedStudent.school_name == "") {
+        return "Student school is required";
+      } else {
+        return true;
+      }
+    },
+    studentParentValidate() {
+      if (this.editedStudent.parent_email == null || this.editedStudent.parent_email == "") {
+        return "Student's parent is required";
+      } else {
+        return true;
+      }
+    },
+    reset() {
+      this.$refs.form.reset();
+    },
+    resetValidation() {
+      this.$refs.form.resetValidation();
+    },
+    validate() {
+      this.$refs.form.validate();
     },
   },
   computed: {
