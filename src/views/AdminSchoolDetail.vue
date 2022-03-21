@@ -171,6 +171,7 @@
       :headers="routeHeaders"
       :items="busRoutes"
       :search="search"
+      :sort-by="['routeName']"
       @click:row="viewRoute"
       class="row-pointer"
     >
@@ -188,6 +189,7 @@
       :headers="studentsHeaders"
       :items="students"
       :search="search"
+      :sort-by="['studentName']"
       @click:row="viewStudent"
       class="row-pointer"
     >

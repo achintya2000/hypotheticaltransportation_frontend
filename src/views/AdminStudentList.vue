@@ -23,6 +23,7 @@
       :headers="headers"
       :items="students"
       :search="search"
+      :sort-by="['name']"
       @click:row="viewItem"
       class="row-pointer"
     >

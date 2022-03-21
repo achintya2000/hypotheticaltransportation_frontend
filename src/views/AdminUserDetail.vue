@@ -184,6 +184,7 @@
       :headers="headers"
       :items="students"
       :search="search"
+      :sort-by="['studentName']"
       @click:row="viewStudent"
       class="row-pointer"
     >
