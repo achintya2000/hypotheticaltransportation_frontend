@@ -405,33 +405,44 @@ export default {
             parentCSVSubmisson.push(e);
           }
         });
-        console.log(parentCSVSubmisson);
-        // base_endpoint
-        //   .post(
-        //     "/api/bulkimportsubmit",
-        //     {
-        //       headers: ["email", "name", "address", "phone_number"],
-        //       csvdata: parentCSVSubmisson,
-        //     },
-        //     {
-        //       headers: {
-        //         Authorization: `Token ${this.$store.state.accessToken}`,
-        //       },
-        //     }
-        //   )
-        //   .then((res) => {
-        //     console.log(res);
-        //   })
-        //   .catch(function () {
-        //     console.log("FAILURE!!");
-        //   });
+        base_endpoint
+          .post(
+            "/api/bulkimportsubmit",
+            {
+              headers: ["email", "name", "address", "phone_number"],
+              csvdata: parentCSVSubmisson,
+            },
+            {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
+              },
+            }
+          )
+          .then((res) => {
+            console.log(res);
+          })
+          .catch(function () {
+            console.log("FAILURE!!");
+          });
       } else {
+        let removalIds = [];
+        let studentCSVSubmisson = [];
+
+        this.studentSelected.forEach((e) => {
+          removalIds.push(e.id);
+        });
+
+        this.indexedStudentCSV.forEach((e) => {
+          if (!removalIds.includes(e.id)) {
+            studentCSVSubmisson.push(e);
+          }
+        });
         base_endpoint
           .post(
             "/api/bulkimportsubmit",
             {
               headers: ["name", "parent_email", "student_id", "school_name"],
-              csvdata: this.studentCSVData,
+              csvdata: studentCSVSubmisson,
             },
             {
               headers: {
