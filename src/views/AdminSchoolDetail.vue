@@ -3,7 +3,11 @@
     <v-card-title class="font-weight-black">
       {{ schoolName }}
       <v-spacer></v-spacer>
-      <v-dialog v-model="dialog2" width="500" v-if="this.userType!='busDriver'">
+      <v-dialog
+        v-model="dialog2"
+        width="500"
+        v-if="this.userType != 'busDriver'"
+      >
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Modify
@@ -20,10 +24,13 @@
                 :rules="nameValidateArray"
                 label="Name"
                 required
-                v-if="this.userType=='admin'"
+                v-if="this.userType == 'admin'"
               ></v-text-field>
 
-              <gmap-autocomplete @place_changed="setPlace" v-if="this.userType=='admin'">
+              <gmap-autocomplete
+                @place_changed="setPlace"
+                v-if="this.userType == 'admin'"
+              >
                 <template v-slot:input="slotProps">
                   <v-text-field
                     v-model="newAddress"
@@ -33,7 +40,6 @@
                     v-on:listeners="slotProps.listeners"
                     v-on:attrs="slotProps.attrs"
                     required
-                    
                   ></v-text-field>
                 </template>
               </gmap-autocomplete>
@@ -80,7 +86,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="dialog" width="500" v-if="this.userType=='admin'">
+      <v-dialog v-model="dialog" width="500" v-if="this.userType == 'admin'">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Delete
@@ -132,25 +138,34 @@
         </v-card>
       </v-dialog>
 
-      <v-btn style="margin: 10px" @click="planNewRoute" outlined v-if="this.userType!='busDriver'">Create/Edit Routes</v-btn>
-      <send-email v-if="this.userType!='busDriver'" :typeOfEmail="'schoolGA'" :relevantID = this.$route.query.id :relevantName = this.schoolName
+      <v-btn
+        style="margin: 10px"
+        @click="planNewRoute"
+        outlined
+        v-if="this.userType != 'busDriver'"
+        >Create/Edit Routes</v-btn
+      >
+      <send-email
+        v-if="this.userType != 'busDriver'"
+        :typeOfEmail="'schoolGA'"
+        :relevantID="this.$route.query.id"
+        :relevantName="this.schoolName"
       ></send-email>
-
     </v-card-title>
     <v-card-subtitle class="black--text">
       <span class="black--text font-weight-bold"> Address: </span
       ><span class="black--text"> {{ schoolAddress }} </span>
     </v-card-subtitle>
 
-    <v-card-subtitle class="black--text"> 
-      <span class="black--text font-weight-bold"> Bus Arrival Time: </span><span class="black--text"> {{ busArriveTime }} </span>
+    <v-card-subtitle class="black--text">
+      <span class="black--text font-weight-bold"> Bus Arrival Time: </span
+      ><span class="black--text"> {{ busArriveTime }} </span>
     </v-card-subtitle>
-    <v-card-subtitle class="black--text"> 
-      <span class="black--text font-weight-bold"> Bus Departure Time: </span><span class="black--text"> {{ busDepTime }} </span>
+    <v-card-subtitle class="black--text">
+      <span class="black--text font-weight-bold"> Bus Departure Time: </span
+      ><span class="black--text"> {{ busDepTime }} </span>
     </v-card-subtitle>
-    <v-card-title>
-      Bus Routes
-    </v-card-title>
+    <v-card-title> Bus Routes </v-card-title>
 
     <v-data-table
       :headers="routeHeaders"
@@ -160,8 +175,10 @@
       class="row-pointer"
     >
       <template v-slot:[`item.routeComplete`]="{ item }">
-        <v-icon v-if="item.routeComplete==false" color="red"> mdi-close </v-icon>
-        <v-icon v-if="item.routeComplete==true"> mdi-check </v-icon>
+        <v-icon v-if="item.routeComplete == false" color="red">
+          mdi-close
+        </v-icon>
+        <v-icon v-if="item.routeComplete == true"> mdi-check </v-icon>
       </template>
     </v-data-table>
 
@@ -176,11 +193,13 @@
     >
       <template v-slot:[`item.studentRoute`]="{ item }">
         <div v-if="item.studentRoute">{{ item.studentRoute }}</div>
-        <div v-if="!item.studentRoute" style="color:red;">No Route</div>
+        <div v-if="!item.studentRoute" style="color: red">No Route</div>
       </template>
       <template v-slot:[`item.studentInRange`]="{ item }">
-        <v-icon v-if="item.studentInRange==false" color="red"> mdi-close </v-icon>
-        <v-icon v-if="item.studentInRange==true"> mdi-check </v-icon>
+        <v-icon v-if="item.studentInRange == false" color="red">
+          mdi-close
+        </v-icon>
+        <v-icon v-if="item.studentInRange == true"> mdi-check </v-icon>
       </template>
     </v-data-table>
   </v-card>
@@ -188,13 +207,13 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-import { mapActions} from "vuex";
-import moment from 'moment';
+import { mapActions } from "vuex";
+import moment from "moment";
 import SendEmail from "../components/SendEmail.vue";
 
 export default {
-  components: { 
-    SendEmail 
+  components: {
+    SendEmail,
   },
   data() {
     return {
@@ -284,7 +303,7 @@ export default {
         .get("/api/school/get/" + this.$route.query.id, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
-        
+
         .then((response) => {
           this.schoolName = response.data.name;
           this.newSchoolName = response.data.name;
@@ -323,7 +342,6 @@ export default {
         })
         .then((response) => {
           this.busRoutes = response.data.map(this.getDisplayRoutes);
-          
         })
         .catch((err) => {
           this.showSnackBar();
@@ -379,8 +397,23 @@ export default {
       }
     },
     submitDataForModify() {
-      console.log("Here it is: " + this.newBusArriveTime);
-      console.log("Here it is 2: " + new Date("2021-01-01 " + this.newBusArriveTime + ":00").toUTCString());
+      // console.log("Here it is: " + this.newBusArriveTime);
+      // console.log("Here it is: " + this.newBusDepTime);
+      // console.log(
+      //   "Here it is 2: " +
+      //     new Date("2021-01-01 " + this.newBusArriveTime + ":00").toUTCString()
+      // );
+      // let test = new moment(
+      //   "2021-01-01" + this.newBusArriveTime + ":00",
+      //   "YYYY-MM-DD hh:mm:ss"
+      // );
+      // let out = moment.utc(test).format("DD-MM-YYYY, HH:mm:ss Z");
+      // console.log("Here it is 3: " + out);
+
+      // if (navigator.userAgent.includes("Safari")) {
+      //   console.log("safari only");
+      //   console.log(new Date());
+      // }
       base_endpoint
         .patch(
           "/api/school/update/" + this.$route.query.id,
@@ -389,8 +422,16 @@ export default {
             address: this.formatted_address,
             latitude: this.latitude,
             longitude: this.longitude,
-            arrivalTime: new Date("2021-01-01 " + this.newBusArriveTime + ":00"),
-            departureTime: new Date("2021-01-01 " + this.newBusDepTime + ":00"),
+            // arrivalTime: new Date("2021-01-01 " + this.busArriveTime + ":00"),
+            // departureTime: new Date("2021-01-01 " + this.busDepTime + ":00"),
+            arrivalTime: new moment(
+              "2021-01-01 " + this.newBusArriveTime + ":00",
+              "YYYY-MM-DD hh:mm:ss"
+            ),
+            departureTime: new moment(
+              "2021-01-01 " + this.newBusDepTime + ":00",
+              "YYYY-MM-DD hh:mm:ss"
+            ),
           },
           {
             headers: {
@@ -409,7 +450,16 @@ export default {
     },
     validateForModify() {
       console.log("HERE" + this.busArriveTime + "HERE");
-      if (this.newSchoolName != "" && this.newSchoolName != null && this.newAddress != "" && this.newAddress != null && this.newBusArriveTime != "" && this.newBusArriveTime != null && this.newBusDepTime != "" && this.newBusDepTime != null) {
+      if (
+        this.newSchoolName != "" &&
+        this.newSchoolName != null &&
+        this.newAddress != "" &&
+        this.newAddress != null &&
+        this.newBusArriveTime != "" &&
+        this.newBusArriveTime != null &&
+        this.newBusDepTime != "" &&
+        this.newBusDepTime != null
+      ) {
         console.log("Did it get here?");
         this.$refs.form.validate();
         this.submitDataForModify();
@@ -479,7 +529,7 @@ export default {
 </script>
 
 <style>
-.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {
   cursor: pointer;
 }
 </style>
