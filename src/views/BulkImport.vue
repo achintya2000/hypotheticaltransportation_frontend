@@ -87,9 +87,7 @@
       </template>
     </v-data-table>
     <v-btn v-on:click="validateFile(typeParent)">Validate Parent CSV</v-btn>
-    <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
-      >Submit Validated File</v-btn
-    >
+    <v-btn v-on:click="submitFile(typeParent)">Submit Validated File</v-btn>
 
     <p></p>
     <!-- STUDENT STUFF STARTS BELOW --->
@@ -187,6 +185,7 @@ import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
     return {
+      test: "YEET",
       center: { lat: 36.001465, lng: -78.939133 },
       markerPos: { lat: 0, lng: 0 },
       file: "",
@@ -238,6 +237,7 @@ export default {
       schoolItems: [],
       parentCSVReady: false,
       studentCSVReady: false,
+      badAddressSnackbar: "",
     };
   },
   methods: {
@@ -368,6 +368,19 @@ export default {
     },
     submitFile(type) {
       if (type == "parent") {
+        // console.log(this.parentSelected);
+        // let removalIds = []
+        // let parentCSVSubmisson = []
+
+        // this.parentSelected.forEach(e => {
+        //   removalIds.push(e.id)
+        // })
+
+        // for (let i = 0; this.indexedParentCSV.length; i++) {
+        //   if (removalIds.includes(this.indexedParentCSV[i].id)) {
+        //     parentCSVSubmisson.push(this.indexedParentCSV[i])
+        //   }
+        // }
         base_endpoint
           .post(
             "/api/bulkimportsubmit",
@@ -417,9 +430,23 @@ export default {
       };
     },
     editParent(item) {
-      this.parentDialog = true;
-      this.editedParentIndex = item.id;
-      this.editedParent = Object.assign({}, item);
+      base_endpoint
+        .post("/api/getaddress", {
+          address: item.address,
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.err != "") {
+            this.badAddressSnackbar = res.err;
+          }
+          this.markerPos = { lat: res.data.lat, lng: res.data.lng };
+          this.parentDialog = true;
+          this.editedParentIndex = item.id;
+          this.editedParent = Object.assign({}, item);
+        })
+        .catch(function () {
+          console.log("FAILURE!!");
+        });
     },
     saveParentItem() {
       console.log("YEET");
