@@ -351,6 +351,7 @@ export default {
               this.indexedParentCSV.forEach((e) => {
                 if (e.exclude == true) {
                   this.parentSelected.push(e);
+                  this.loadingSnackbar = false;
                 }
               });
 
@@ -378,6 +379,7 @@ export default {
               this.indexedStudentCSV.forEach((e) => {
                 if (e.exclude == true) {
                   this.studentSelected.push(e);
+                  this.loadingSnackbar = false;
                 }
               });
 
@@ -463,7 +465,6 @@ export default {
           if (res.err != "") {
             this.badAddressSnackbar = res.err;
           }
-          this.loadingSnackbar = false;
           this.markerPos = { lat: res.data.lat, lng: res.data.lng };
           this.parentDialog = true;
           this.editedParentIndex = item.id;
