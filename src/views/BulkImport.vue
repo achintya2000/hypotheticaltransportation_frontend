@@ -202,7 +202,6 @@ import { base_endpoint } from "../services/axios-api";
 export default {
   data() {
     return {
-      test: "YEET",
       center: { lat: 36.001465, lng: -78.939133 },
       markerPos: { lat: 0, lng: 0 },
       file: "",
@@ -290,10 +289,12 @@ export default {
       });
     },
     validateFile(type) {
-      // let formData = new FormData();
-      // formData.append("file", this.file);
       this.loadingSnackbar = true;
       if (type == "parent") {
+        this.parentSelected.forEach((e) => {
+          this.parentCSVData[e.id].exclude = true;
+        });
+
         base_endpoint
           .post(
             "/api/bulkimportvalidate",
@@ -316,8 +317,10 @@ export default {
             console.log("FAILURE!!");
           });
       } else {
-        console.log("HERE IT IS");
-        console.log(this.studentCSVData);
+        this.studentSelected.forEach((e) => {
+          this.studentCSVData[e.id].exclude = true;
+        });
+        
         base_endpoint
           .post(
             "/api/bulkimportvalidate",
@@ -354,7 +357,6 @@ export default {
               console.log(res.data);
               this.parentCSVData = res.data.res.csvdata;
               this.parentCSVReady = res.data.res.valid;
-
               this.indexedParentCSV.forEach((e) => {
                 if (e.exclude == true) {
                   this.parentSelected.push(e);
@@ -381,7 +383,6 @@ export default {
               console.log(res.data);
               this.studentCSVData = res.data.res.csvdata;
               this.studentCSVReady = res.data.res.valid;
-
               this.indexedStudentCSV.forEach((e) => {
                 if (e.exclude == true) {
                   this.studentSelected.push(e);

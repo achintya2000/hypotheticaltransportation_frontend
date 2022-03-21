@@ -87,6 +87,7 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { mapActions } from "vuex";
+import moment from "moment";
 export default {
   data() {
     return {
@@ -135,8 +136,16 @@ export default {
             address: this.formatted_address,
             latitude: this.latitude,
             longitude: this.longitude,
-            arrivalTime: new Date("2021-01-01 " + this.busArriveTime + ":00"),
-            departureTime: new Date("2021-01-01 " + this.busDepTime + ":00"),
+            // arrivalTime: new Date("2021-01-01 " + this.busArriveTime + ":00"),
+            // departureTime: new Date("2021-01-01 " + this.busDepTime + ":00"),
+            arrivalTime: new moment(
+              "2021-01-01 " + this.busArriveTime + ":00",
+              "YYYY-MM-DD hh:mm:ss"
+            ),
+            departureTime: new moment(
+              "2021-01-01 " + this.busDepTime + ":00",
+              "YYYY-MM-DD hh:mm:ss"
+            ),
           },
           {
             headers: {
