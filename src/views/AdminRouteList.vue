@@ -14,6 +14,7 @@
     <v-data-table
       :headers="headers"
       :items="schools"
+      :sort-by="['name']"
       :search="search"
       @click:row="viewItem"
       class="row-pointer"

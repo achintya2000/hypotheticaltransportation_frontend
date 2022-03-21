@@ -27,6 +27,7 @@
       :items="addresses"
       :search="search"
       @click:row="viewItem"
+      :sort-by="['name']"
       class="row-pointer"
     >
     </v-data-table>

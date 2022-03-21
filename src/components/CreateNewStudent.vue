@@ -231,6 +231,8 @@ export default {
       longitude: 0,
       formatted_address: "",
       allParentEmails: [],
+      theSpeicalID: "",
+      allParentEmails2: [],
       //reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
       userNameValidateArray: [this.userNameValidate],
       userEmailValidateArray: [this.userEmailValidate],
@@ -252,6 +254,11 @@ export default {
     showSnackBarAddress() {
       this.snackBar(
         "Uh-Oh! Something Went Wrong! Make sure to click the Autofill result to complete your Address!"
+      );
+    },
+    showSnackBarWeirdCreate() {
+      this.snackBar(
+        "This user already exists and the student has been added. You can now view them from your User List page "
       );
     },
     setPlace(place) {
@@ -293,6 +300,9 @@ export default {
         })
         .then((response) => {
           this.parents = response.data.map(this.getDisplayParent);
+          for (let i = 0; i < this.parents.length; i++) {
+            this.allParentEmails2.push(this.parents[i].email);
+          }
         })
         .catch((err) => {
           this.showSnackBar();
@@ -308,7 +318,7 @@ export default {
           
 
           this.allParents = response.data.map(this.getDisplayParent);
-          for (let i = 0; i < this.parents.length; i++) {
+          for (let i = 0; i < this.allParents.length; i++) {
             this.allParentEmails.push(this.allParents[i].email);
           }
           console.log("All Emails:" + this.allParentEmails);
@@ -321,7 +331,60 @@ export default {
     submitData() {
       if (this.userCheckbox == true) {
         console.log("GOT INTO THE IF STATMENT");
-        base_endpoint
+        console.log(this.userType=='schoolStaff');
+        console.log(this.allParentEmails.includes(this.parentEmail));
+        console.log(this.allParentEmails);
+        console.log(this.parentEmail);
+        if (this.userType=='schoolStaff' && this.allParentEmails.includes(this.parentEmail)) {
+          console.log("GOT INTO THE NEWWWWW IF STATMENT");
+          base_endpoint
+                .get(
+                  "/api/profile/getfromemail/" + this.parentEmail,
+                  {
+                    headers: {
+                      Authorization: `Token ${this.$store.state.accessToken}`,
+                    },
+                  }
+                )
+                .then((response) => {
+                  this.theSpeicalID = response.data.id;
+                  console.log(this.theSpeicalID);
+                  base_endpoint
+                .post(
+                  "/api/student/create",
+                  {
+                    full_name: this.studentName,
+                    sid: this.sid,
+                    school: this.schoolSelected.id,
+                    parent: this.theSpeicalID,
+                  },
+                  {
+                    headers: {
+                      Authorization: `Token ${this.$store.state.accessToken}`,
+                    },
+                  }
+                )
+                .then(() => {
+                  this.$emit(
+                    "studentcreated",
+                    "A new student has been created and sent to database"
+                  );
+                })
+                .catch((err) => {
+                  this.showSnackBarAddress();
+                  console.log(err);
+                });
+                  this.showSnackBarWeirdCreate();
+                })
+                .catch((err) => {
+                  this.showSnackBarAddress();
+                  console.log(err);
+                });
+
+
+          
+        } else {
+          base_endpoint
           .post(
             "/api/profile/create",
             {
@@ -390,6 +453,7 @@ export default {
             this.showSnackBarAddress();
             console.log(err);
           });
+        }
       } else {
         console.log("GOT INTO THE ELSE STATMENT");
         base_endpoint
@@ -481,7 +545,7 @@ export default {
       ) {
         return "Parent email is required";
       } else {
-        if (this.allParentEmails.includes(this.parentEmail)) {
+        if (this.allParentEmails2.includes(this.parentEmail)) {
           return "A email is already assigned to a user, try creating a new student";
         } else {
           const splitStringAt = this.parentEmail.split("@");

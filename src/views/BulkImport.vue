@@ -1,15 +1,17 @@
 <template>
   <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
-    <h2>Parents CSV File</h2>
-    <label
+    <v-card-title>Parents CSV File<v-spacer></v-spacer> <v-btn v-on:click="validateFile(typeParent)">Validate Parent CSV</v-btn>
+    <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
+      >Submit Validated File</v-btn
+    ></v-card-title>
+    <v-card-subtitle
       >File
       <input
         type="file"
         accept=".csv"
         @change="handleFileUpload($event, typeParent)"
       />
-    </label>
-    <br />
+    </v-card-subtitle>
 
     <v-dialog v-model="parentDialog" width="50%">
       <v-card>
@@ -91,24 +93,25 @@
         </v-icon>
       </template>
     </v-data-table>
-    <v-btn v-on:click="validateFile(typeParent)">Validate Parent CSV</v-btn>
-    <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
-      >Submit Validated File</v-btn
-    >
-
+    
+  
+    <p></p>
+    <v-divider></v-divider>
     <p></p>
     <!-- STUDENT STUFF STARTS BELOW --->
 
-    <h2>Students CSV File</h2>
-    <label
+    <v-card-title>Students CSV File    <v-spacer></v-spacer><v-btn v-on:click="validateFile(typeStudent)">Validate Student CSV</v-btn>
+    <v-btn :disabled="!studentCSVReady" v-on:click="submitFile(typeStudent)"
+      >Submit Validated File</v-btn
+    ></v-card-title>
+    <v-card-subtitle
       >File
       <input
         type="file"
         accept=".csv"
         @change="handleFileUpload($event, typeStudent)"
       />
-    </label>
-    <br />
+    </v-card-subtitle>
 
     <v-dialog v-model="studentDialog" width="50%">
       <v-card>
@@ -166,7 +169,7 @@
     </v-dialog>
 
     <v-data-table
-      :v-model="studentSelected"
+      v-model="studentSelected"
       :headers="headerStudent"
       :items="indexedStudentCSV"
       item-key="id"
@@ -180,12 +183,13 @@
         </v-icon>
       </template>
     </v-data-table>
-    <v-btn v-on:click="validateFile(typeStudent)">Submit Student CSV</v-btn>
-    <v-btn :disabled="!studentCSVReady" v-on:click="submitFile(typeStudent)"
-      >Submit Validated File</v-btn
-    >
+
     <v-snackbar v-model="loadingSnackbar" outlines color="blue" :timeout="-1">
       Validation In Progress
+      <v-progress-circular indeterminate color="black"></v-progress-circular>
+    </v-snackbar>
+    <v-snackbar v-model="submissionSnackbar" outlines color="blue" :timeout="-1">
+      Submission In Progress
       <v-progress-circular indeterminate color="black"></v-progress-circular>
     </v-snackbar>
   </v-card>
@@ -209,6 +213,7 @@ export default {
       parentDialog: false,
       studentDialog: false,
       loadingSnackbar: false,
+      submissionSnackbar: false,
       userNameValidateArray: [this.userNameValidate],
       userEmailValidateArray: [this.userEmailValidate],
       userPhoneValidateArray: [this.userPhoneValidate],
@@ -311,6 +316,8 @@ export default {
             console.log("FAILURE!!");
           });
       } else {
+        console.log("HERE IT IS");
+        console.log(this.studentCSVData);
         base_endpoint
           .post(
             "/api/bulkimportvalidate",
@@ -391,6 +398,7 @@ export default {
       }
     },
     submitFile(type) {
+      this.submissionSnackbar = true;
       if (type == "parent") {
         // console.log(this.parentSelected);
         let removalIds = [];
@@ -420,6 +428,7 @@ export default {
           )
           .then((res) => {
             console.log(res);
+            this.submissionSnackbar = false;
           })
           .catch(function () {
             console.log("FAILURE!!");
@@ -452,6 +461,7 @@ export default {
           )
           .then((res) => {
             console.log(res);
+            this.submissionSnackbar = false;
           })
           .catch(function () {
             console.log("FAILURE!!");
