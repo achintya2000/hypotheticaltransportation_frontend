@@ -353,7 +353,7 @@ export default {
                   this.parentSelected.push(e);
                 }
               });
-
+              this.loadingSnackbar = false;
               return;
             }
             setTimeout(this.pollStatus(this.typeParent), 3000);
@@ -380,7 +380,7 @@ export default {
                   this.studentSelected.push(e);
                 }
               });
-
+              this.loadingSnackbar = false;
               return;
             }
             setTimeout(this.pollStatus(this.typeStudent), 3000);
@@ -393,37 +393,38 @@ export default {
     submitFile(type) {
       if (type == "parent") {
         // console.log(this.parentSelected);
-        // let removalIds = []
-        // let parentCSVSubmisson = []
+        let removalIds = [];
+        let parentCSVSubmisson = [];
 
-        // this.parentSelected.forEach(e => {
-        //   removalIds.push(e.id)
-        // })
+        this.parentSelected.forEach((e) => {
+          removalIds.push(e.id);
+        });
 
-        // for (let i = 0; this.indexedParentCSV.length; i++) {
-        //   if (removalIds.includes(this.indexedParentCSV[i].id)) {
-        //     parentCSVSubmisson.push(this.indexedParentCSV[i])
-        //   }
-        // }
-        base_endpoint
-          .post(
-            "/api/bulkimportsubmit",
-            {
-              headers: ["email", "name", "address", "phone_number"],
-              csvdata: this.parentCSVData,
-            },
-            {
-              headers: {
-                Authorization: `Token ${this.$store.state.accessToken}`,
-              },
-            }
-          )
-          .then((res) => {
-            console.log(res);
-          })
-          .catch(function () {
-            console.log("FAILURE!!");
-          });
+        this.indexedParentCSV.forEach((e) => {
+          if (!removalIds.includes(e.id)) {
+            parentCSVSubmisson.push(e);
+          }
+        });
+        console.log(parentCSVSubmisson);
+        // base_endpoint
+        //   .post(
+        //     "/api/bulkimportsubmit",
+        //     {
+        //       headers: ["email", "name", "address", "phone_number"],
+        //       csvdata: parentCSVSubmisson,
+        //     },
+        //     {
+        //       headers: {
+        //         Authorization: `Token ${this.$store.state.accessToken}`,
+        //       },
+        //     }
+        //   )
+        //   .then((res) => {
+        //     console.log(res);
+        //   })
+        //   .catch(function () {
+        //     console.log("FAILURE!!");
+        //   });
       } else {
         base_endpoint
           .post(
@@ -463,7 +464,6 @@ export default {
           if (res.err != "") {
             this.badAddressSnackbar = res.err;
           }
-          this.loadingSnackbar = false;
           this.markerPos = { lat: res.data.lat, lng: res.data.lng };
           this.parentDialog = true;
           this.editedParentIndex = item.id;
@@ -474,7 +474,6 @@ export default {
         });
     },
     saveParentItem() {
-      console.log("YEET");
       if (this.editedParentIndex > -1) {
         Object.assign(
           this.parentCSVData[this.editedParentIndex],
