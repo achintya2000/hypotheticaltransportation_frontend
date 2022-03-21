@@ -17,59 +17,62 @@
 
         <v-card-text>
           <v-form ref="form" v-model="valid" lazy-validation>
-          <v-text-field label="Name" v-model="editedParent.name" :rules="userNameValidateArray"></v-text-field>
-          <v-text-field
-            label="Email"
-            :rules="userEmailValidateArray"
-            v-model="editedParent.email"
-          ></v-text-field>
+            <v-text-field
+              label="Name"
+              v-model="editedParent.name"
+              :rules="userNameValidateArray"
+            ></v-text-field>
+            <v-text-field
+              label="Email"
+              :rules="userEmailValidateArray"
+              v-model="editedParent.email"
+            ></v-text-field>
 
-          <gmap-autocomplete @place_changed="setPlaceParent">
-            <template v-slot:input="slotProps">
-              <v-text-field
-                v-model="editedParent.address"
-                label="Enter a location address"
-                append-icon="mdi-map-marker"
-                :rules="userPhoneValidateArray"
-                ref="input"
-                v-on:listeners="slotProps.listeners"
-                v-on:attrs="slotProps.attrs"
-              ></v-text-field>
-            </template>
-          </gmap-autocomplete>
+            <gmap-autocomplete @place_changed="setPlaceParent">
+              <template v-slot:input="slotProps">
+                <v-text-field
+                  v-model="editedParent.address"
+                  label="Enter a location address"
+                  append-icon="mdi-map-marker"
+                  :rules="userPhoneValidateArray"
+                  ref="input"
+                  v-on:listeners="slotProps.listeners"
+                  v-on:attrs="slotProps.attrs"
+                ></v-text-field>
+              </template>
+            </gmap-autocomplete>
 
-          <GmapMap
-            style="width: 100%; height: 400px"
-            ref="mapRef"
-            :center="markerPos"
-            :zoom="12"
-          >
-            <GmapMarker :key="index" :position="markerPos" />
-          </GmapMap>
+            <GmapMap
+              style="width: 100%; height: 400px"
+              ref="mapRef"
+              :center="markerPos"
+              :zoom="12"
+            >
+              <GmapMarker :key="index" :position="markerPos" />
+            </GmapMap>
 
-          <v-text-field
-            label="Phone"
-            :rules="userAddressValidateArray"
-            v-model="editedParent.phone_number"
-          ></v-text-field>
-        
+            <v-text-field
+              label="Phone"
+              :rules="userAddressValidateArray"
+              v-model="editedParent.phone_number"
+            ></v-text-field>
 
-          <v-btn color="warning" class="mr-4" @click="parentDialog = false">
-            Close
-          </v-btn>
-          <v-btn
-            color="success"
-            class="mr-4"
-            :disabled = !valid
-            @click="
-              parentDialog = false;
-              saveParentItem();
-            "
-          >
-            Save
-          </v-btn>
+            <v-btn color="warning" class="mr-4" @click="parentDialog = false">
+              Close
+            </v-btn>
+            <v-btn
+              color="success"
+              class="mr-4"
+              :disabled="!valid"
+              @click="
+                parentDialog = false;
+                saveParentItem();
+              "
+            >
+              Save
+            </v-btn>
           </v-form>
-          </v-card-text>
+        </v-card-text>
       </v-card>
     </v-dialog>
 
@@ -141,7 +144,10 @@
             <v-btn
               color="success"
               class="mr-4"
-              @click="saveStudentItem(); studentDialog = false"
+              @click="
+                saveStudentItem();
+                studentDialog = false;
+              "
               :disabled="!valid"
             >
               Save
@@ -454,7 +460,7 @@ export default {
           console.log(res);
           if (res.err != "") {
             this.badAddressSnackbar = res.err;
-
+          }
           this.loadingSnackbar = false;
           this.markerPos = { lat: res.data.lat, lng: res.data.lng };
           this.parentDialog = true;
@@ -541,16 +547,20 @@ export default {
       }
     },
     userAddressValidate() {
-      if (this.editedParent.address == null || this.editedParent.address == "")
-      {
+      if (
+        this.editedParent.address == null ||
+        this.editedParent.address == ""
+      ) {
         return "Parent address is required";
       } else {
         return true;
       }
     },
     userPhoneValidate() {
-      if (this.editedParent.phone_number == null || this.editedParent.phone_number == "")
-      {
+      if (
+        this.editedParent.phone_number == null ||
+        this.editedParent.phone_number == ""
+      ) {
         return "Parent phone number is required";
       } else {
         return true;
@@ -575,14 +585,20 @@ export default {
       }
     },
     studentSchoolValidate() {
-      if (this.editedStudent.school_name == null || this.editedStudent.school_name == "") {
+      if (
+        this.editedStudent.school_name == null ||
+        this.editedStudent.school_name == ""
+      ) {
         return "Student school is required";
       } else {
         return true;
       }
     },
     studentParentValidate() {
-      if (this.editedStudent.parent_email == null || this.editedStudent.parent_email == "") {
+      if (
+        this.editedStudent.parent_email == null ||
+        this.editedStudent.parent_email == ""
+      ) {
         return "Student's parent is required";
       } else {
         return true;
