@@ -92,7 +92,9 @@
       </template>
     </v-data-table>
     <v-btn v-on:click="validateFile(typeParent)">Validate Parent CSV</v-btn>
-    <v-btn v-on:click="submitFile(typeParent)">Submit Validated File</v-btn>
+    <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
+      >Submit Validated File</v-btn
+    >
 
     <p></p>
     <!-- STUDENT STUFF STARTS BELOW --->
