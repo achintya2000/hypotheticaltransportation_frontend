@@ -366,7 +366,9 @@
       <v-btn
         :disabled="!parentValidEnable"
         v-on:click="validateFile(typeParent)"
+        outlined
         >Validate Parent CSV</v-btn
+        
       >
       
       <!-- <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
@@ -512,6 +514,7 @@
       ><v-btn
         :disabled="!studentValidEnable"
         v-on:click="validateFile(typeStudent)"
+        outlined
         >Validate Student CSV</v-btn
       >
       <!-- <v-btn :disabled="!studentCSVReady" v-on:click="submitFile(typeStudent)">Submit Validated File</v-btn> -->
