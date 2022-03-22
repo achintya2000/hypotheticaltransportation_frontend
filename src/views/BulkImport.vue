@@ -88,6 +88,7 @@
       item-key="id"
       show-select
       hide-default-footer
+      @item-selected="parentCheckBoxEvent"
       disable-pagination
     >
       <template v-slot:[`item.actions`]="{ item }">
@@ -183,6 +184,7 @@
       show-select
       hide-default-footer
       disable-pagination
+      @item-selected="studentCheckBoxEvent"
     >
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon color="green" class="mr-3" @click.stop="editStudent(item)">
@@ -451,8 +453,8 @@ export default {
           )
           .then((res) => {
             console.log(res);
-            this.submitTaskId = res.data.id;
-            this.submissionSnackbar = false;
+            this.submitTaskId = res.data;
+            this.pollSubmission();
           })
           .catch(function () {
             console.log("FAILURE!!");
@@ -485,8 +487,8 @@ export default {
           )
           .then((res) => {
             console.log(res);
-            this.submitTaskId = res.data.id;
-            this.submissionSnackbar = false;
+            this.submitTaskId = res.data;
+            this.pollSubmission();
           })
           .catch(function () {
             console.log("FAILURE!!");
@@ -501,9 +503,14 @@ export default {
           },
         })
         .then((res) => {
+          console.log("polling submission");
+          console.log(res);
           if (res.data.state == "SUCCESS") {
             console.log("submit is done");
+            this.submissionSnackbar = false;
+            return;
           }
+          setTimeout(this.pollSubmission, 3000);
         });
     },
     setPlaceParent(place) {
@@ -525,6 +532,7 @@ export default {
           }
           this.markerPos = { lat: res.data.lat, lng: res.data.lng };
           this.parentDialog = true;
+          this.parentCSVReady = false;
           this.editedParentIndex = item.id;
           this.editedParent = Object.assign({}, item);
         })
@@ -541,6 +549,7 @@ export default {
       }
     },
     editStudent(item) {
+      this.studentCSVReady = false;
       this.studentDialog = true;
       this.editedStudentIndex = item.id;
       this.editedStudent = Object.assign({}, item);
@@ -672,6 +681,12 @@ export default {
     },
     validate() {
       this.$refs.form.validate();
+    },
+    parentCheckBoxEvent() {
+      this.parentCSVReady = false;
+    },
+    studentCheckBoxEvent() {
+      this.studentCSVReady = false;
     },
   },
   computed: {
