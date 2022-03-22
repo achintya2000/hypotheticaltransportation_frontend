@@ -368,10 +368,36 @@
         v-on:click="validateFile(typeParent)"
         >Validate Parent CSV</v-btn
       >
-      <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
+      <!-- <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
         >Submit Validated File</v-btn
-      >
+      > -->
+      <v-dialog v-model="confirm3" width="500">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn :disabled="!parentCSVReady" style="margin: 10px" outlined v-bind="attrs" v-on="on">
+            Submit Validated File
+          </v-btn>
+        </template>
+
+        <v-card>
+          <v-card-title class="text-h5 grey lighten-2">
+            Please Confirm
+          </v-card-title>
+
+          <v-card-text>
+            <v-form ref="form">
+              <v-spacer></v-spacer>
+
+              <v-btn color="error" class="mr-4" v-on:click="submitFile(typeParent)">
+                Yes, Submit
+              </v-btn>
+
+              <v-btn color="success" @click="confirm3 = false"> Cancel </v-btn>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
       <v-btn outlined @click="clearParent">Clear</v-btn>
+
     </v-card-title>
     <v-card-subtitle
       >File
@@ -477,11 +503,35 @@
         v-on:click="validateFile(typeStudent)"
         >Validate Student CSV</v-btn
       >
-      <v-btn :disabled="!studentCSVReady" v-on:click="submitFile(typeStudent)"
-        >Submit Validated File</v-btn
-      >
+      <!-- <v-btn :disabled="!studentCSVReady" v-on:click="submitFile(typeStudent)">Submit Validated File</v-btn> -->
+      <v-dialog v-model="confirm2" width="500">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn :disabled="!studentCSVReady" style="margin: 10px" outlined v-bind="attrs" v-on="on">
+            Submit Validated File
+          </v-btn>
+        </template>
+
+        <v-card>
+          <v-card-title class="text-h5 grey lighten-2">
+            Please Confirm
+          </v-card-title>
+
+          <v-card-text>
+            <v-form ref="form">
+              <v-spacer></v-spacer>
+
+              <v-btn color="error" class="mr-4" v-on:click="submitFile(typeStudent);">
+                Yes, Submit
+              </v-btn>
+
+              <v-btn color="success" @click="confirm2 = false"> Cancel </v-btn>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
       <v-btn outlined @click="clearStudent">Clear</v-btn>
-    </v-card-title>
+      </v-card-title
+    >
     <v-card-subtitle
       >File
       <input
@@ -577,6 +627,13 @@
       Submission In Progress
       <v-progress-circular indeterminate color="black"></v-progress-circular>
     </v-snackbar>
+    <v-snackbar
+      v-model="badAddressSnackbar"
+      outlines
+      color="red"
+    >
+      This address was not recognized
+    </v-snackbar>
   </v-card>
 </template>
 
@@ -597,6 +654,9 @@ export default {
       parentDialog: false,
       studentDialog: false,
       intDialog: false,
+      badAddressSnackbar: false,
+      confirm2: false,
+      confirm3: false,
       loadingSnackbar: false,
       submissionSnackbar: false,
       userNameValidateArray: [this.userNameValidate],
@@ -812,6 +872,8 @@ export default {
     },
     submitFile(type) {
       this.submissionSnackbar = true;
+      this.confirm2 = false;
+      this.confirm3 = false;
       if (type == "parent") {
         let removalIds = [];
         let parentCSVSubmisson = [];
@@ -915,7 +977,7 @@ export default {
         .then((res) => {
           console.log(res);
           if (res.err != "") {
-            this.badAddressSnackbar = res.err;
+            this.badAddressSnackbar = true;
           }
           this.markerPos = { lat: res.data.lat, lng: res.data.lng };
           this.parentDialog = true;
