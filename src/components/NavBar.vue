@@ -9,7 +9,7 @@
       <v-spacer class="hidden-md-and-up"></v-spacer>
 
       <!-- <router-link to="/" style="text-decoration: none; color: inherit"> -->
-        <v-toolbar-title> ConnectWise </v-toolbar-title>
+      <v-toolbar-title> ConnectWise </v-toolbar-title>
       <!-- </router-link> -->
 
       <v-spacer></v-spacer>
@@ -108,7 +108,9 @@ export default {
         {
           title: "Import",
           to: "/bulkimport",
-          show: this.isAdmin,
+          show:
+            this.isAdmin &&
+            window.localStorage.getItem("userType") != "busDriver",
         },
       ];
     },

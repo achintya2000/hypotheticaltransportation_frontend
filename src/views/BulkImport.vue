@@ -652,7 +652,7 @@
       This file is not formatted correctly. Check your headers
     </v-snackbar>
     <v-snackbar v-model="catchAllError" outlines color="red">
-      {{errorMessage}}
+      {{ errorMessage }}
     </v-snackbar>
   </v-card>
 </template>
@@ -985,11 +985,11 @@ export default {
           }
           setTimeout(this.pollSubmission, 3000);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           this.errorMessage = err;
           this.catchAllError = true;
-        })
+        });
     },
     setPlaceParent(place) {
       this.editedParent.address = place.formatted_address;
