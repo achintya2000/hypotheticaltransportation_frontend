@@ -108,7 +108,7 @@ export default {
         {
           title: "Import",
           to: "/bulkimport",
-          show: this.loggedIn,
+          show: this.isAdmin,
         },
       ];
     },
