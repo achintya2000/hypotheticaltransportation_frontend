@@ -368,6 +368,7 @@
         v-on:click="validateFile(typeParent)"
         >Validate Parent CSV</v-btn
       >
+      
       <!-- <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
         >Submit Validated File</v-btn
       > -->
@@ -417,6 +418,7 @@
         @change="handleFileUpload($event, typeParent)"
       />
     </v-card-subtitle>
+    <v-card-subtitle>To exclude a record, select the checkbox on the left</v-card-subtitle>
 
     <v-dialog v-model="parentDialog" width="50%">
       <v-card>
@@ -559,6 +561,7 @@
         @change="handleFileUpload($event, typeStudent)"
       />
     </v-card-subtitle>
+    <v-card-subtitle>To exclude a record, select the checkbox on the left</v-card-subtitle>
 
     <v-dialog v-model="studentDialog" width="50%">
       <v-card>
