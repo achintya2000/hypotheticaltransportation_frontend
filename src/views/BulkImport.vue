@@ -648,6 +648,12 @@
     <v-snackbar v-model="badAddressSnackbar" outlines color="red">
       This address was not recognized
     </v-snackbar>
+    <v-snackbar v-model="badFileFormat" outlines color="red">
+      This file is not formatted correctly. Check your headers
+    </v-snackbar>
+    <v-snackbar v-model="catchAllError" outlines color="red">
+      {{errorMessage}}
+    </v-snackbar>
   </v-card>
 </template>
 
@@ -670,6 +676,8 @@ export default {
       intDialog: false,
       confirm2: false,
       confirm3: false,
+      badFileFormat: false,
+      catchAllError: false,
       loadingSnackbar: false,
       submissionSnackbar: false,
       userNameValidateArray: [this.userNameValidate],
@@ -724,11 +732,12 @@ export default {
       schoolItems: [],
       parentCSVReady: false,
       studentCSVReady: false,
-      badAddressSnackbar: "",
+      badAddressSnackbar: false,
       parentValidEnable: false,
       studentValidEnable: false,
       parentInputKey: 0,
       studentInputKey: 0,
+      errorMessage: "",
     };
   },
   methods: {
@@ -828,6 +837,7 @@ export default {
             if (res.data.res == "error") {
               this.loadingSnackbar = false;
               console.log("YEET FAILURE");
+              this.badFileFormat = true;
               return;
             }
             if (res.data.state == "SUCCESS") {
@@ -860,6 +870,7 @@ export default {
             if (res.data.res == "error") {
               this.loadingSnackbar = false;
               console.log("YEET FAILURE");
+              this.badFileFormat = true;
               return;
             }
             if (res.data.state == "SUCCESS") {
@@ -973,7 +984,12 @@ export default {
             return;
           }
           setTimeout(this.pollSubmission, 3000);
-        });
+        })
+        .catch(err => {
+          console.log(err);
+          this.errorMessage = err;
+          this.catchAllError = true;
+        })
     },
     setPlaceParent(place) {
       this.editedParent.address = place.formatted_address;
@@ -989,7 +1005,7 @@ export default {
         })
         .then((res) => {
           console.log(res);
-          if (res.err != "") {
+          if (res.data.error != "") {
             this.badAddressSnackbar = true;
           }
           this.markerPos = { lat: res.data.lat, lng: res.data.lng };
