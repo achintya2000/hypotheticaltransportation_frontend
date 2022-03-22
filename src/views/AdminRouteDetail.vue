@@ -3,43 +3,9 @@
     <v-card-title class="font-weight-black">
       {{ routeName }}
       <v-spacer></v-spacer>
-      <v-dialog v-model="linkDialog" width="500">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined v-bind="attrs" v-on="on"> Navigation Links </v-btn>
-        </template>
-
-        <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
-            Navigation Links
-          </v-card-title>
-
-          <v-card-text><template>
-            <v-row>
-              <v-col>
-                <v-card-title width=100%>Pick-Up</v-card-title>
-              </v-col>
-              <v-col>
-                <v-card-title>Drop-Off</v-card-title>
-              </v-col>
-            </v-row>
-            <v-divider></v-divider>
-            <div v-for="index in pickUpLinks.length" :key="index">
-                <v-row>
-                  <v-col>
-                    <v-btn outlined v-bind="attrs" v-on="on" :href="`${pickUpLinks[index-1].link}`" target="_blank">{{pickUpLinks[index-1].name}} </v-btn>
-                  </v-col>
-                  <v-divider vertical></v-divider>
-                  <v-col>
-                    <v-btn outlined v-bind="attrs" v-on="on" :href="`${dropOffLinks[index-1].link}`" target="_blank"> {{dropOffLinks[index-1].name}} </v-btn>
-                  </v-col>
-                </v-row>
-                <v-divider></v-divider>
-            </div>
-          </template></v-card-text>
-        </v-card>
-      </v-dialog>
-      <v-btn @click="planNewRoute" outlined v-if="this.userType!='busDriver'">Modify Route</v-btn>
-      <v-btn style="margin: 10px" @click="seeRouteRoster" outlined>Print Roster</v-btn>
+      
+      <v-btn style="margin: 10px" @click="planNewRoute" outlined v-if="this.userType!='busDriver'">Modify Route</v-btn>
+      
       <v-dialog v-model="dialog2" width="50%" v-if="this.userType!='busDriver'">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -49,7 +15,7 @@
             v-on="on"
             @click="newmethod"
           >
-            Modify Name and Description
+            Modify Name/Des.
           </v-btn>
         </template>
 
@@ -131,6 +97,45 @@
         :relevantName = this.routeName
         v-if="this.userType!='busDriver'"
       ></send-email>
+    <!-- </v-card-title>
+    <v-card-title> -->
+      <br>
+      <v-btn style="margin: 10px" @click="seeRouteRoster" outlined>Print Roster</v-btn>
+      <v-dialog v-model="linkDialog" width="500">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn outlined v-bind="attrs" v-on="on"> Navigation Links </v-btn>
+        </template>
+
+        <v-card>
+          <v-card-title class="text-h5 grey lighten-2">
+            Navigation Links
+          </v-card-title>
+
+          <v-card-text><template>
+            <v-row>
+              <v-col>
+                <v-card-title width=100%>Pick-Up</v-card-title>
+              </v-col>
+              <v-col>
+                <v-card-title>Drop-Off</v-card-title>
+              </v-col>
+            </v-row>
+            <v-divider></v-divider>
+            <div v-for="index in pickUpLinks.length" :key="index">
+                <v-row>
+                  <v-col>
+                    <v-btn outlined v-bind="attrs" v-on="on" :href="`${pickUpLinks[index-1].link}`" target="_blank">{{pickUpLinks[index-1].name}} </v-btn>
+                  </v-col>
+                  <v-divider vertical></v-divider>
+                  <v-col>
+                    <v-btn outlined v-bind="attrs" v-on="on" :href="`${dropOffLinks[index-1].link}`" target="_blank"> {{dropOffLinks[index-1].name}} </v-btn>
+                  </v-col>
+                </v-row>
+                <v-divider></v-divider>
+            </div>
+          </template></v-card-text>
+        </v-card>
+      </v-dialog>
     </v-card-title>
 
     <v-row>
