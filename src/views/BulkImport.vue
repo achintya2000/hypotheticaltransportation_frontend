@@ -1,9 +1,12 @@
 <template>
   <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
-    <v-card-title>Parents CSV File<v-spacer></v-spacer> <v-btn v-on:click="validateFile(typeParent)">Validate Parent CSV</v-btn>
-    <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
-      >Submit Validated File</v-btn
-    ></v-card-title>
+    <v-card-title
+      >Parents CSV File<v-spacer></v-spacer>
+      <v-btn v-on:click="validateFile(typeParent)">Validate Parent CSV</v-btn>
+      <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
+        >Submit Validated File</v-btn
+      ></v-card-title
+    >
     <v-card-subtitle
       >File
       <input
@@ -93,17 +96,21 @@
         </v-icon>
       </template>
     </v-data-table>
-    
-  
+
     <p></p>
     <v-divider></v-divider>
     <p></p>
     <!-- STUDENT STUFF STARTS BELOW --->
 
-    <v-card-title>Students CSV File    <v-spacer></v-spacer><v-btn v-on:click="validateFile(typeStudent)">Validate Student CSV</v-btn>
-    <v-btn :disabled="!studentCSVReady" v-on:click="submitFile(typeStudent)"
-      >Submit Validated File</v-btn
-    ></v-card-title>
+    <v-card-title
+      >Students CSV File <v-spacer></v-spacer
+      ><v-btn v-on:click="validateFile(typeStudent)"
+        >Validate Student CSV</v-btn
+      >
+      <v-btn :disabled="!studentCSVReady" v-on:click="submitFile(typeStudent)"
+        >Submit Validated File</v-btn
+      ></v-card-title
+    >
     <v-card-subtitle
       >File
       <input
@@ -188,7 +195,12 @@
       Validation In Progress
       <v-progress-circular indeterminate color="black"></v-progress-circular>
     </v-snackbar>
-    <v-snackbar v-model="submissionSnackbar" outlines color="blue" :timeout="-1">
+    <v-snackbar
+      v-model="submissionSnackbar"
+      outlines
+      color="blue"
+      :timeout="-1"
+    >
       Submission In Progress
       <v-progress-circular indeterminate color="black"></v-progress-circular>
     </v-snackbar>
@@ -222,6 +234,7 @@ export default {
       studentSchoolValidateArray: [this.studentSchoolValidate],
       studentParentValidateArray: [this.studentParentValidate],
       csvTaskId: "",
+      submitTaskId: "",
       parentCSVData: [],
       parentSelected: [],
       studentSelected: [],
@@ -291,6 +304,10 @@ export default {
     validateFile(type) {
       this.loadingSnackbar = true;
       if (type == "parent") {
+        this.parentCSVData.forEach((e) => {
+          e.exclude = false;
+        });
+
         this.parentSelected.forEach((e) => {
           this.parentCSVData[e.id].exclude = true;
         });
@@ -317,10 +334,14 @@ export default {
             console.log("FAILURE!!");
           });
       } else {
+        this.studentCSVData.forEach((e) => {
+          e.exclude = false;
+        });
+
         this.studentSelected.forEach((e) => {
           this.studentCSVData[e.id].exclude = true;
         });
-        
+
         base_endpoint
           .post(
             "/api/bulkimportvalidate",
@@ -357,6 +378,7 @@ export default {
               console.log(res.data);
               this.parentCSVData = res.data.res.csvdata;
               this.parentCSVReady = res.data.res.valid;
+              this.parentSelected = [];
               this.indexedParentCSV.forEach((e) => {
                 if (e.exclude == true) {
                   this.parentSelected.push(e);
@@ -383,6 +405,7 @@ export default {
               console.log(res.data);
               this.studentCSVData = res.data.res.csvdata;
               this.studentCSVReady = res.data.res.valid;
+              this.studentSelected = [];
               this.indexedStudentCSV.forEach((e) => {
                 if (e.exclude == true) {
                   this.studentSelected.push(e);
@@ -401,7 +424,6 @@ export default {
     submitFile(type) {
       this.submissionSnackbar = true;
       if (type == "parent") {
-        // console.log(this.parentSelected);
         let removalIds = [];
         let parentCSVSubmisson = [];
 
@@ -429,6 +451,7 @@ export default {
           )
           .then((res) => {
             console.log(res);
+            this.submitTaskId = res.data.id;
             this.submissionSnackbar = false;
           })
           .catch(function () {
@@ -462,12 +485,26 @@ export default {
           )
           .then((res) => {
             console.log(res);
+            this.submitTaskId = res.data.id;
             this.submissionSnackbar = false;
           })
           .catch(function () {
             console.log("FAILURE!!");
           });
       }
+    },
+    pollSubmission() {
+      base_endpoint
+        .get("/api/gettaskprogress/" + this.submitTaskId, {
+          headers: {
+            Authorization: `Token ${this.$store.state.accessToken}`,
+          },
+        })
+        .then((res) => {
+          if (res.data.state == "SUCCESS") {
+            console.log("submit is done");
+          }
+        });
     },
     setPlaceParent(place) {
       this.editedParent.address = place.formatted_address;
