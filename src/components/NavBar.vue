@@ -28,6 +28,36 @@
       <login v-if="!loggedIn"></login>
       <logout v-if="loggedIn"></logout>
     </v-app-bar>
+
+    <v-navigation-drawer
+      v-model="drawer"
+      absolute
+      temporary
+      app
+      class="hidden-md-and-up"
+    >
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title class="title">Hypothetical</v-list-item-title>
+          <v-list-item-subtitle>Transportation</v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
+      <v-list dense nav>
+        <v-list-item
+          v-for="link in navBarLinks"
+          :key="link.title"
+          v-show="link.show"
+          :to="link.to"
+        >
+          <v-list-item-content>
+            <v-list-item-title>{{ link.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
   </nav>
 </template>
 
