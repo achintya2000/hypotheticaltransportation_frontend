@@ -363,7 +363,11 @@
         </v-card>
       </v-dialog>
       <v-spacer></v-spacer>
-      <v-btn v-on:click="validateFile(typeParent)">Validate Parent CSV</v-btn>
+      <v-btn
+        :disabled="!parentValidEnable"
+        v-on:click="validateFile(typeParent)"
+        >Validate Parent CSV</v-btn
+      >
       <!-- <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
         >Submit Validated File</v-btn
       > -->
@@ -392,12 +396,15 @@
           </v-card-text>
         </v-card>
       </v-dialog>
+      <v-btn outlined @click="clearParent">Clear</v-btn>
+
     </v-card-title>
     <v-card-subtitle
       >File
       <input
         type="file"
         accept=".csv"
+        :key="parentInputKey"
         @change="handleFileUpload($event, typeParent)"
       />
     </v-card-subtitle>
@@ -491,7 +498,9 @@
 
     <v-card-title
       >Students CSV File <v-spacer></v-spacer
-      ><v-btn v-on:click="validateFile(typeStudent)"
+      ><v-btn
+        :disabled="!studentValidEnable"
+        v-on:click="validateFile(typeStudent)"
         >Validate Student CSV</v-btn
       >
       <!-- <v-btn :disabled="!studentCSVReady" v-on:click="submitFile(typeStudent)">Submit Validated File</v-btn> -->
@@ -520,6 +529,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
+      <v-btn outlined @click="clearStudent">Clear</v-btn>
       </v-card-title
     >
     <v-card-subtitle
@@ -527,6 +537,7 @@
       <input
         type="file"
         accept=".csv"
+        :key="studentInputKey"
         @change="handleFileUpload($event, typeStudent)"
       />
     </v-card-subtitle>
@@ -700,6 +711,11 @@ export default {
       schoolItems: [],
       parentCSVReady: false,
       studentCSVReady: false,
+      badAddressSnackbar: "",
+      parentValidEnable: false,
+      studentValidEnable: false,
+      parentInputKey: 0,
+      studentInputKey: 0,
     };
   },
   methods: {
@@ -715,10 +731,11 @@ export default {
           this.content = results;
           this.parsed = true;
           if (type == "parent") {
+            this.parentValidEnable = true;
             this.parentCSVData = this.content.data;
           } else {
+            this.studentValidEnable = true;
             this.studentCSVData = this.content.data;
-            console.log(this.studentCSVData);
           }
         }.bind(this),
       });
@@ -748,12 +765,11 @@ export default {
             }
           )
           .then((res) => {
-            console.log(res);
             this.csvTaskId = res.data.id;
             this.pollStatus(this.typeParent);
           })
-          .catch(function () {
-            console.log("FAILURE!!");
+          .catch((err) => {
+            console.log(err);
           });
       } else {
         this.studentCSVData.forEach((e) => {
@@ -781,8 +797,9 @@ export default {
             this.csvTaskId = res.data.id;
             this.pollStatus(this.typeStudent);
           })
-          .catch(function () {
-            console.log("FAILURE!!");
+          .catch((err) => {
+            console.log("Failure");
+            console.log(err);
           });
       }
     },
@@ -795,6 +812,11 @@ export default {
             },
           })
           .then((res) => {
+            if (res.data.res == "error") {
+              this.loadingSnackbar = false;
+              console.log("YEET FAILURE");
+              return;
+            }
             if (res.data.state == "SUCCESS") {
               console.log("done");
               console.log(res.data);
@@ -822,6 +844,11 @@ export default {
             },
           })
           .then((res) => {
+            if (res.data.res == "error") {
+              this.loadingSnackbar = false;
+              console.log("YEET FAILURE");
+              return;
+            }
             if (res.data.state == "SUCCESS") {
               console.log("done");
               console.log(res.data);
@@ -1109,6 +1136,22 @@ export default {
     },
     studentCheckBoxEvent() {
       this.studentCSVReady = false;
+    },
+    clearParent() {
+      console.log("clearing");
+      this.parentInputKey++;
+      this.parentCSVData = [];
+      this.parentSelected = [];
+      this.parentCSVReady = false;
+      this.parentValidEnable = false;
+    },
+    clearStudent() {
+      console.log("clearing");
+      this.studentInputKey++;
+      this.studentCSVData = [];
+      this.studentSelected = [];
+      this.studentCSVReady = false;
+      this.studentValidEnable = false;
     },
   },
   computed: {
