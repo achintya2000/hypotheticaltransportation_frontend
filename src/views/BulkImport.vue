@@ -1,9 +1,10 @@
 <template>
   <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
-    <v-card-title>Parents CSV File
-      
-    <v-spacer></v-spacer> 
-    <v-dialog v-model="intDialog" width="80%">
+    <v-card-title
+      >Parents CSV File
+
+      <v-spacer></v-spacer>
+      <v-dialog v-model="intDialog" width="80%">
         <template v-slot:activator="{ on, attrs }">
           <v-btn outlined v-bind="attrs" v-on="on"> Instructions </v-btn>
         </template>
@@ -15,151 +16,357 @@
 
           <v-card-text>
             <p class="font-weight-medium">
-              To begin bulk import, choose to either import students or users. In most situations, 
-              you will want to do users first since the account email's must be present in the database 
-              before the student can be created.
+              To begin bulk import, choose to either import students or users.
+              In most situations, you will want to do users first since the
+              account email's must be present in the database before the student
+              can be created.
             </p>
             <p class="font-weight-medium">
-              Select a csv file that follows the file format below and upload it to the correct file uploader. 
-              The data will populate into the table. Click the "Validate" button to determine if there are any errors
-              or detected duplicates.
+              Select a csv file that follows the file format below and upload it
+              to the correct file uploader. The data will populate into the
+              table. Click the "Validate" button to determine if there are any
+              errors or detected duplicates.
             </p>
             <p class="font-weight-medium">
-              To modify the data entry, click the Pencil icon to the right. To exclude the data entry, check the box on
-              the left. You must fix all errors or exclude data entires with errors in order to be able top submit. Continue to
-              use the "Validate" button until the "Submit" button has been enabled.
+              To modify the data entry, click the Pencil icon to the right. To
+              exclude the data entry, check the box on the left. You must fix
+              all errors or exclude data entires with errors in order to be able
+              top submit. Continue to use the "Validate" button until the
+              "Submit" button has been enabled.
             </p>
 
             <p class="font-weight-medium">
               Finally, click the "Submit" to commit the data to the database.
             </p>
-            <div id="doc" class="markdown-body container-fluid comment-enabled" data-hard-breaks="true"><h2 id="File-format" data-id="File-format"><span>File format</span></h2><ul>
-<li><span>Two separate CSV files, one for users and one for students.</span>
-<ul>
-<li><span>CSV is defined as in </span><a href="https://datatracker.ietf.org/doc/html/rfc4180#section-2" target="_blank" rel="noopener"><span>RFC 4180, Section 2</span></a>
-<ul>
-<li><span>The optional header line in </span><a href="https://datatracker.ietf.org/doc/html/rfc4180#section-2" target="_blank" rel="noopener"><span>RFC 4180, Section 2.3</span></a><span> is required for these files</span></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><span>If the files exist (defined below) they will each have at minimum two lines–the header and a record that follows the defined formatting</span></li>
-<li><span>“Field is not empty” indicates that at least one character must be present in the field</span></li>
-</ul><h2 id="Users-file" data-id="Users-file"><span>Users file</span></h2><p><span>Fields appear in the following order in the users file as follows: </span><code>email,name,address,phone_number</code><span>. This is also the contents of the first line in the file. This file only exists if importing user(s) is desired.</span></p><ul>
-<li>
-<p><code>email</code><span> field:</span></p>
-<ul>
-<li><span>character limit: </span><code>&lt;= 254 chars</code><span> as per </span><a href="https://datatracker.ietf.org/doc/html/rfc5321#section-4.5.3.1.3" target="_blank" rel="noopener"><span>RFC 5321, Section 4.5.3.1.3</span></a></li>
-<li><span>must be a valid address as per the addr-spec of </span><a href="https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1" target="_blank" rel="noopener"><span>RFC 5322, Section 3.4.1</span></a></li>
-<li><span>field is not empty</span>
-<ul>
-<li><span>example: </span><code>john.smith@example.com</code><span>, </span><code>john.smith@cs.duke.edu</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><code>name</code><span> field:</span></p>
-<ul>
-<li><span>character limit: </span><code>&lt;= 150 chars</code></li>
-<li><span>field is not empty</span></li>
-<li><span>some text field containing both a first and last name with potential suffixes (eg </span><code>Jr</code><span>, </span><code>Sr</code><span>, </span><code>III</code><span>, etc)</span>
-<ul>
-<li><span>example: </span><code>"John Smith Jr"</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><code>address</code><span> field:</span></p>
-<ul>
-<li><span>character limit: </span><code>&lt;= 150 chars</code></li>
-<li><span>some text that is a Complete Address as per </span><a href="https://pe.usps.com/text/dmm300/602.htm#ep1085515" target="_blank" rel="noopener"><span>USPS Standard 602.1.4</span></a><span>.</span>
-<ul>
-<li><span>Adressee Name (USPS Standard 602.1.4.2a) is not applicable and is not included in this field</span></li>
-<li><span>The delimiter between Address Elements (USPS Standard 602.1.4.2) must match the regex </span><code>,? +</code></li>
-</ul>
-</li>
-<li><span>field is not empty</span>
-<ul>
-<li><span>example: </span><code>"998 Chevis Rd, Savannah, GA 31419"</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><code>phone_number</code><span> field:</span></p>
-<ul>
-<li><span>character limit: </span><code>&lt;= 35 chars</code><span>, including characters for formatting</span></li>
-<li><span>field may be left empty</span>
-<ul>
-<li><span>some implementations of the software may require phone numbers, as per Variance Request #79 – if this is the case and the phone number is left blank, then it is up to the group’s implementation to either reject the record with an appropriate error message or mark the phone number as 0000000000.</span></li>
-</ul>
-</li>
-<li><span>example: </span><code>19198776589</code><span>, </span><code>(555) 555-5555</code><span>, </span><code>+1 415 555 0132</code></li>
-</ul>
-</li>
-</ul><h2 id="Studentscsv" data-id="Studentscsv"><code>Students.csv</code></h2><p><span>Fields appear in the following order in </span><code>Students.csv</code><span> as follows: </span><code>name,parent_email,student_id,school_name</code><span>. This is also the contents of the first line in the file. This file only exists if importing student(s) is desired.</span></p><ul>
-<li>
-<p><code>name</code><span> field:</span></p>
-<ul>
-<li><span>character limit: </span><code>&lt;= 150 chars</code></li>
-<li><span>field is not empty</span></li>
-<li><span>some text field containing both a first and last name with potential suffixes (eg </span><code>Jr</code><span>, </span><code>Sr</code><span>, </span><code>III</code><span>, etc)</span>
-<ul>
-<li><span>example: </span><code>"John Smith Jr"</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><code>parent_email</code><span> field:</span></p>
-<ul>
-<li><span>character limit: </span><code>&lt;= 254 chars</code><span> as per </span><a href="https://datatracker.ietf.org/doc/html/rfc5321#section-4.5.3.1.3" target="_blank" rel="noopener"><span>RFC 5321, Section 4.5.3.1.3</span></a></li>
-<li><span>must be a valid address as per the addr-spec of </span><a href="https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1" target="_blank" rel="noopener"><span>RFC 5322, Section 3.4.1</span></a></li>
-<li><span>field is not empty</span>
-<ul>
-<li><span>example: </span><code>john.smith@example.com</code><span>, </span><code>john.smith@cs.duke.edu</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><code>student_id</code><span> field:</span></p>
-<ul>
-<li><span>some non-zero, positive (but less than </span><code>2147483647</code><span>) number. As this is an optional field, if there is no desired student id the field is left empty.</span>
-<ul>
-<li><span>some implementations of the software may require student_id, as per Variance Request #37 - if this is the case and the student id is left blank, then it is up to the group’s implementation to either reject the record with an appropriate error message or mark the student id as 0.</span></li>
-<li><span>example: </span><code>24601</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><code>school_name</code><span> field:</span></p>
-<ul>
-<li><span>character limit: </span><code>&lt;= 150 chars</code></li>
-<li><span>school name must case-insensitively and whitespace-insensitively match an existing school name, or else the record will be rejected with an appropriate error message</span>
-<ul>
-<li><span>for example, “A School” matches "   a sCHoOl   " and “A          School” but not “aschool”</span></li>
-</ul>
-</li>
-<li><span>field is not empty</span>
-<ul>
-<li><span>example: </span><code>"Duke University"</code></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul></div>
+            <div
+              id="doc"
+              class="markdown-body container-fluid comment-enabled"
+              data-hard-breaks="true"
+            >
+              <h2 id="File-format" data-id="File-format">
+                <span>File format</span>
+              </h2>
+              <ul>
+                <li>
+                  <span
+                    >Two separate CSV files, one for users and one for
+                    students.</span
+                  >
+                  <ul>
+                    <li>
+                      <span>CSV is defined as in </span
+                      ><a
+                        href="https://datatracker.ietf.org/doc/html/rfc4180#section-2"
+                        target="_blank"
+                        rel="noopener"
+                        ><span>RFC 4180, Section 2</span></a
+                      >
+                      <ul>
+                        <li>
+                          <span>The optional header line in </span
+                          ><a
+                            href="https://datatracker.ietf.org/doc/html/rfc4180#section-2"
+                            target="_blank"
+                            rel="noopener"
+                            ><span>RFC 4180, Section 2.3</span></a
+                          ><span> is required for these files</span>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <span
+                    >If the files exist (defined below) they will each have at
+                    minimum two lines–the header and a record that follows the
+                    defined formatting</span
+                  >
+                </li>
+                <li>
+                  <span
+                    >“Field is not empty” indicates that at least one character
+                    must be present in the field</span
+                  >
+                </li>
+              </ul>
+              <h2 id="Users-file" data-id="Users-file">
+                <span>Users file</span>
+              </h2>
+              <p>
+                <span
+                  >Fields appear in the following order in the users file as
+                  follows: </span
+                ><code>email,name,address,phone_number</code
+                ><span
+                  >. This is also the contents of the first line in the file.
+                  This file only exists if importing user(s) is desired.</span
+                >
+              </p>
+              <ul>
+                <li>
+                  <p><code>email</code><span> field:</span></p>
+                  <ul>
+                    <li>
+                      <span>character limit: </span><code>&lt;= 254 chars</code
+                      ><span> as per </span
+                      ><a
+                        href="https://datatracker.ietf.org/doc/html/rfc5321#section-4.5.3.1.3"
+                        target="_blank"
+                        rel="noopener"
+                        ><span>RFC 5321, Section 4.5.3.1.3</span></a
+                      >
+                    </li>
+                    <li>
+                      <span
+                        >must be a valid address as per the addr-spec of </span
+                      ><a
+                        href="https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1"
+                        target="_blank"
+                        rel="noopener"
+                        ><span>RFC 5322, Section 3.4.1</span></a
+                      >
+                    </li>
+                    <li>
+                      <span>field is not empty</span>
+                      <ul>
+                        <li>
+                          <span>example: </span
+                          ><code>john.smith@example.com</code><span>, </span
+                          ><code>john.smith@cs.duke.edu</code>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <p><code>name</code><span> field:</span></p>
+                  <ul>
+                    <li>
+                      <span>character limit: </span><code>&lt;= 150 chars</code>
+                    </li>
+                    <li><span>field is not empty</span></li>
+                    <li>
+                      <span
+                        >some text field containing both a first and last name
+                        with potential suffixes (eg </span
+                      ><code>Jr</code><span>, </span><code>Sr</code
+                      ><span>, </span><code>III</code><span>, etc)</span>
+                      <ul>
+                        <li>
+                          <span>example: </span><code>"John Smith Jr"</code>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <p><code>address</code><span> field:</span></p>
+                  <ul>
+                    <li>
+                      <span>character limit: </span><code>&lt;= 150 chars</code>
+                    </li>
+                    <li>
+                      <span>some text that is a Complete Address as per </span
+                      ><a
+                        href="https://pe.usps.com/text/dmm300/602.htm#ep1085515"
+                        target="_blank"
+                        rel="noopener"
+                        ><span>USPS Standard 602.1.4</span></a
+                      ><span>.</span>
+                      <ul>
+                        <li>
+                          <span
+                            >Adressee Name (USPS Standard 602.1.4.2a) is not
+                            applicable and is not included in this field</span
+                          >
+                        </li>
+                        <li>
+                          <span
+                            >The delimiter between Address Elements (USPS
+                            Standard 602.1.4.2) must match the regex </span
+                          ><code>,? +</code>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <span>field is not empty</span>
+                      <ul>
+                        <li>
+                          <span>example: </span
+                          ><code>"998 Chevis Rd, Savannah, GA 31419"</code>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <p><code>phone_number</code><span> field:</span></p>
+                  <ul>
+                    <li>
+                      <span>character limit: </span><code>&lt;= 35 chars</code
+                      ><span>, including characters for formatting</span>
+                    </li>
+                    <li>
+                      <span>field may be left empty</span>
+                      <ul>
+                        <li>
+                          <span
+                            >some implementations of the software may require
+                            phone numbers, as per Variance Request #79 – if this
+                            is the case and the phone number is left blank, then
+                            it is up to the group’s implementation to either
+                            reject the record with an appropriate error message
+                            or mark the phone number as 0000000000.</span
+                          >
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <span>example: </span><code>19198776589</code
+                      ><span>, </span><code>(555) 555-5555</code><span>, </span
+                      ><code>+1 415 555 0132</code>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+              <h2 id="Studentscsv" data-id="Studentscsv">
+                <code>Students.csv</code>
+              </h2>
+              <p>
+                <span>Fields appear in the following order in </span
+                ><code>Students.csv</code><span> as follows: </span
+                ><code>name,parent_email,student_id,school_name</code
+                ><span
+                  >. This is also the contents of the first line in the file.
+                  This file only exists if importing student(s) is
+                  desired.</span
+                >
+              </p>
+              <ul>
+                <li>
+                  <p><code>name</code><span> field:</span></p>
+                  <ul>
+                    <li>
+                      <span>character limit: </span><code>&lt;= 150 chars</code>
+                    </li>
+                    <li><span>field is not empty</span></li>
+                    <li>
+                      <span
+                        >some text field containing both a first and last name
+                        with potential suffixes (eg </span
+                      ><code>Jr</code><span>, </span><code>Sr</code
+                      ><span>, </span><code>III</code><span>, etc)</span>
+                      <ul>
+                        <li>
+                          <span>example: </span><code>"John Smith Jr"</code>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <p><code>parent_email</code><span> field:</span></p>
+                  <ul>
+                    <li>
+                      <span>character limit: </span><code>&lt;= 254 chars</code
+                      ><span> as per </span
+                      ><a
+                        href="https://datatracker.ietf.org/doc/html/rfc5321#section-4.5.3.1.3"
+                        target="_blank"
+                        rel="noopener"
+                        ><span>RFC 5321, Section 4.5.3.1.3</span></a
+                      >
+                    </li>
+                    <li>
+                      <span
+                        >must be a valid address as per the addr-spec of </span
+                      ><a
+                        href="https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1"
+                        target="_blank"
+                        rel="noopener"
+                        ><span>RFC 5322, Section 3.4.1</span></a
+                      >
+                    </li>
+                    <li>
+                      <span>field is not empty</span>
+                      <ul>
+                        <li>
+                          <span>example: </span
+                          ><code>john.smith@example.com</code><span>, </span
+                          ><code>john.smith@cs.duke.edu</code>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <p><code>student_id</code><span> field:</span></p>
+                  <ul>
+                    <li>
+                      <span>some non-zero, positive (but less than </span
+                      ><code>2147483647</code
+                      ><span
+                        >) number. As this is an optional field, if there is no
+                        desired student id the field is left empty.</span
+                      >
+                      <ul>
+                        <li>
+                          <span
+                            >some implementations of the software may require
+                            student_id, as per Variance Request #37 - if this is
+                            the case and the student id is left blank, then it
+                            is up to the group’s implementation to either reject
+                            the record with an appropriate error message or mark
+                            the student id as 0.</span
+                          >
+                        </li>
+                        <li><span>example: </span><code>24601</code></li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <p><code>school_name</code><span> field:</span></p>
+                  <ul>
+                    <li>
+                      <span>character limit: </span><code>&lt;= 150 chars</code>
+                    </li>
+                    <li>
+                      <span
+                        >school name must case-insensitively and
+                        whitespace-insensitively match an existing school name,
+                        or else the record will be rejected with an appropriate
+                        error message</span
+                      >
+                      <ul>
+                        <li>
+                          <span
+                            >for example, “A School” matches " a sCHoOl " and “A
+                            School” but not “aschool”</span
+                          >
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <span>field is not empty</span>
+                      <ul>
+                        <li>
+                          <span>example: </span><code>"Duke University"</code>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-spacer></v-spacer> 
+      <v-spacer></v-spacer>
       <v-btn v-on:click="validateFile(typeParent)">Validate Parent CSV</v-btn>
-    <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
-      >Submit Validated File</v-btn
-    >
+      <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
+        >Submit Validated File</v-btn
+      >
     </v-card-title>
     <v-card-subtitle
       >File
@@ -169,7 +376,6 @@
         @change="handleFileUpload($event, typeParent)"
       />
     </v-card-subtitle>
-    
 
     <v-dialog v-model="parentDialog" width="50%">
       <v-card>
