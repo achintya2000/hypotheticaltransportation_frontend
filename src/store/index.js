@@ -103,6 +103,13 @@ export default new Vuex.Store({
         message: message,
       });
     },
+    snackBarGreen({ commit }, message) {
+      commit("SET_SNACKBAR", {
+        active: true,
+        color: "green", // You can create another actions for diferent color.
+        message: message,
+      });
+    },
   },
   modules: {
   }

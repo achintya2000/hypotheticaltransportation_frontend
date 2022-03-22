@@ -654,6 +654,12 @@
     <v-snackbar v-model="catchAllError" outlines color="red">
       {{errorMessage}}
     </v-snackbar>
+    <v-snackbar v-model="subDone" outlines color="green">
+      Submission is complete!
+    </v-snackbar>
+    <v-snackbar v-model="validDone" outlines color="green">
+      Validation is complete!
+    </v-snackbar>
   </v-card>
 </template>
 
@@ -668,6 +674,8 @@ export default {
       markerPos: { lat: 0, lng: 0 },
       file: "",
       content: [],
+      subDone: false,
+      validDone: false,
       valid: true,
       typeParent: "parent",
       typeStudent: "student",
@@ -852,6 +860,7 @@ export default {
                 }
               });
               this.loadingSnackbar = false;
+              this.validDone = true;
               return;
             }
             setTimeout(this.pollStatus(this.typeParent), 3000);
@@ -885,6 +894,7 @@ export default {
                 }
               });
               this.loadingSnackbar = false;
+              this.validDone = true;
               return;
             }
             setTimeout(this.pollStatus(this.typeStudent), 3000);
@@ -981,6 +991,7 @@ export default {
           if (res.data.state == "SUCCESS") {
             console.log("submit is done");
             this.submissionSnackbar = false;
+            this.subDone = true;
             return;
           }
           setTimeout(this.pollSubmission, 3000);

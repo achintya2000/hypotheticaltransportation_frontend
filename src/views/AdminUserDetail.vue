@@ -7,7 +7,7 @@
         @studentcreated="getStudents()"
         v-if="this.userType!='busDriver'"
       ></create-new-student-only>
-      <v-dialog v-model="dialog2" width="500" v-if="this.userType!='busDriver'">
+      <v-dialog v-model="dialog2" width="500" v-if="this.userType=='admin' || (this.userType=='schoolStaff' && this.userRoleType=='parent')">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Modify

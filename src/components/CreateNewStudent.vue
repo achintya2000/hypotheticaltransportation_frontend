@@ -247,7 +247,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["snackBar"]),
+    ...mapActions(["snackBar","snackBarGreen"]),
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
@@ -257,7 +257,7 @@ export default {
       );
     },
     showSnackBarWeirdCreate() {
-      this.snackBar(
+      this.snackBarGreen(
         "This user already exists and the student has been added. You can now view them from your User List page "
       );
     },
