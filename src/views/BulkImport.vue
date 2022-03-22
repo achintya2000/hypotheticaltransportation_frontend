@@ -373,7 +373,13 @@
       > -->
       <v-dialog v-model="confirm3" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn :disabled="!parentCSVReady" style="margin: 10px" outlined v-bind="attrs" v-on="on">
+          <v-btn
+            :disabled="!parentCSVReady"
+            style="margin: 10px"
+            outlined
+            v-bind="attrs"
+            v-on="on"
+          >
             Submit Validated File
           </v-btn>
         </template>
@@ -387,7 +393,11 @@
             <v-form ref="form">
               <v-spacer></v-spacer>
 
-              <v-btn color="error" class="mr-4" v-on:click="submitFile(typeParent)">
+              <v-btn
+                color="error"
+                class="mr-4"
+                v-on:click="submitFile(typeParent)"
+              >
                 Yes, Submit
               </v-btn>
 
@@ -397,7 +407,6 @@
         </v-card>
       </v-dialog>
       <v-btn outlined @click="clearParent">Clear</v-btn>
-
     </v-card-title>
     <v-card-subtitle
       >File
@@ -506,7 +515,13 @@
       <!-- <v-btn :disabled="!studentCSVReady" v-on:click="submitFile(typeStudent)">Submit Validated File</v-btn> -->
       <v-dialog v-model="confirm2" width="500">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn :disabled="!studentCSVReady" style="margin: 10px" outlined v-bind="attrs" v-on="on">
+          <v-btn
+            :disabled="!studentCSVReady"
+            style="margin: 10px"
+            outlined
+            v-bind="attrs"
+            v-on="on"
+          >
             Submit Validated File
           </v-btn>
         </template>
@@ -520,7 +535,11 @@
             <v-form ref="form">
               <v-spacer></v-spacer>
 
-              <v-btn color="error" class="mr-4" v-on:click="submitFile(typeStudent);">
+              <v-btn
+                color="error"
+                class="mr-4"
+                v-on:click="submitFile(typeStudent)"
+              >
                 Yes, Submit
               </v-btn>
 
@@ -530,8 +549,7 @@
         </v-card>
       </v-dialog>
       <v-btn outlined @click="clearStudent">Clear</v-btn>
-      </v-card-title
-    >
+    </v-card-title>
     <v-card-subtitle
       >File
       <input
@@ -627,11 +645,7 @@
       Submission In Progress
       <v-progress-circular indeterminate color="black"></v-progress-circular>
     </v-snackbar>
-    <v-snackbar
-      v-model="badAddressSnackbar"
-      outlines
-      color="red"
-    >
+    <v-snackbar v-model="badAddressSnackbar" outlines color="red">
       This address was not recognized
     </v-snackbar>
   </v-card>
@@ -654,7 +668,6 @@ export default {
       parentDialog: false,
       studentDialog: false,
       intDialog: false,
-      badAddressSnackbar: false,
       confirm2: false,
       confirm3: false,
       loadingSnackbar: false,
