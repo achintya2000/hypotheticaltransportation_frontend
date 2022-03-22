@@ -38,6 +38,7 @@
                 :rules="userPhoneValidateArray"
                 label="User Phone Number"
                 append-icon="mdi-phone"
+                required
               ></v-text-field>
 
               <gmap-autocomplete @place_changed="setPlace">
@@ -121,7 +122,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="dialog" width="500" v-if="this.userType!='busDriver'">
+      <v-dialog v-model="dialog" width="500" v-if="this.userType=='admin' || (this.userType=='schoolStaff' && this.userRoleType=='parent')">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Delete
@@ -429,7 +430,6 @@ export default {
     },
     userPhoneValidate() {
       if (
-        this.userCheckbox == true &&
         (this.parentPhone == null || this.parentPhone == "")
       ) {
         return "Parent phone number is required";

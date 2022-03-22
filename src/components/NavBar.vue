@@ -8,9 +8,9 @@
 
       <v-spacer class="hidden-md-and-up"></v-spacer>
 
-      <router-link to="/" style="text-decoration: none; color: inherit">
+      <!-- <router-link to="/" style="text-decoration: none; color: inherit"> -->
         <v-toolbar-title> ConnectWise </v-toolbar-title>
-      </router-link>
+      <!-- </router-link> -->
 
       <v-spacer></v-spacer>
 

@@ -3,8 +3,9 @@
   <v-dialog v-model="dialog" width="50%">
     <template v-slot:activator="{ on, attrs }">
       <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
-        <span v-if="GABool == true">Email Announcement</span
-        ><span v-if="GABool == false">Email Announcement</span>
+        <span v-if="allBool == true"> User Email Announcement</span>
+        <span v-if="schoolBool == true">School Email Announcement</span>
+        <span v-if="routeBool == true">Route Announcement</span>
       </v-btn>
     </template>
 
