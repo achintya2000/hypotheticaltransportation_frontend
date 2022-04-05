@@ -27,6 +27,12 @@
                 label="Student ID"
                 :rules="studentIDValidateArray"
               ></v-text-field>
+              
+              <v-text-field
+                v-model="newStudentPhone"
+                label="Student Phone Number"
+                append-icon="mdi-phone"
+              ></v-text-field>
 
               <v-autocomplete
                 v-model="parent"
@@ -45,6 +51,27 @@
                 :rules="studentSchoolValidateArray"
                 return-object
               ></v-autocomplete>
+              <v-text>Give Student Accont:</v-text> 
+              <v-radio-group
+                  v-model="newStudentAccountState"
+                  row
+                  dense
+                >
+                  <v-radio
+                    label="Yes"
+                    :value="true"
+                  ></v-radio>
+                  <v-radio
+                    label="No"
+                    :value="false"
+                  ></v-radio>
+                </v-radio-group>
+                <v-text-field
+                v-model="newStudentEmail"
+                v-if="newStudentAccountState==true"
+                :rules="studentEmailValidateArray"
+                label="Student Email"
+              ></v-text-field>
 
               <v-btn
                 color="success"
@@ -88,6 +115,20 @@
 
           <v-card-text>
             <v-form ref="form">
+              <v-radio-group
+                  v-model="studentDeleteChoice"
+                  row
+                  dense
+                >
+                  <v-radio
+                    label="Student Login Ability Only"
+                    value="loginOnly"
+                  ></v-radio>
+                  <v-radio
+                    label="Whole Student Profile"
+                    value="wholeThing"
+                  ></v-radio>
+                </v-radio-group>
               <v-spacer></v-spacer>
 
               <v-btn color="error" class="mr-4" @click="validateDelete">
@@ -104,6 +145,16 @@
       <span class="black--text font-weight-bold"> ID: </span>
       <span class="black--text" v-if="studentId!=null"> {{ studentId }} </span>
       <span class="black--text" v-if="studentId==null || studentId==''"> None </span>
+    </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Email: </span>
+      <span class="black--text" v-if="studentEmail!=null"> {{ studentEmail }} </span>
+      <span class="black--text" v-if="studentEmail==null || studentEmail==''"> None </span>
+    </v-card-subtitle>
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> Phone: </span>
+      <span class="black--text" v-if="studentPhone!=null"> {{ studentPhone }} </span>
+      <span class="black--text" v-if="studentPhone==null || studentPhone==''"> None </span>
     </v-card-subtitle>
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> School: </span>
@@ -149,6 +200,19 @@
         No Route Assigned
         </span>
 
+    </v-card-subtitle>
+
+    <v-card-subtitle>
+      <span class="black--text font-weight-bold"> In Transit Status: </span
+      ><span class="black--text"> {{ routeInTransit }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle v-if="this.routeInTransit == true">
+      <span class="black--text font-weight-bold"> In Transit Bus: </span
+      ><span class="black--text"> {{ routeInTransitBus }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle v-if="this.routeInTransit == true">
+      <span class="black--text font-weight-bold"> In Transit Driver: </span
+      ><span class="black--text"> {{ routeInTransitDriverName }} </span>
     </v-card-subtitle>
 
     <v-card-subtitle>
@@ -210,21 +274,33 @@ export default {
       parent: null,
       studentSchool: "",
       studentRoute: "",
+      studentEmail: "",
+      studentPhone: "",
+      newStudentPhone: "",
       studentInRangeStatus: "",
       studentParent: "",
       studentParentEmail: "",
+      newStudentAccountState: null,
+      newStudentEmail: "",
       studentParentAddress: "",
       studentParentPhone: "",
       newStudentName: "",
+      studentDeleteChoice: "loginOnly",
       newStudentId: "",
       newStudentSchool: "",
       newStudentParent: "",
       userType: "",
       userID: "",
+      allParentEmails2: [],
+      routeInTransit: "",
+      routeInTransitBus: "",
+      routeInTransitDriverID: "",
+      routeInTransitDriverName: "",
       studentNameValidateArray: [this.studentNameValidate],
       studentIDValidateArray: [this.studentIDValidate],
       studentSchoolValidateArray: [this.studentSchoolValidate],
       studentParentValidateArray: [this.studentParentValidate],
+      studentEmailValidateArray: [this.studentEmailValidate],
     };
   },
   methods: {
@@ -254,6 +330,22 @@ export default {
           this.studentRouteId = response.data.route_id;
           this.studentParentId = response.data.parent_id;
           this.studentInRangeStatus = response.data.inRange;
+
+          this.studentEmail = response.data.studentEmail;
+          this.newStudentEmail = response.data.studentEmail;
+          
+          if (this.studentEmail == "" || this.studentEmail == null) {
+            this.newStudentAccountState = false;
+          } else {
+            this.newStudentAccountState = true;
+          }
+          this.studentPhone = response.data.studentPhone;
+          this.newStudentPhone = response.data.studentPhone;
+
+          this.routeInTransit = response.data.in_transit;
+          this.routeInTransitBus = response.data.bus_id;
+          this.routeInTransitDriverID = response.data.driver_id;
+          this.routeInTransitDriverName = response.data.driver_name;
 
           this.getSchools();
           this.getParents();
@@ -299,7 +391,7 @@ export default {
     },
     getParents() {
       base_endpoint
-        .get("/api/profile/getallwithaddress/" + this.userID, {
+        .get("/api/profile/getallparentswithuserid/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -329,8 +421,10 @@ export default {
             sid: this.newStudentId,
             school: this.school.id,
             route: this.studentRoute,
+            email: this.newStudentEmail,
+            phone: this.newStudentPhone,
             parent: this.parent.id,
-
+            profile: this.newStudentAccountState,
           },
           {
             headers: {
@@ -374,9 +468,27 @@ export default {
           console.log(err);
         });
     },
+    submitDataForDeleteProfileOnly() {
+      base_endpoint
+        .delete("/api/student/deleteprofile/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log(response);
+          this.$router.push({ name: "AdminStudentList" });
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
     validateDelete() {
       this.$refs.form.validate();
-      this.submitDataForDelete();
+      if (this.studentDeleteChoice == "loginOnly") {
+        this.submitDataForDeleteProfileOnly();
+      } else if (this.studentDeleteChoice == "wholeThing") {
+        this.submitDataForDelete();
+      }
       this.dialog = false;
       this.$emit(
         "schoolmodified",
@@ -414,6 +526,49 @@ export default {
       } else {
         return true;
       }
+    },
+    studentEmailValidate() {
+      if (
+        this.studentCheckbox == true && this.studentAccountState == "true" &&
+        (this.newStudentEmail == null || this.newStudentEmail == "")
+      ) {
+        return "Student email is required";
+      } else {
+        if (this.allParentEmails2.includes(this.newStudentEmail)) {
+          return "A email is already assigned to a user, try creating a new student";
+        } else {
+          const splitStringAt = this.newStudentEmail.split("@");
+          if (splitStringAt.length != 2) {
+            return "Please enter a valid email address";
+          } else {
+            const splitStringPeriod = splitStringAt[1].split(".");
+            if (
+              splitStringPeriod.length != 2 ||
+              splitStringPeriod[1].length == 0
+            ) {
+              return "Please enter a valid email address";
+            } else {
+              return true;
+            }
+          }
+        }
+      }
+    },
+    getRequestAllParentsWithAddress() {
+      base_endpoint
+        .get("/api/profile/getallparentswithuserid/" + this.userID, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.parents = response.data.map(this.getDisplayParent);
+          for (let i = 0; i < this.parents.length; i++) {
+            this.allParentEmails2.push(this.parents[i].email);
+          }
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
     },
     reset() {
       this.$refs.form.reset();

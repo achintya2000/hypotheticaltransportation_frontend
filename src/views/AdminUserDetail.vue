@@ -41,7 +41,7 @@
                 required
               ></v-text-field>
 
-              <gmap-autocomplete @place_changed="setPlace">
+              <gmap-autocomplete @place_changed="setPlace" v-if="this.userRoleType=='parent'">
                 <template v-slot:input="slotProps">
                   <v-text-field
                     v-model="newCurrentAddress"
@@ -55,10 +55,10 @@
                 </template>
               </gmap-autocomplete>
 
-              <v-text v-if="this.userType=='admin' && this.userID!=this.$route.query.id">User Role Type:</v-text>
+              <v-text v-if="this.userType=='admin' && this.userID!=this.$route.query.id  && this.userRoleType!='parent' && this.userRoleType!='student'">User Role Type:</v-text>
               <v-radio-group
                   v-model="newUserRoleType"
-                  v-if="this.userType=='admin' && this.userID!=this.$route.query.id"
+                  v-if="this.userType=='admin' && this.userID!=this.$route.query.id && this.userRoleType!='parent' && this.userRoleType!='student'"
                   row
                   :rules="userRoleTypeValidateArray"
                   dense
@@ -68,10 +68,6 @@
                     label="Admin"
                     value="admin"
                     v-if="this.userType=='admin'"
-                  ></v-radio>
-                  <v-radio
-                    label="Parent"
-                    value="parent"
                   ></v-radio>
                   <v-radio
                     label="Bus Driver"
@@ -180,6 +176,21 @@
       <span class="black--text font-weight-bold"> Managed Schools: </span
       ><span class="black--text"> {{ formattedSchools }} </span>
     </v-card-subtitle>
+    <v-card-subtitle v-if="this.userRoleType=='busDriver'">
+      <span class="black--text font-weight-bold"> In Transit Status: </span
+      ><span class="black--text"> {{ busDriverInTransit }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle v-if="this.userRoleType=='busDriver' && this.busDriverInTransit == true">
+      <span class="black--text font-weight-bold"> In Transit Bus: </span
+      ><span class="black--text"> {{ busDriverInTransitBus }} </span>
+    </v-card-subtitle>
+    <v-card-subtitle v-if="this.userRoleType=='busDriver' && this.busDriverInTransit == true">
+      <span class="black--text font-weight-bold"> In Transit Route: </span
+      ><span text 
+        @click="viewRoute(busDriverInTransitRouteID)" class="txt blue--text text--darken-4">
+         {{ busDriverInTransitRouteName }} 
+      </span>  
+    </v-card-subtitle>
     <v-card-title> Students </v-card-title>
     <v-data-table
       :headers="headers"
@@ -238,6 +249,10 @@ export default {
       newAdministrator: "",
       userRoleType: "",
       newUserRoleType: "",
+      busDriverInTransit: "",
+      busDriverInTransitBus: "",
+      busDriverInTransitRouteID: "",
+      busDriverInTransitRouteName: "",
       userNameValidateArray: [this.userNameValidate],
       userEmailValidateArray: [this.userEmailValidate],
       userPhoneValidateArray: [this.userPhoneValidate],
@@ -320,6 +335,9 @@ export default {
         query: { id: row.studentId },
       });
     },
+    viewRoute(item) {
+      this.$router.push({ name: "AdminRouteDetail", query: { id: item } });
+    },
     getDisplaySchool(item) {
       return {
         id: item.id,
@@ -356,8 +374,11 @@ export default {
             if (this.managedSchools[i+1] != null) {
               this.formattedSchools = this.formattedSchools + ", ";
             }
-            
           }
+          this.busDriverInTransit = response.data.in_transit;
+          this.busDriverInTransitBus = response.data.bus_id;
+          this.busDriverInTransitRouteID = response.data.route_id;
+          this.busDriverInTransitRouteName = response.data.route_name;
           this.$forceUpdate();
         })
         .catch((err) => {
@@ -514,4 +535,7 @@ export default {
 .row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
   cursor: pointer;
 }
+.txt:hover {
+          text-decoration: underline;
+      }
 </style>

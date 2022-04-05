@@ -55,6 +55,15 @@ const routes = [
     }
   },
   {
+    path: '/admintransitlog',
+    name: 'AdminTransitLog',
+    component: () => import('../views/AdminTransitLog.vue'),
+    meta: {
+      requiresLogin: true,
+      adminLocked: true
+    }
+  },
+  {
     path: '/adminschooldetail',
     name: 'AdminSchoolDetail',
     component: () => import('../views/AdminSchoolDetail.vue'),

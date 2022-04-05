@@ -175,6 +175,20 @@
             >No Route Descritpion</span
           >
         </v-card-subtitle>
+
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> In Transit Status: </span
+          ><span class="black--text"> {{ routeInTransit }} </span>
+        </v-card-subtitle>
+        <v-card-subtitle v-if="this.routeInTransit == true">
+          <span class="black--text font-weight-bold"> In Transit Bus: </span
+          ><span class="black--text"> {{ routeInTransitBus }} </span>
+        </v-card-subtitle>
+        <v-card-subtitle v-if="this.routeInTransit == true">
+          <span class="black--text font-weight-bold"> In Transit Driver: </span
+          ><span class="black--text"> {{ routeInTransitDriverName }} </span>
+        </v-card-subtitle>
+
       </v-col>
       <v-col md="9">
         <div class="map" id="map">
@@ -286,6 +300,10 @@ export default {
       oldSchoolID: "",
       busArriveTime: "",
       busDepTime: "",
+      routeInTransit: "",
+      routeInTransitBus: "",
+      routeInTransitDriverID: "",
+      routeInTransitDriverName: "",
       headers: [
         {
           text: "Name",
@@ -374,11 +392,20 @@ export default {
           this.newRouteDescription = response.data.description;
           this.oldSchoolID = response.data.school.id;
           this.routeStatus = response.data.complete;
+
+          this.routeInTransit = response.data.in_transit;
+          this.routeInTransitBus = response.data.bus_id;
+          this.routeInTransitDriverID = response.data.driver_id;
+          this.routeInTransitDriverName = response.data.driver_name;
+
           this.getSchoolInfo();
         })
         .catch((err) => {
           console.log(err);
         });
+    },
+    viewRoute(item) {
+      this.$router.push({ name: "AdminRouteDetail", query: { id: item } });
     },
     getRouteDirInfo() {
       base_endpoint

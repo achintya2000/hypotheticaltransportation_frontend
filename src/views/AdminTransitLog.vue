@@ -1,7 +1,7 @@
 <template>
   <v-card height="100%" style="padding-left: 15px; padding-right: 15px">
     <v-card-title>
-      Your Routes
+      Transit Log
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
@@ -13,7 +13,7 @@
     </v-card-title>
     <v-data-table
       :headers="headers"
-      :items="schools"
+      :items="logs"
       :sort-by="['name']"
       :search="search"
       @click:row="viewItem"
@@ -38,19 +38,18 @@ export default {
       userID: "",
       headers: [
         {
-          text: "Name",
+          text: "Driver",
           align: "start",
-          value: "name",
+          value: "driverName",
         },
-        { text: "School", value: "school" },
-        { text: "Description", value: "description", sortable: false },
-        { text: "# of Students", value: "student_count" },
-        { text: "Completion Status", value: "routeComplete", sortable: false },
-        { text: "In Transit Status", value: "inTransit", sortable: false },
-        { text: "In Transit Bus", value: "busNumber", sortable: false },
-        { text: "In Transit Driver", value: "routeName", sortable: false },
+        { text: "Bus Number", value: "busNumber" },
+        { text: "School", value: "schoolName" },
+        { text: "Route", value: "routeName" },
+        { text: "Direction", value: "direction" },
+        { text: "Start Date & Time", value: "startDateAndTime" },
+        { text: "Duration", value: "duration" },
       ],
-      schools: [],
+      logs: [],
     };
   },
   methods: {
@@ -61,26 +60,27 @@ export default {
     viewItem(item) {
       this.$router.push({ name: "AdminRouteDetail", query: { id: item.id } });
     },
-    getDisplayRoute(item) {
+    getDisplayLog(item) {
       return {
-        name: item.name,
-        school: item.school,
-        description: item.description,
-        student_count: item.student_count,
-        id: item.id,
-        routeComplete: item.complete,
-        inTransit: item.in_transit,
-        busNumber: item.bus_id,
-        routeName: item.driver_name,
+        driverID: item.driver_id,
+        driverName: item.driver_name,
+        busNumber: item.bus,
+        schoolID: item.school_id,
+        schoolName: item.school_name ,
+        routeID: item.route_id,
+        routeName: item.route_name,
+        direction: item.direction,
+        startDateAndTime: item.start_time,
+        duration: item.duration,
       };
     },
     getRequestAllRoutes() {
       base_endpoint
-        .get("/api/route/getall/" + this.userID, {
+        .get("/api/getlogs", {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-          this.schools = response.data.map(this.getDisplayRoute);
+          this.logs = response.data.map(this.getDisplayLog);
           //this.$store.state.addresses = response.data;
         })
         .catch((err) => {
