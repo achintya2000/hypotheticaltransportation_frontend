@@ -368,9 +368,8 @@
         v-on:click="validateFile(typeParent)"
         outlined
         >Validate Parent CSV</v-btn
-        
       >
-      
+
       <!-- <v-btn :disabled="!parentCSVReady" v-on:click="submitFile(typeParent)"
         >Submit Validated File</v-btn
       > -->
@@ -420,7 +419,9 @@
         @change="handleFileUpload($event, typeParent)"
       />
     </v-card-subtitle>
-    <v-card-subtitle>To exclude a record, select the checkbox on the left</v-card-subtitle>
+    <v-card-subtitle
+      >To exclude a record, select the checkbox on the left</v-card-subtitle
+    >
 
     <v-dialog v-model="parentDialog" width="50%">
       <v-card>
@@ -564,7 +565,9 @@
         @change="handleFileUpload($event, typeStudent)"
       />
     </v-card-subtitle>
-    <v-card-subtitle>To exclude a record, select the checkbox on the left</v-card-subtitle>
+    <v-card-subtitle
+      >To exclude a record, select the checkbox on the left</v-card-subtitle
+    >
 
     <v-dialog v-model="studentDialog" width="50%">
       <v-card>
@@ -661,7 +664,7 @@
       {{ errorMessage }}
     </v-snackbar>
     <v-snackbar v-model="subDone" outlines color="green">
-      Submission is complete!
+      Submission of {{ this.itemNums }} items is complete!
     </v-snackbar>
     <v-snackbar v-model="validDone" outlines color="green">
       Validation is complete!
@@ -752,6 +755,7 @@ export default {
       parentInputKey: 0,
       studentInputKey: 0,
       errorMessage: "",
+      itemNums: 0,
     };
   },
   methods: {
@@ -927,6 +931,7 @@ export default {
             parentCSVSubmisson.push(e);
           }
         });
+        this.itemNums = parentCSVSubmisson.length;
         base_endpoint
           .post(
             "/api/bulkimportsubmit",
@@ -961,6 +966,7 @@ export default {
             studentCSVSubmisson.push(e);
           }
         });
+        this.itemNums = studentCSVSubmisson.length;
         base_endpoint
           .post(
             "/api/bulkimportsubmit",
@@ -993,7 +999,6 @@ export default {
         })
         .then((res) => {
           console.log("polling submission");
-          console.log(res);
           if (res.data.state == "SUCCESS") {
             console.log("submit is done");
             this.submissionSnackbar = false;
