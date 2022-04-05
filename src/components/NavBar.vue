@@ -101,6 +101,11 @@ export default {
           show: this.isAdmin,
         },
         {
+          title: "Transit Log",
+          to: "/admintransitlog",
+          show: this.isAdmin,
+        },
+        {
           title: "Your Details",
           to: "/parentdetails",
           show: this.loggedIn,

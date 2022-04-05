@@ -146,6 +146,9 @@ export default {
         { text: "Description", value: "description", sortable: false },
         { text: "# of Students", value: "student_count" },
         { text: "Completion Status", value: "routeComplete", sortable: false },
+        { text: "In Transit Status", value: "inTransit", sortable: false },
+        { text: "In Transit Bus", value: "busNumber", sortable: false },
+        { text: "In Transit Driver", value: "routeName", sortable: false },
       ],
       schools: [],
       cur_routeInTransit: false,
@@ -168,6 +171,9 @@ export default {
         student_count: item.student_count,
         id: item.id,
         routeComplete: item.complete,
+        inTransit: item.in_transit,
+        busNumber: item.bus_id,
+        routeName: item.driver_name,
       };
     },
     getRequestAllRoutes() {

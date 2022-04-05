@@ -79,6 +79,8 @@ export default {
         },
         { text: "Student ID", value: "sid" },
         { text: "School", value: "school" },
+        { text: "Phone", value: "phone" },
+        { text: "Email", value: "email" },
         { text: "Parent Name", value: "parentName", sortable: false  },
         { text: "Parent Phone", value: "parentPhone", sortable: false  },
         { text: "Route", value: "route" },
@@ -105,6 +107,8 @@ export default {
         studentInRange: item.inRange,
         parentName: item.parent,
         parentPhone: item.phone,
+        phone: item.studentPhone,
+        email: item.studentEmail,
       };
     },
     getRequestAllStudents() {
