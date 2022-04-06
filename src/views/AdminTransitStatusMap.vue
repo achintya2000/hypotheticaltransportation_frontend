@@ -16,43 +16,12 @@
       :items="logs"
       :sort-by="['name']"
       :search="search"
+      @click:row="viewItem"
       class="row-pointer"
     >
       <template v-slot:[`item.routeComplete`]="{ item }">
         <v-icon v-if="item.routeComplete==false" color="red"> mdi-close </v-icon>
         <v-icon v-if="item.routeComplete==true"> mdi-check </v-icon>
-      </template>
-      
-      <template v-slot:[`item.driverName`]="{ item }">
-        <span text 
-        @click="viewUser(item.driverID)"
-         class="txt blue--text text--darken-4">
-        {{ item.driverName }} 
-        </span>
-      </template>
-      <template v-slot:[`item.schoolName`]="{ item }">
-        <span text 
-        @click="viewSchool(item.schoolID)"
-         class="txt blue--text text--darken-4">
-        {{ item.schoolName }} 
-        </span>
-      </template>
-      <template v-slot:[`item.routeName`]="{ item }">
-        <span text 
-        @click="viewRoute(item.routeID)"
-         class="txt blue--text text--darken-4">
-        {{ item.routeName }} 
-        </span>
-      </template>
-      <template v-slot:[`item.direction`]="{ item }">
-       <span
-            v-if="item.direction == 'to'"
-            >To-School</span
-          >
-          <span
-            v-if="item.direction != 'to'"
-            >From-School</span
-          >
       </template>
     </v-data-table>
   </v-card>
@@ -61,7 +30,6 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { mapActions } from "vuex";
-import moment from "moment";
 export default {
   data() {
     return {
@@ -89,8 +57,10 @@ export default {
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
+    viewItem(item) {
+      this.$router.push({ name: "AdminRouteDetail", query: { id: item.id } });
+    },
     getDisplayLog(item) {
-      var startTime = moment.utc(item.start_time);
       return {
         driverID: item.driver_id,
         driverName: item.driver_name,
@@ -100,22 +70,13 @@ export default {
         routeID: item.route_id,
         routeName: item.route_name,
         direction: item.direction,
-        startDateAndTime: startTime.local().format("M/D/YYYY h:mm A"),
+        startDateAndTime: item.start_time,
         duration: item.duration,
       };
     },
-    viewUser(item) {
-      this.$router.push({ name: "AdminUserDetail", query: { id: item } });
-    },
-    viewSchool(item) {
-      this.$router.push({ name: "AdminSchoolDetail", query: { id: item } });
-    },
-    viewRoute(item) {
-      this.$router.push({ name: "AdminRouteDetail", query: { id: item } });
-    },
     getRequestAllRoutes() {
       base_endpoint
-        .get("/api/getlogs", {
+        .get("/api/getintransitlogs", {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
@@ -138,8 +99,7 @@ export default {
 </script>
 
 <style>
-.txt:hover {
-          text-decoration: underline;
-          cursor: pointer;
-      }
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+  cursor: pointer;
+}
 </style>

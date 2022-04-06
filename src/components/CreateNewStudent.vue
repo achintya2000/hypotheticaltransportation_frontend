@@ -103,7 +103,7 @@
                 hint="Pick the schools for them to manage"
                 persistent-hint
               ></v-select>
-              <gmap-autocomplete v-if="userCheckbox" @place_changed="setPlace">
+                <gmap-autocomplete v-if="userCheckbox && userRoleType=='parent'" @place_changed="setPlace">
                 <template v-slot:input="slotProps">
                   <v-text-field
                     v-model="parentAddress"
@@ -111,7 +111,6 @@
                     :rules="userAddressValidateArray"
                     append-icon="mdi-map-marker"
                     ref="input"
-                    v-if="userRoleType == 'parent'"
                     v-on:listeners="slotProps.listeners"
                     v-on:attrs="slotProps.attrs"
                   ></v-text-field>
@@ -122,7 +121,7 @@
               <v-checkbox
                 v-model="studentCheckbox"
                 :label="'Create a New Student'"
-                :disabled="this.userType == 'schoolStaff'"
+                :disabled="this.userType=='schoolStaff' || this.userRoleType == 'admin'"
                 input-value="1"
                 @click="updateUserRoleType()"
               ></v-checkbox>
@@ -141,13 +140,7 @@
                 append-icon="mdi-numeric-0-box"
                 label="Student ID"
               ></v-text-field>
-              <v-text-field
-                v-if="studentCheckbox"
-                v-model="studentPhone"
-                label="Student Phone Number"
-                append-icon="mdi-phone"
-                required
-              ></v-text-field>
+              
               <v-autocomplete
                 v-model="parentSelected"
                 v-if="userAndStudentCheckbox"
@@ -185,6 +178,13 @@
                 v-if="studentCheckbox && studentAccountState == 'true'"
                 :rules="studentEmailValidateArray"
                 label="Student Email"
+              ></v-text-field>
+              <v-text-field
+                v-if="studentCheckbox && studentAccountState=='true'"
+                v-model="studentPhone"
+                label="Student Phone Number"
+                append-icon="mdi-phone"
+                required
               ></v-text-field>
             </v-col>
           </v-row>
@@ -534,18 +534,18 @@ export default {
     validate() {
       if (
         (this.userCheckbox == true &&
-          this.parentName != null &&
-          this.parentName != "" &&
-          this.parentEmail != null &&
-          this.parentEmail != "" &&
-          this.passType2 != null &&
-          this.passType2 != "" &&
-          this.userRoleType != null &&
-          this.userRoleType != "" &&
-          this.parentPhone != null &&
-          this.parentPhone != "" &&
-          this.parentAddress != null &&
-          this.parentAddress != "") ||
+          (this.parentName != null &&
+          this.parentName != "") &&
+          (this.parentEmail != null &&
+          this.parentEmail != "") &&
+          (this.passType2 != null &&
+          this.passType2 != "") &&
+          (this.userRoleType != null &&
+          this.userRoleType != "") &&
+          (this.parentPhone != null &&
+          this.parentPhone != "") &&
+          ((this.parentAddress != null && 
+          this.parentAddress != "") || this.userRoleType != 'parent')) ||
         (this.studentCheckbox == true &&
           this.studentName != null &&
           this.studentName != "" &&

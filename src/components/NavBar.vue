@@ -106,6 +106,11 @@ export default {
           show: this.isAdmin,
         },
         {
+          title: "Transit Map",
+          to: "/admintransitstatusmap",
+          show: this.isAdmin,
+        },
+        {
           title: "Your Details",
           to: "/parentdetails",
           show: this.loggedIn,
