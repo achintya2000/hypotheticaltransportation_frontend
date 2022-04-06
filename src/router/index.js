@@ -62,6 +62,14 @@ const routes = [
       requiresLogin: true,
       adminLocked: true
     }
+  },{
+    path: '/admintransitstatusmap',
+    name: 'AdminTransitStatusMap',
+    component: () => import('../views/AdminTransitStatusMap.vue'),
+    meta: {
+      requiresLogin: true,
+      adminLocked: true
+    }
   },
   {
     path: '/adminschooldetail',

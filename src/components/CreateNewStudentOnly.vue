@@ -35,6 +35,35 @@
             return-object
           ></v-autocomplete>
 
+          <v-text>Give Student Accont:</v-text> 
+              <v-radio-group
+                  v-model="studentAccountState"
+                  row
+                  dense
+                >
+                  <v-radio
+                    label="Yes"
+                    value="true"
+                  ></v-radio>
+                  <v-radio
+                    label="No"
+                    value="false"
+                  ></v-radio>
+                </v-radio-group>
+                <v-text-field
+                v-model="studentEmail"
+                v-if="studentAccountState=='true'"
+                :rules="studentEmailValidateArray"
+                label="Student Email"
+              ></v-text-field>
+              <v-text-field
+                v-if="studentAccountState=='true'"
+                v-model="studentPhone"
+                label="Student Phone Number"
+                append-icon="mdi-phone"
+                required
+              ></v-text-field>
+
           <v-btn
             :disabled="!valid"
             color="success"
@@ -80,13 +109,19 @@ export default {
       schoolSelected: null,
       userType: "",
       userID: "",
+      studentAccountState: "",
+      studentEmail: "",
+      studentPhone: "",
       latitude: 0,
       longitude: 0,
       formatted_address: "",
+      allParentEmails: [],
+      allParents: [],
       //reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
       studentNameValidateArray: [this.studentNameValidate],
       studentIDValidateArray: [this.studentIDValidate],
       studentSchoolValidateArray: [this.studentSchoolValidate],
+      studentEmailValidateArray: [this.studentEmailValidate],
     };
   },
   methods: {
@@ -179,7 +214,59 @@ export default {
         return true;
       }
     },
+    studentEmailValidate() {
+      if (
+         this.studentAccountState == "true" &&
+        (this.studentEmail == null || this.studentEmail == "")
+      ) {
+        return "Student email is required";
+      } else {
+        if (this.allParentEmails.includes(this.studentEmail)) {
+          return "A email is already assigned to a user, try creating a new student";
+        } else {
+          const splitStringAt = this.studentEmail.split("@");
+          if (splitStringAt.length != 2) {
+            return "Please enter a valid email address";
+          } else {
+            const splitStringPeriod = splitStringAt[1].split(".");
+            if (
+              splitStringPeriod.length != 2 ||
+              splitStringPeriod[1].length == 0
+            ) {
+              return "Please enter a valid email address";
+            } else {
+              return true;
+            }
+          }
+        }
+      }
+    },
+    getRequestAllParents() {
+      base_endpoint
+        .get("/api/profile/getallextreme", {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.allParents = response.data.map(this.getDisplayParent);
+          for (let i = 0; i < this.allParents.length; i++) {
+            this.allParentEmails.push(this.allParents[i].email);
+          }
+          console.log("All Emails:" + this.allParentEmails);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
+    getDisplayParent(item) {
+      return {
+        id: item.id,
+        name: item.full_name,
+        email: item.email,
+      };
+    },
   },
+  
   created() {
     this.userType = window.localStorage.getItem("userType");
     this.userID = window.localStorage.getItem("userID");

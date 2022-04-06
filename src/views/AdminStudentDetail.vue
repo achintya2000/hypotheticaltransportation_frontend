@@ -27,13 +27,7 @@
                 label="Student ID"
                 :rules="studentIDValidateArray"
               ></v-text-field>
-              
-              <v-text-field
-                v-model="newStudentPhone"
-                label="Student Phone Number"
-                append-icon="mdi-phone"
-              ></v-text-field>
-
+            
               <v-autocomplete
                 v-model="parent"
                 :items="parentItems"
@@ -71,6 +65,12 @@
                 v-if="newStudentAccountState==true"
                 :rules="studentEmailValidateArray"
                 label="Student Email"
+              ></v-text-field>
+              <v-text-field
+                v-model="newStudentPhone"
+                v-if="newStudentAccountState==true"
+                label="Student Phone Number"
+                append-icon="mdi-phone"
               ></v-text-field>
 
               <v-btn
