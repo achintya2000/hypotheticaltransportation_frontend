@@ -1,7 +1,9 @@
 <template>
   <v-dialog v-model="dialog" width="75%">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Create New Student/User </v-btn>
+      <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
+        Create New Student/User
+      </v-btn>
     </template>
 
     <v-card>
@@ -41,75 +43,67 @@
                 append-icon="mdi-phone"
                 required
               ></v-text-field>
-              
-              <v-text v-if="userCheckbox">Password Type:</v-text>
-                <v-radio-group
-                  v-model="passType2"
-                  row
-                  :rules="userPasswordTypeValidateArray"
-                  v-if="userCheckbox"
-                  dense
-                >
-                  <v-radio
-                    label="One Time Password"
-                    value="otp"
-                  ></v-radio>
-                  <v-radio
-                    label="Link Based Password Creation"
-                    value="link"
-                  ></v-radio>
-                </v-radio-group>
-              
 
-<!--               <v-checkbox
+              <v-text v-if="userCheckbox">Password Type:</v-text>
+              <v-radio-group
+                v-model="passType2"
+                row
+                :rules="userPasswordTypeValidateArray"
+                v-if="userCheckbox"
+                dense
+              >
+                <v-radio label="One Time Password" value="otp"></v-radio>
+                <v-radio
+                  label="Link Based Password Creation"
+                  value="link"
+                ></v-radio>
+              </v-radio-group>
+
+              <!--               <v-checkbox
                 v-if="userCheckbox"
                 v-model="userAdminCheckbox"
                 :label="'Make User Admin?'"
               ></v-checkbox> -->
-              <v-text v-if="userCheckbox">User Role Type:</v-text> 
+              <v-text v-if="userCheckbox">User Role Type:</v-text>
               <v-radio-group
-                  v-model="userRoleType"
-                  row
-                  :rules="userRoleTypeValidateArray"
-                  v-if="userCheckbox"
+                v-model="userRoleType"
+                row
+                :rules="userRoleTypeValidateArray"
+                v-if="userCheckbox"
+                @click="console.log(this.userRoleType)"
+                dense
+                :disabled="studentCheckbox"
+              >
+                <v-radio
+                  label="Admin"
+                  value="admin"
                   @click="console.log(this.userRoleType)"
-                  dense
-                  :disabled="studentCheckbox"
-                >
-                  <v-radio
-                    label="Admin"
-                    value="admin"
-                    @click="console.log(this.userRoleType)"
-                    v-if="this.userType=='admin'"
-                  ></v-radio>
-                  <v-radio
-                    label="Parent"
-                    value="parent"
-                    
-                  ></v-radio>
-                  <v-radio
-                    label="Bus Driver"
-                    value="busDriver"
-                    v-if="this.userType=='admin'"
-                  ></v-radio>
-                  <v-radio
-                    label="School Staff"
-                    value="schoolStaff"
-                    v-if="this.userType=='admin'"
-                  ></v-radio>
-                </v-radio-group>
-                <v-select
-                  v-model="selectedSchoolsForSchoolStaff"
-                  :items="schools"
-                  :menu-props="{ maxHeight: '400' }"
-                  label="Select"
-                  multiple
-                  item-text="name"
-                  v-if="userRoleType=='schoolStaff'"
-                  hint="Pick the schools for them to manage"
-                  persistent-hint
-                ></v-select>
-                <gmap-autocomplete v-if="userCheckbox" @place_changed="setPlace">
+                  v-if="this.userType == 'admin'"
+                ></v-radio>
+                <v-radio label="Parent" value="parent"></v-radio>
+                <v-radio
+                  label="Bus Driver"
+                  value="busDriver"
+                  v-if="this.userType == 'admin'"
+                ></v-radio>
+                <v-radio
+                  label="School Staff"
+                  value="schoolStaff"
+                  v-if="this.userType == 'admin'"
+                ></v-radio>
+              </v-radio-group>
+              <v-select
+                v-model="selectedSchoolsForSchoolStaff"
+                :items="schools"
+                :menu-props="{ maxHeight: '400' }"
+                label="Select"
+                multiple
+                item-text="name"
+                v-if="userRoleType == 'schoolStaff'"
+                hint="Pick the schools for them to manage"
+                persistent-hint
+              ></v-select>
+              <gmap-autocomplete v-if="userCheckbox" @place_changed="setPlace">
                 <template v-slot:input="slotProps">
                   <v-text-field
                     v-model="parentAddress"
@@ -117,19 +111,18 @@
                     :rules="userAddressValidateArray"
                     append-icon="mdi-map-marker"
                     ref="input"
-                    v-if="userRoleType=='parent'"
+                    v-if="userRoleType == 'parent'"
                     v-on:listeners="slotProps.listeners"
                     v-on:attrs="slotProps.attrs"
                   ></v-text-field>
                 </template>
               </gmap-autocomplete>
-
             </v-col>
             <v-col>
               <v-checkbox
                 v-model="studentCheckbox"
                 :label="'Create a New Student'"
-                :disabled="this.userType=='schoolStaff'"
+                :disabled="this.userType == 'schoolStaff'"
                 input-value="1"
                 @click="updateUserRoleType()"
               ></v-checkbox>
@@ -177,31 +170,23 @@
                 return-object
               ></v-autocomplete>
 
-              <v-text v-if="studentCheckbox">Give Student Accont:</v-text> 
+              <v-text v-if="studentCheckbox">Give Student Accont:</v-text>
               <v-radio-group
-                  v-model="studentAccountState"
-                  row
-                  v-if="studentCheckbox"
-                  dense
-                >
-                  <v-radio
-                    label="Yes"
-                    value="true"
-                  ></v-radio>
-                  <v-radio
-                    label="No"
-                    value="false"
-                  ></v-radio>
-                </v-radio-group>
-                <v-text-field
+                v-model="studentAccountState"
+                row
+                v-if="studentCheckbox"
+                dense
+              >
+                <v-radio label="Yes" value="true"></v-radio>
+                <v-radio label="No" value="false"></v-radio>
+              </v-radio-group>
+              <v-text-field
                 v-model="studentEmail"
-                v-if="studentCheckbox && studentAccountState=='true'"
+                v-if="studentCheckbox && studentAccountState == 'true'"
                 :rules="studentEmailValidateArray"
                 label="Student Email"
               ></v-text-field>
-
             </v-col>
-
           </v-row>
           <v-btn
             :disabled="!valid"
@@ -232,7 +217,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-import { mapActions} from "vuex";
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -285,7 +270,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["snackBar","snackBarGreen"]),
+    ...mapActions(["snackBar", "snackBarGreen"]),
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
@@ -318,6 +303,16 @@ export default {
         })
         .then((response) => {
           this.schools = response.data.map(this.getDisplaySchool);
+
+          this.schools.sort(function (a, b) {
+            if (a.name < b.name) {
+              return -1;
+            }
+            if (a.name > b.name) {
+              return 1;
+            }
+            return 0;
+          });
         })
         .catch((err) => {
           this.showSnackBar();
@@ -338,8 +333,21 @@ export default {
         })
         .then((response) => {
           this.parentsWithUserID = response.data.map(this.getDisplayParent);
+
+          this.parentsWithUserID.sort(function (a, b) {
+            if (a.name < b.name) {
+              return -1;
+            }
+            if (a.name > b.name) {
+              return 1;
+            }
+            return 0;
+          });
+
           for (let i = 0; i < this.parentsWithUserID.length; i++) {
-            this.allParentEmailsWithUserID.push(this.parentsWithUserID[i].email);
+            this.allParentEmailsWithUserID.push(
+              this.parentsWithUserID[i].email
+            );
           }
         })
         .catch((err) => {
@@ -366,182 +374,185 @@ export default {
     },
     submitData() {
       if (this.userCheckbox == true) {
-        console.log("Got into 'this.userCheckbox == true' if statement")
-        if (this.userType=='schoolStaff' && this.allParentEmails.includes(this.parentEmail)) {
-          console.log("Got into the if statement for school staff parent email weird thing");
+        console.log("Got into 'this.userCheckbox == true' if statement");
+        if (
+          this.userType == "schoolStaff" &&
+          this.allParentEmails.includes(this.parentEmail)
+        ) {
+          console.log(
+            "Got into the if statement for school staff parent email weird thing"
+          );
           base_endpoint
-                .get(
-                  "/api/profile/getfromemail/" + this.parentEmail,
-                  {
-                    headers: {
-                      Authorization: `Token ${this.$store.state.accessToken}`,
-                    },
-                  }
-                )
-                .then((response) => {
-                  this.theSpeicalID = response.data.id;
-                  console.log(this.theSpeicalID);
-                  if (this.isStudentOkayToSubmit()) {
-                    base_endpoint
-                    .post(
-                      "/api/student/create",
-                      {
-                        full_name: this.studentName,
-                        sid: this.sid,
-                        school: this.schoolSelected.id,
-                        parent: this.theSpeicalID,
-                        email: this.studentEmail,
-                        phone: this.studentPhone,
-                        createProfile: this.studentAccountState,
-                      },
-                      {
-                        headers: {
-                          Authorization: `Token ${this.$store.state.accessToken}`,
-                        },
-                      }
-                    )
-                    .then(() => {
-                      this.$emit(
-                        "studentcreated",
-                        "A new student has been created and sent to database"
-                      );
-                    })
-                    .catch((err) => {
-                      this.showSnackBarAddress();
-                      console.log(err);
-                    });
-                    this.showSnackBarWeirdCreate();
-                  }
-                })
-                .catch((err) => {
-                  this.showSnackBarAddress();
-                  console.log(err);
-                });        
-        } else {
-          console.log("Got into else statement in first if")
-          base_endpoint
-          .post(
-            "/api/profile/create",
-            {
-              full_name: this.parentName,
-              address: this.formatted_address,
-              longitude: this.longitude,
-              latitude: this.latitude,
-              email: this.parentEmail,
-              password: this.parentPassword,
-              type: this.userRoleType,
-              passwordType: this.passType2,
-              managed_schools: this.selectedSchoolsForSchoolStaff,
-              phone: this.parentPhone,
-            },
-            {
+            .get("/api/profile/getfromemail/" + this.parentEmail, {
               headers: {
                 Authorization: `Token ${this.$store.state.accessToken}`,
               },
-            }
-          )
-          .then((response) => {
-            console.log(response.data.id);
-            this.newParentID = response.data.id;
-            
-            this.$emit(
-              "usercreated",
-              "A new student has been created and sent to database"
-            );
-            console.log("Checking to see if I should create a new student");
-            if (this.isStudentOkayToSubmit()) {
-              console.log("CREATING STUDENT");
-              base_endpoint
-                .post(
-                  "/api/student/create",
-                  {
-                    full_name: this.studentName,
-                    sid: this.sid,
-                    school: this.schoolSelected.id,
-                    parent: this.newParentID,
-                    email: this.studentEmail,
-                    phone: this.studentPhone,
-                    createProfile: this.studentAccountState,
-                  },
-                  {
-                    headers: {
-                      Authorization: `Token ${this.$store.state.accessToken}`,
+            })
+            .then((response) => {
+              this.theSpeicalID = response.data.id;
+              console.log(this.theSpeicalID);
+              if (this.isStudentOkayToSubmit()) {
+                base_endpoint
+                  .post(
+                    "/api/student/create",
+                    {
+                      full_name: this.studentName,
+                      sid: this.sid,
+                      school: this.schoolSelected.id,
+                      parent: this.theSpeicalID,
+                      email: this.studentEmail,
+                      phone: this.studentPhone,
+                      createProfile: this.studentAccountState,
                     },
-                  }
-                )
-                .then(() => {
-                  this.$emit(
-                    "studentcreated",
-                    "A new student has been created and sent to database"
-                  );
-                })
-                .catch((err) => {
-                  this.showSnackBarAddress();
-                  console.log(err);
-                });
-            }
-          })
-          .catch((err) => {
-            this.showSnackBarAddress();
-            console.log(err);
-          });
+                    {
+                      headers: {
+                        Authorization: `Token ${this.$store.state.accessToken}`,
+                      },
+                    }
+                  )
+                  .then(() => {
+                    this.$emit(
+                      "studentcreated",
+                      "A new student has been created and sent to database"
+                    );
+                  })
+                  .catch((err) => {
+                    this.showSnackBarAddress();
+                    console.log(err);
+                  });
+                this.showSnackBarWeirdCreate();
+              }
+            })
+            .catch((err) => {
+              this.showSnackBarAddress();
+              console.log(err);
+            });
+        } else {
+          console.log("Got into else statement in first if");
+          base_endpoint
+            .post(
+              "/api/profile/create",
+              {
+                full_name: this.parentName,
+                address: this.formatted_address,
+                longitude: this.longitude,
+                latitude: this.latitude,
+                email: this.parentEmail,
+                password: this.parentPassword,
+                type: this.userRoleType,
+                passwordType: this.passType2,
+                managed_schools: this.selectedSchoolsForSchoolStaff,
+                phone: this.parentPhone,
+              },
+              {
+                headers: {
+                  Authorization: `Token ${this.$store.state.accessToken}`,
+                },
+              }
+            )
+            .then((response) => {
+              console.log(response.data.id);
+              this.newParentID = response.data.id;
+
+              this.$emit(
+                "usercreated",
+                "A new student has been created and sent to database"
+              );
+              console.log("Checking to see if I should create a new student");
+              if (this.isStudentOkayToSubmit()) {
+                console.log("CREATING STUDENT");
+                base_endpoint
+                  .post(
+                    "/api/student/create",
+                    {
+                      full_name: this.studentName,
+                      sid: this.sid,
+                      school: this.schoolSelected.id,
+                      parent: this.newParentID,
+                      email: this.studentEmail,
+                      phone: this.studentPhone,
+                      createProfile: this.studentAccountState,
+                    },
+                    {
+                      headers: {
+                        Authorization: `Token ${this.$store.state.accessToken}`,
+                      },
+                    }
+                  )
+                  .then(() => {
+                    this.$emit(
+                      "studentcreated",
+                      "A new student has been created and sent to database"
+                    );
+                  })
+                  .catch((err) => {
+                    this.showSnackBarAddress();
+                    console.log(err);
+                  });
+              }
+            })
+            .catch((err) => {
+              this.showSnackBarAddress();
+              console.log(err);
+            });
         }
       } else {
         console.log("GOT INTO THE ELSE STATMENT");
         if (this.isStudentOkayToSubmitStudentOnly()) {
-        base_endpoint
-          .post(
-            "/api/student/create",
-            {
-              full_name: this.studentName,
-              sid: this.sid,
-              school: this.schoolSelected.id,
-              parent: this.parentSelected.id,
-              email: this.studentEmail,
-              phone: this.studentPhone,
-              createProfile: this.studentAccountState,
-            },
-            {
-              headers: {
-                Authorization: `Token ${this.$store.state.accessToken}`,
+          base_endpoint
+            .post(
+              "/api/student/create",
+              {
+                full_name: this.studentName,
+                sid: this.sid,
+                school: this.schoolSelected.id,
+                parent: this.parentSelected.id,
+                email: this.studentEmail,
+                phone: this.studentPhone,
+                createProfile: this.studentAccountState,
               },
-            }
-          )
-          .then(() => {
-            this.$emit(
-              "studentcreated",
-              "usercreated",
-              "A new student has been created and sent to database"
-            );
-          })
-          .catch((err) => {
-            this.showSnackBar();
-            console.log(err);
-          });
+              {
+                headers: {
+                  Authorization: `Token ${this.$store.state.accessToken}`,
+                },
+              }
+            )
+            .then(() => {
+              this.$emit(
+                "studentcreated",
+                "usercreated",
+                "A new student has been created and sent to database"
+              );
+            })
+            .catch((err) => {
+              this.showSnackBar();
+              console.log(err);
+            });
         }
       }
     },
     validate() {
       if (
         (this.userCheckbox == true &&
-          (this.parentName != null &&
-          this.parentName != "") &&
-          (this.parentEmail != null &&
-          this.parentEmail != "") &&
-          (this.passType2 != null &&
-          this.passType2 != "") &&
-          (this.userRoleType != null &&
-          this.userRoleType != "") &&
-          (this.parentPhone != null &&
-          this.parentPhone != "") &&
-          (this.parentAddress != null && 
-          this.parentAddress != "")) ||
+          this.parentName != null &&
+          this.parentName != "" &&
+          this.parentEmail != null &&
+          this.parentEmail != "" &&
+          this.passType2 != null &&
+          this.passType2 != "" &&
+          this.userRoleType != null &&
+          this.userRoleType != "" &&
+          this.parentPhone != null &&
+          this.parentPhone != "" &&
+          this.parentAddress != null &&
+          this.parentAddress != "") ||
         (this.studentCheckbox == true &&
           this.studentName != null &&
           this.studentName != "" &&
           this.schoolSelected != null &&
           this.schoolSelected != "" &&
-          ((this.parentSelected != null && this.parentSelected != "") ||  this.userCheckbox == true))
+          ((this.parentSelected != null && this.parentSelected != "") ||
+            this.userCheckbox == true))
       ) {
         this.$refs.form.validate();
         this.submitData();
@@ -604,7 +615,8 @@ export default {
     },
     studentEmailValidate() {
       if (
-        this.studentCheckbox == true && this.studentAccountState == "true" &&
+        this.studentCheckbox == true &&
+        this.studentAccountState == "true" &&
         (this.studentEmail == null || this.studentEmail == "")
       ) {
         return "Student email is required";
@@ -701,54 +713,60 @@ export default {
         return true;
       }
     },
-    updateUserRole() {
-
-    },
+    updateUserRole() {},
     isStudentOkayToSubmit() {
       console.log("Checking for isStudentOkayToSubmit()");
       console.log(this.studentEmail != null && this.studentEmail != "");
       console.log(this.newParentID);
-      console.log((
-              this.studentName != null &&
-              this.studentName != "" &&
-              this.schoolSelected.id != null &&
-              this.schoolSelected.id != "" &&
-              this.newParentID != null &&
-              this.newParentID != "" &&
-              ((this.studentEmail != null && this.studentEmail != "") || this.studentAccountState == "false")));
+      console.log(
+        this.studentName != null &&
+          this.studentName != "" &&
+          this.schoolSelected.id != null &&
+          this.schoolSelected.id != "" &&
+          this.newParentID != null &&
+          this.newParentID != "" &&
+          ((this.studentEmail != null && this.studentEmail != "") ||
+            this.studentAccountState == "false")
+      );
       return (
-              this.studentName != null &&
-              this.studentName != "" &&
-              this.schoolSelected.id != null &&
-              this.schoolSelected.id != "" &&
-              this.newParentID != null &&
-              this.newParentID != "" &&
-              ((this.studentEmail != null && this.studentEmail != "") || this.studentAccountState == "false"));
+        this.studentName != null &&
+        this.studentName != "" &&
+        this.schoolSelected.id != null &&
+        this.schoolSelected.id != "" &&
+        this.newParentID != null &&
+        this.newParentID != "" &&
+        ((this.studentEmail != null && this.studentEmail != "") ||
+          this.studentAccountState == "false")
+      );
     },
     isStudentOkayToSubmitStudentOnly() {
       console.log("Checking for isStudentOkayToSubmitStudentOnly()");
-      console.log((
-              this.studentName != null &&
-              this.studentName != "" &&
-              this.schoolSelected.id != null &&
-              this.schoolSelected.id != "" &&
-              this.parentSelected.id != null &&
-              this.parentSelected.id != "" &&
-              ((this.studentEmail != null && this.studentEmail != "") || this.studentAccountState == "false")));
+      console.log(
+        this.studentName != null &&
+          this.studentName != "" &&
+          this.schoolSelected.id != null &&
+          this.schoolSelected.id != "" &&
+          this.parentSelected.id != null &&
+          this.parentSelected.id != "" &&
+          ((this.studentEmail != null && this.studentEmail != "") ||
+            this.studentAccountState == "false")
+      );
       return (
-              this.studentName != null &&
-              this.studentName != "" &&
-              this.schoolSelected.id != null &&
-              this.schoolSelected.id != "" &&
-              this.parentSelected.id != null &&
-              this.parentSelected.id != "" &&
-              ((this.studentEmail != null && this.studentEmail != "") || this.studentAccountState == "false"));
+        this.studentName != null &&
+        this.studentName != "" &&
+        this.schoolSelected.id != null &&
+        this.schoolSelected.id != "" &&
+        this.parentSelected.id != null &&
+        this.parentSelected.id != "" &&
+        ((this.studentEmail != null && this.studentEmail != "") ||
+          this.studentAccountState == "false")
+      );
     },
     updateUserRoleType() {
       if (this.studentCheckbox) {
         this.userRoleType = "parent";
       }
-    }
+    },
   },
   created() {
     this.userType = window.localStorage.getItem("userType");
@@ -756,18 +774,17 @@ export default {
     this.getRequestAllSchools();
     this.getRequestAllParentsWithUserID();
     this.getRequestAllParents();
-    this.studentCheckbox = this.userType=='schoolStaff';
+    this.studentCheckbox = this.userType == "schoolStaff";
   },
   computed: {
-    
     //...mapGetters(["loggedIn", "isAdmin", "loggedInUserID","loggedInUserType"]),
     userAndStudentCheckbox() {
       return !this.userCheckbox && this.studentCheckbox;
     },
   },
   watch: {
-    userRoleType: 'updateUserRole'
-  }
+    userRoleType: "updateUserRole",
+  },
 };
 </script>
 
