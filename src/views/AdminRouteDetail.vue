@@ -3,10 +3,20 @@
     <v-card-title class="font-weight-black">
       {{ routeName }}
       <v-spacer></v-spacer>
-      
-      <v-btn style="margin: 10px" @click="planNewRoute" outlined v-if="this.userType!='busDriver'">Modify Route</v-btn>
-      
-      <v-dialog v-model="dialog2" width="50%" v-if="this.userType!='busDriver'">
+
+      <v-btn
+        style="margin: 10px"
+        @click="planNewRoute"
+        outlined
+        v-if="this.userType != 'busDriver'"
+        >Modify Route</v-btn
+      >
+
+      <v-dialog
+        v-model="dialog2"
+        width="50%"
+        v-if="this.userType != 'busDriver'"
+      >
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             style="margin: 10px"
@@ -68,7 +78,12 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-dialog style="margin: 10px" v-model="dialog" width="500" v-if="this.userType!='busDriver'">
+      <v-dialog
+        style="margin: 10px"
+        v-model="dialog"
+        width="500"
+        v-if="this.userType != 'busDriver'"
+      >
         <template v-slot:activator="{ on, attrs }">
           <v-btn outlined v-bind="attrs" v-on="on"> Delete </v-btn>
         </template>
@@ -94,13 +109,15 @@
       <send-email
         :typeOfEmail="'routeRA'"
         :relevantID="this.$route.query.id"
-        :relevantName = this.routeName
-        v-if="this.userType!='busDriver'"
+        :relevantName="this.routeName"
+        v-if="this.userType != 'busDriver'"
       ></send-email>
-    <!-- </v-card-title>
+      <!-- </v-card-title>
     <v-card-title> -->
-      <br>
-      <v-btn style="margin: 10px" @click="seeRouteRoster" outlined>Print Roster</v-btn>
+      <br />
+      <v-btn style="margin: 10px" @click="seeRouteRoster" outlined
+        >Print Roster</v-btn
+      >
       <v-dialog v-model="linkDialog" width="500">
         <template v-slot:activator="{ on, attrs }">
           <v-btn outlined v-bind="attrs" v-on="on"> Navigation Links </v-btn>
@@ -111,29 +128,45 @@
             Navigation Links
           </v-card-title>
 
-          <v-card-text><template>
-            <v-row>
-              <v-col>
-                <v-card-title width=100%>Pick-Up</v-card-title>
-              </v-col>
-              <v-col>
-                <v-card-title>Drop-Off</v-card-title>
-              </v-col>
-            </v-row>
-            <v-divider></v-divider>
-            <div v-for="index in pickUpLinks.length" :key="index">
+          <v-card-text
+            ><template>
+              <v-row>
+                <v-col>
+                  <v-card-title width="100%">Pick-Up</v-card-title>
+                </v-col>
+                <v-col>
+                  <v-card-title>Drop-Off</v-card-title>
+                </v-col>
+              </v-row>
+              <v-divider></v-divider>
+              <div v-for="index in pickUpLinks.length" :key="index">
                 <v-row>
                   <v-col>
-                    <v-btn outlined v-bind="attrs" v-on="on" :href="`${pickUpLinks[index-1].link}`" target="_blank">{{pickUpLinks[index-1].name}} </v-btn>
+                    <v-btn
+                      outlined
+                      v-bind="attrs"
+                      v-on="on"
+                      :href="`${pickUpLinks[index - 1].link}`"
+                      target="_blank"
+                      >{{ pickUpLinks[index - 1].name }}
+                    </v-btn>
                   </v-col>
                   <v-divider vertical></v-divider>
                   <v-col>
-                    <v-btn outlined v-bind="attrs" v-on="on" :href="`${dropOffLinks[index-1].link}`" target="_blank"> {{dropOffLinks[index-1].name}} </v-btn>
+                    <v-btn
+                      outlined
+                      v-bind="attrs"
+                      v-on="on"
+                      :href="`${dropOffLinks[index - 1].link}`"
+                      target="_blank"
+                    >
+                      {{ dropOffLinks[index - 1].name }}
+                    </v-btn>
                   </v-col>
                 </v-row>
                 <v-divider></v-divider>
-            </div>
-          </template></v-card-text>
+              </div> </template
+          ></v-card-text>
         </v-card>
       </v-dialog>
     </v-card-title>
@@ -188,45 +221,44 @@
           <span class="black--text font-weight-bold"> In Transit Driver: </span
           ><span class="black--text"> {{ routeInTransitDriverName }} </span>
         </v-card-subtitle>
-
       </v-col>
       <v-col md="9">
         <div class="map" id="map">
-        <GmapMap
-          style="width: 100%; height: 400px"
-          ref="mapRef"
-          @click="handleMapClick($event)"
-          :center="center"
-        >
-          <GmapMarker
-            :key="index"
-            v-for="(m, index) in markers"
-            :position="m.position"
-            :label="m.label"
-            :icon="m.icon"
-          />
-          <GmapMarker
-            :key="'stop_' + index"
-            v-for="(m, index) in stops"
-            :position="m.position"
-            :icon="stopMapMarker.icon"
-            :label="m.label"
-          />
-          <GmapCircle
-            :key="'circle_' + index"
-            v-for="(m, index) in stops"
-            :center="m.position"
-            :radius="483"
-            :visible="true"
-            :options="{
-              strokeColor: '#FF0000',
-              strokeOpacity: 0.8,
-              strokeWeight: 2,
-              fillColor: '#FF0000',
-              fillOpacity: 0.35,
-            }"
-          />
-        </GmapMap>
+          <GmapMap
+            style="width: 100%; height: 400px"
+            ref="mapRef"
+            @click="handleMapClick($event)"
+            :center="center"
+          >
+            <GmapMarker
+              :key="index"
+              v-for="(m, index) in markers"
+              :position="m.position"
+              :label="m.label"
+              :icon="m.icon"
+            />
+            <GmapMarker
+              :key="'stop_' + index"
+              v-for="(m, index) in stops"
+              :position="m.position"
+              :icon="stopMapMarker.icon"
+              :label="m.label"
+            />
+            <GmapCircle
+              :key="'circle_' + index"
+              v-for="(m, index) in stops"
+              :center="m.position"
+              :radius="483"
+              :visible="true"
+              :options="{
+                strokeColor: '#FF0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#FF0000',
+                fillOpacity: 0.35,
+              }"
+            />
+          </GmapMap>
         </div>
       </v-col>
     </v-row>
@@ -598,6 +630,10 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
+    continuousBusCheck() {
+      console.log("GOT HERE");
+      console.log(this.routeInTransitBus);
+    },
   },
   created() {
     this.userType = window.localStorage.getItem("userType");
@@ -605,9 +641,11 @@ export default {
     this.getRouteInfo();
     console.log("Here 3: " + this.routeSchoolID);
     this.getRouteDirInfo();
-    
+
     this.getStudentsInRoute();
     this.getRouteMarkers();
+
+    this.continuousBusCheck();
   },
   computed: {
     google: gmapApi,
@@ -616,14 +654,14 @@ export default {
 </script>
 
 <style>
-.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {
   cursor: pointer;
 }
 #map {
-    background-color: black;
-    padding-top: 2px;
-    padding-right: 2px;
-    padding-bottom: 2px;
-    padding-left: 2px;
+  background-color: black;
+  padding-top: 2px;
+  padding-right: 2px;
+  padding-bottom: 2px;
+  padding-left: 2px;
 }
 </style>

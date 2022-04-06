@@ -1,7 +1,9 @@
 <template>
   <v-dialog v-model="dialog" width="50%">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on"> Add a New Student </v-btn>
+      <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
+        Add a New Student
+      </v-btn>
     </template>
 
     <v-card>
@@ -11,7 +13,6 @@
 
       <v-card-text>
         <v-form ref="form" v-model="valid" lazy-validation>
-
           <v-text-field
             v-model="studentName"
             :rules="studentNameValidateArray"
@@ -139,40 +140,52 @@ export default {
         })
         .then((response) => {
           this.schools = response.data.map(this.getDisplaySchool);
+
+          this.schools.sort(function (a, b) {
+            if (a.name < b.name) {
+              return -1;
+            }
+            if (a.name > b.name) {
+              return 1;
+            }
+            return 0;
+          });
         })
         .catch((err) => {
           console.log(err);
         });
     },
     submitData() {
-        console.log("GOT INTO THE ELSE STATMENT");
-        base_endpoint
-          .post(
-            "/api/student/create",
-            {
-              full_name: this.studentName,
-              sid: this.sid,
-              school: this.schoolSelected.id,
-              parent: this.$route.query.id,
+      console.log("GOT INTO THE ELSE STATMENT");
+      base_endpoint
+        .post(
+          "/api/student/create",
+          {
+            full_name: this.studentName,
+            sid: this.sid,
+            school: this.schoolSelected.id,
+            parent: this.$route.query.id,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
             },
-            {
-              headers: {
-                Authorization: `Token ${this.$store.state.accessToken}`,
-              },
-            }
-          )
-          .then(() => {
-            this.$emit(
-              "studentcreated",
-              "A new student has been created and sent to database"
-            );
-          });
+          }
+        )
+        .then(() => {
+          this.$emit(
+            "studentcreated",
+            "A new student has been created and sent to database"
+          );
+        });
     },
     validate() {
-      if (this.studentName != null &&
-          this.studentName != "" &&
-          this.schoolSelected != null &&
-          this.schoolSelected != "") {
+      if (
+        this.studentName != null &&
+        this.studentName != "" &&
+        this.schoolSelected != null &&
+        this.schoolSelected != ""
+      ) {
         this.$refs.form.validate();
         this.submitData();
         this.dialog = false;
@@ -186,9 +199,7 @@ export default {
       this.$refs.form.resetValidation();
     },
     studentNameValidate() {
-      if (
-        (this.studentName == null || this.studentName == "")
-      ) {
+      if (this.studentName == null || this.studentName == "") {
         return "Student Name is required";
       } else {
         return true;
@@ -206,9 +217,7 @@ export default {
       }
     },
     studentSchoolValidate() {
-      if (
-        (this.schoolSelected == null || this.schoolSelected == "")
-      ) {
+      if (this.schoolSelected == null || this.schoolSelected == "") {
         return "Student school is required";
       } else {
         return true;

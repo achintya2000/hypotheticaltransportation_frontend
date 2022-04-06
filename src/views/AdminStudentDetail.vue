@@ -3,7 +3,11 @@
     <v-card-title class="font-weight-black">
       {{ studentName }}
       <v-spacer></v-spacer>
-      <v-dialog v-model="dialog2" width="500" v-if="this.userType!='busDriver'">
+      <v-dialog
+        v-model="dialog2"
+        width="500"
+        v-if="this.userType != 'busDriver'"
+      >
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Modify
@@ -27,7 +31,6 @@
                 label="Student ID"
                 :rules="studentIDValidateArray"
               ></v-text-field>
-            
               <v-autocomplete
                 v-model="parent"
                 :items="parentItems"
@@ -45,24 +48,14 @@
                 :rules="studentSchoolValidateArray"
                 return-object
               ></v-autocomplete>
-              <v-text>Give Student Accont:</v-text> 
-              <v-radio-group
-                  v-model="newStudentAccountState"
-                  row
-                  dense
-                >
-                  <v-radio
-                    label="Yes"
-                    :value="true"
-                  ></v-radio>
-                  <v-radio
-                    label="No"
-                    :value="false"
-                  ></v-radio>
-                </v-radio-group>
-                <v-text-field
+              <v-text>Give Student Accont:</v-text>
+              <v-radio-group v-model="newStudentAccountState" row dense>
+                <v-radio label="Yes" :value="true"></v-radio>
+                <v-radio label="No" :value="false"></v-radio>
+              </v-radio-group>
+              <v-text-field
                 v-model="newStudentEmail"
-                v-if="newStudentAccountState==true"
+                v-if="newStudentAccountState == true"
                 :rules="studentEmailValidateArray"
                 label="Student Email"
               ></v-text-field>
@@ -101,7 +94,11 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="dialog" width="500" v-if="this.userType!='busDriver'">
+      <v-dialog
+        v-model="dialog"
+        width="500"
+        v-if="this.userType != 'busDriver'"
+      >
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Delete
@@ -115,20 +112,16 @@
 
           <v-card-text>
             <v-form ref="form">
-              <v-radio-group
-                  v-model="studentDeleteChoice"
-                  row
-                  dense
-                >
-                  <v-radio
-                    label="Student Login Ability Only"
-                    value="loginOnly"
-                  ></v-radio>
-                  <v-radio
-                    label="Whole Student Profile"
-                    value="wholeThing"
-                  ></v-radio>
-                </v-radio-group>
+              <v-radio-group v-model="studentDeleteChoice" row dense>
+                <v-radio
+                  label="Student Login Ability Only"
+                  value="loginOnly"
+                ></v-radio>
+                <v-radio
+                  label="Whole Student Profile"
+                  value="wholeThing"
+                ></v-radio>
+              </v-radio-group>
               <v-spacer></v-spacer>
 
               <v-btn color="error" class="mr-4" @click="validateDelete">
@@ -143,63 +136,88 @@
     </v-card-title>
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> ID: </span>
-      <span class="black--text" v-if="studentId!=null"> {{ studentId }} </span>
-      <span class="black--text" v-if="studentId==null || studentId==''"> None </span>
+      <span class="black--text" v-if="studentId != null">
+        {{ studentId }}
+      </span>
+      <span class="black--text" v-if="studentId == null || studentId == ''">
+        None
+      </span>
     </v-card-subtitle>
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Email: </span>
-      <span class="black--text" v-if="studentEmail!=null"> {{ studentEmail }} </span>
-      <span class="black--text" v-if="studentEmail==null || studentEmail==''"> None </span>
+      <span class="black--text" v-if="studentEmail != null">
+        {{ studentEmail }}
+      </span>
+      <span
+        class="black--text"
+        v-if="studentEmail == null || studentEmail == ''"
+      >
+        None
+      </span>
     </v-card-subtitle>
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Phone: </span>
-      <span class="black--text" v-if="studentPhone!=null"> {{ studentPhone }} </span>
-      <span class="black--text" v-if="studentPhone==null || studentPhone==''"> None </span>
+      <span class="black--text" v-if="studentPhone != null">
+        {{ studentPhone }}
+      </span>
+      <span
+        class="black--text"
+        v-if="studentPhone == null || studentPhone == ''"
+      >
+        None
+      </span>
     </v-card-subtitle>
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> School: </span>
-      <span text 
-        @click="viewSchool(studentSchoolId)" class="txt blue--text text--darken-4">
-         {{ studentSchool }} 
-      </span>        
+      <span
+        text
+        @click="viewSchool(studentSchoolId)"
+        class="txt blue--text text--darken-4"
+      >
+        {{ studentSchool }}
+      </span>
     </v-card-subtitle>
 
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Route: </span>
-      <span text 
+      <span
+        text
         @click="viewRoute(studentRouteId)"
         class="txt blue--text text--darken-4"
-        v-if="studentRoute != 'No route assigned'">
-        {{ studentRoute }} 
-        </span>
-        
-        <span text 
-        class="red--text"
-        v-if="studentRoute == 'No route assigned'">
-        No Route Assigned
-        </span>
+        v-if="studentRoute != 'No route assigned'"
+      >
+        {{ studentRoute }}
+      </span>
 
+      <span text class="red--text" v-if="studentRoute == 'No route assigned'">
+        No Route Assigned
+      </span>
     </v-card-subtitle>
 
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Stop Status: </span>
-        <span text 
+      <span
+        text
         class="black--text"
-        v-if="studentRoute != 'No route assigned' && studentInRangeStatus == true">
+        v-if="
+          studentRoute != 'No route assigned' && studentInRangeStatus == true
+        "
+      >
         Stop(s) in Range
-        </span>
-        <span text 
+      </span>
+      <span
+        text
         class="red--text"
-        v-if="studentRoute != 'No route assigned' && studentInRangeStatus == false">
+        v-if="
+          studentRoute != 'No route assigned' && studentInRangeStatus == false
+        "
+      >
         Stop(s) not in Range
-        </span>
-        
-        <span text 
-        class="red--text"
-        v-if="studentRoute == 'No route assigned'">
-        No Route Assigned
-        </span>
+      </span>
 
+      <span text class="red--text" v-if="studentRoute == 'No route assigned'">
+        No Route Assigned
+      </span>
     </v-card-subtitle>
 
     <v-card-subtitle>
@@ -217,11 +235,13 @@
 
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Parent: </span>
-      <span text 
+      <span
+        text
         @click="viewParent(studentParentId)"
-         class="txt blue--text text--darken-4">
-        {{ studentParent }} 
-        </span>
+        class="txt blue--text text--darken-4"
+      >
+        {{ studentParent }}
+      </span>
     </v-card-subtitle>
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> Parent Email: </span>
@@ -240,7 +260,7 @@
 
 <script>
 import { base_endpoint } from "../services/axios-api";
-import { mapActions} from "vuex";
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -333,7 +353,7 @@ export default {
 
           this.studentEmail = response.data.studentEmail;
           this.newStudentEmail = response.data.studentEmail;
-          
+
           if (this.studentEmail == "" || this.studentEmail == null) {
             this.newStudentAccountState = false;
           } else {
@@ -371,6 +391,16 @@ export default {
         .then((response) => {
           this.schoolItems = response.data.map(this.getDisplaySchools);
 
+          this.schoolItems.sort(function (a, b) {
+            if (a.name < b.name) {
+              return -1;
+            }
+            if (a.name > b.name) {
+              return 1;
+            }
+            return 0;
+          });
+
           this.schoolItems.forEach((item) => {
             if (this.studentSchoolId == item.id) {
               this.school = item;
@@ -396,6 +426,16 @@ export default {
         })
         .then((response) => {
           this.parentItems = response.data.map(this.getDisplayParents);
+
+          this.parentItems.sort(function (a, b) {
+            if (a.full_name < b.full_name) {
+              return -1;
+            }
+            if (a.full_name > b.full_name) {
+              return 1;
+            }
+            return 0;
+          });
 
           this.parentItems.forEach((item) => {
             if (this.studentParentId == item.id) {
@@ -529,7 +569,8 @@ export default {
     },
     studentEmailValidate() {
       if (
-        this.studentCheckbox == true && this.studentAccountState == "true" &&
+        this.studentCheckbox == true &&
+        this.studentAccountState == "true" &&
         (this.newStudentEmail == null || this.newStudentEmail == "")
       ) {
         return "Student email is required";
@@ -582,11 +623,10 @@ export default {
     this.userID = window.localStorage.getItem("userID");
     this.getStudentInfo();
   },
-  
 };
 </script>
 <style>
 .txt:hover {
-          text-decoration: underline;
-      }
+  text-decoration: underline;
+}
 </style>

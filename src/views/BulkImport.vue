@@ -1077,6 +1077,16 @@ export default {
         .then((response) => {
           this.schoolItems = response.data.map(this.getDisplaySchools);
 
+          this.schoolItems.sort(function (a, b) {
+            if (a.name < b.name) {
+              return -1;
+            }
+            if (a.name > b.name) {
+              return 1;
+            }
+            return 0;
+          });
+
           this.schoolItems.forEach((item) => {
             if (this.studentSchoolId == item.id) {
               this.school = item;
