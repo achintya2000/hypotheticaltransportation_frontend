@@ -114,6 +114,7 @@
             <v-form ref="form">
               <v-radio-group v-model="studentDeleteChoice" row dense>
                 <v-radio
+                  v-if="studentAccountState==true"
                   label="Student Login Ability Only"
                   value="loginOnly"
                 ></v-radio>
@@ -300,12 +301,13 @@ export default {
       studentInRangeStatus: "",
       studentParent: "",
       studentParentEmail: "",
+      studentAccountState: null,
       newStudentAccountState: null,
       newStudentEmail: "",
       studentParentAddress: "",
       studentParentPhone: "",
       newStudentName: "",
-      studentDeleteChoice: "loginOnly",
+      studentDeleteChoice: "",
       newStudentId: "",
       newStudentSchool: "",
       newStudentParent: "",
@@ -355,10 +357,15 @@ export default {
           this.newStudentEmail = response.data.studentEmail;
 
           if (this.studentEmail == "" || this.studentEmail == null) {
+            this.studentAccountState = false;
             this.newStudentAccountState = false;
+            this.studentDeleteChoice = "wholeThing";
           } else {
+            this.studentAccountState = true;
             this.newStudentAccountState = true;
+            this.studentDeleteChoice = "loginOnly";
           }
+
           this.studentPhone = response.data.studentPhone;
           this.newStudentPhone = response.data.studentPhone;
 
@@ -622,6 +629,8 @@ export default {
     this.userType = window.localStorage.getItem("userType");
     this.userID = window.localStorage.getItem("userID");
     this.getStudentInfo();
+    console.log("Here is studentAccountState");
+    console.log(this.studentAccountState);
   },
 };
 </script>
