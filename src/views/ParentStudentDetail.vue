@@ -10,50 +10,55 @@
     </v-card-title>
     <v-row>
       <v-col width="50%">
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> ID: </span
-      ><span class="black--text"> {{ studentId }} </span>
-    </v-card-subtitle>
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> School: </span
-      ><span class="black--text"> {{ studentSchool }} </span>
-    </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> ID: </span
+          ><span class="black--text"> {{ studentId }} </span>
+        </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> School: </span
+          ><span class="black--text"> {{ studentSchool }} </span>
+        </v-card-subtitle>
 
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Route: </span
-      ><span class="black--text"> {{ studentRoute }} </span>
-    </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> Route: </span
+          ><span class="black--text"> {{ studentRoute }} </span>
+        </v-card-subtitle>
 
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Route Description: </span
-      ><span class="black--text"> {{ studentRouteDescription }} </span>
-    </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> Route Description: </span
+          ><span class="black--text"> {{ studentRouteDescription }} </span>
+        </v-card-subtitle>
 
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Parent: </span
-      ><span class="black--text"> {{ studentParent }} </span>
-    </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> Parent: </span
+          ><span class="black--text"> {{ studentParent }} </span>
+        </v-card-subtitle>
 
-    
-      
         <v-data-table :headers="headers" :items="stopsInRange"> </v-data-table>
       </v-col>
       <v-col width="50%">
         <div class="map" id="map">
-        <GmapMap
-          ref="mapRef"
-          style="width: 100%; height: 400px"
-          :center="center"
-          :zoom="12"
-        >
-          <GmapMarker
-            :key="index"
-            v-for="(m, index) in markers"
-            :position="m.position"
-            :icon="m.icon"
-            :label="m.label"
-          />
-        </GmapMap>
+          <GmapMap
+            ref="mapRef"
+            style="width: 100%; height: 400px"
+            :center="center"
+            :zoom="12"
+          >
+            <GmapMarker
+              :key="index"
+              v-for="(m, index) in markers"
+              :position="m.position"
+              :icon="m.icon"
+              :label="m.label"
+            />
+            <GmapMarker
+              :key="'bus_' + index"
+              v-for="(m, index) in buses"
+              :position="m.position"
+              :icon="m.icon"
+              :label="m.label"
+            />
+          </GmapMap>
         </div>
       </v-col>
     </v-row>
@@ -110,6 +115,9 @@ export default {
       stopsInRange: [],
       center: { lat: 36.001465, lng: -78.939133 },
       markers: [],
+      buses: [],
+      intervalId: null,
+      firstBusLoc: true,
     };
   },
   methods: {
@@ -136,7 +144,7 @@ export default {
           this.studentSchoolId = response.data.school_id;
           this.studentRouteId = response.data.route_id;
           this.studentParentId = response.data.parent_id;
-
+          
           this.routeInTransit = response.data.in_transit;
           this.routeInTransitBus = response.data.bus_id;
           this.routeInTransitDriverID = response.data.driver_id;
@@ -144,6 +152,26 @@ export default {
           this.routeInTransitLat = response.data.driver_name;
           this.routeInTransitLong = response.data.driver_name;
 
+          this.buses = [];
+          var busMarker = {
+            position: {
+              lat: response.data.latitude,
+              lng: response.data.longitude,
+            },
+            icon: {
+              path: this.google.maps.SymbolPath.CIRCLE,
+              scale: 20,
+              fillOpacity: 1,
+              strokeWeight: 2,
+              fillColor: "#5384ED",
+              strokeColor: "#ffffff",
+            },
+            label: {
+              text: response.data.bus_id.toString(),
+            },
+          };
+          this.buses.push(busMarker);
+          
         })
         .catch((err) => {
           this.showSnackBar();
@@ -215,6 +243,16 @@ export default {
               for (var i = 0; i < this.markers.length; i++) {
                 bounds.extend(this.markers[i].position);
               }
+
+              if (this.firstBusLoc) {
+                if (this.buses.length == 0) {
+                  setTimeout(this.getUserInfo, 1000);
+                } else {
+                  bounds.extend(this.buses[0].position);
+                  this.firstBusLoc = false;
+                }
+              }
+
               this.$refs.mapRef.$mapPromise.then((map) => {
                 map.fitBounds(bounds);
               });
@@ -234,22 +272,25 @@ export default {
     },
   },
   created() {
-    this.getStudentInfo();
+    this.intervalId = setInterval(this.getStudentInfo, 1000);
     this.getInRangeStops();
     this.getUserInfo();
   },
   computed: {
     google: gmapApi,
   },
+  beforeDestroy() {
+    clearInterval(this.intervalId);
+  },
 };
 </script>
 
 <style>
 #map {
-    background-color: black;
-    padding-top: 2px;
-    padding-right: 2px;
-    padding-bottom: 2px;
-    padding-left: 2px;
+  background-color: black;
+  padding-top: 2px;
+  padding-right: 2px;
+  padding-bottom: 2px;
+  padding-left: 2px;
 }
 </style>

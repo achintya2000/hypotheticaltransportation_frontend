@@ -244,6 +244,13 @@
               :icon="stopMapMarker.icon"
               :label="m.label"
             />
+            <GmapMarker
+              :key="'bus_' + index"
+              v-for="(m, index) in buses"
+              :position="m.position"
+              :icon="m.icon"
+              :label="m.label"
+            />
             <GmapCircle
               :key="'circle_' + index"
               v-for="(m, index) in stops"
@@ -359,6 +366,9 @@ export default {
       stops: [],
       nameValidateArray: [this.nameValidate],
       markers: [],
+      buses: [],
+      intervalId: null,
+      firstBusLoc: true,
     };
   },
   methods: {
@@ -415,6 +425,9 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
+          console.log("YEET");
+          console.log(response);
+
           this.routeName = response.data.name;
           this.newRouteName = response.data.name;
           this.routeSchool = response.data.school;
@@ -429,6 +442,26 @@ export default {
           this.routeInTransitBus = response.data.bus_id;
           this.routeInTransitDriverID = response.data.driver_id;
           this.routeInTransitDriverName = response.data.driver_name;
+
+          this.buses = [];
+          var busMarker = {
+            position: {
+              lat: response.data.latitude,
+              lng: response.data.longitude,
+            },
+            icon: {
+              path: this.google.maps.SymbolPath.CIRCLE,
+              scale: 20,
+              fillOpacity: 1,
+              strokeWeight: 2,
+              fillColor: "#5384ED",
+              strokeColor: "#ffffff",
+            },
+            label: {
+              text: this.routeInTransitBus.toString(),
+            },
+          };
+          this.buses.push(busMarker);
 
           this.getSchoolInfo();
         })
@@ -479,7 +512,8 @@ export default {
         )
         .then((response) => {
           console.log(response);
-          this.getRouteInfo();
+          clearInterval(this.intervalId);
+          this.intervalId = setInterval(this.getRouteInfo, 1000);
           this.getRouteDirInfo();
           this.getStudentsInRoute();
         });
@@ -599,6 +633,16 @@ export default {
           for (var i = 0; i < this.markers.length; i++) {
             bounds.extend(this.markers[i].position);
           }
+
+          if (this.firstBusLoc) {
+            if (this.buses.length == 0) {
+              setTimeout(this.getRouteMarkers, 1000);
+            } else {
+              bounds.extend(this.buses[0].position);
+              this.firstBusLoc = false;
+            }
+          }
+
           this.$refs.mapRef.$mapPromise.then((map) => {
             map.fitBounds(bounds);
           });
@@ -630,25 +674,23 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
-    continuousBusCheck() {
-      console.log("GOT HERE");
-      console.log(this.routeInTransitBus);
-    },
   },
   created() {
     this.userType = window.localStorage.getItem("userType");
     this.userID = window.localStorage.getItem("userID");
-    this.getRouteInfo();
-    console.log("Here 3: " + this.routeSchoolID);
+
+    this.intervalId = setInterval(this.getRouteInfo, 1000);
+
     this.getRouteDirInfo();
 
     this.getStudentsInRoute();
     this.getRouteMarkers();
-
-    this.continuousBusCheck();
   },
   computed: {
     google: gmapApi,
+  },
+  beforeDestroy() {
+    clearInterval(this.intervalId);
   },
 };
 </script>

@@ -61,7 +61,7 @@
               ></v-text-field>
               <v-text-field
                 v-model="newStudentPhone"
-                v-if="newStudentAccountState==true"
+                v-if="newStudentAccountState == true"
                 label="Student Phone Number"
                 append-icon="mdi-phone"
               ></v-text-field>
@@ -256,15 +256,43 @@
       <span class="black--text font-weight-bold"> Parent Phone: </span>
       <span class="black--text"> {{ studentParentPhone }} </span>
     </v-card-subtitle>
+    <GmapMap
+      ref="mapRef"
+      style="width: 100%; height: 400px"
+      :center="center"
+      :zoom="12"
+    >
+      <GmapMarker
+        :key="index"
+        v-for="(m, index) in markers"
+        :position="m.position"
+        :icon="m.icon"
+        :label="m.label"
+      />
+      <GmapMarker
+        :key="'bus_' + index"
+        v-for="(m, index) in buses"
+        :position="m.position"
+        :icon="m.icon"
+        :label="m.label"
+      />
+    </GmapMap>
   </v-card>
 </template>
 
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { mapActions } from "vuex";
+import { stopMapMarker, bluePerson } from "../assets/markers";
+import moment from "moment";
+import { gmapApi } from "vue2-google-maps-withscopedautocomp";
+
 export default {
   data() {
     return {
+      bluePerson,
+      stopMapMarker,
+      center: { lat: 36.001465, lng: -78.939133 },
       studentName: "",
       dialog: false,
       dialog2: false,
@@ -279,7 +307,10 @@ export default {
       // schoolRules: [(v) => !!v || "School is required"],
       busRouteValue: "Old Bus Route",
       // busRouteRules: [(v) => !!v || "Bus Route is required"],
-
+      markers: [],
+      buses: [],
+      firstBusLoc: true,
+      intervalId: null,
       headers: [
         {
           text: "Name",
@@ -374,6 +405,26 @@ export default {
           this.routeInTransitDriverID = response.data.driver_id;
           this.routeInTransitDriverName = response.data.driver_name;
 
+          this.buses = [];
+          var busMarker = {
+            position: {
+              lat: response.data.latitude,
+              lng: response.data.longitude,
+            },
+            icon: {
+              path: this.google.maps.SymbolPath.CIRCLE,
+              scale: 20,
+              fillOpacity: 1,
+              strokeWeight: 2,
+              fillColor: "#5384ED",
+              strokeColor: "#ffffff",
+            },
+            label: {
+              text: response.data.bus_id.toString(),
+            },
+          };
+          this.buses.push(busMarker);
+
           this.getSchools();
           this.getParents();
         })
@@ -455,7 +506,95 @@ export default {
           console.log(err);
         });
     },
+    getDisplayStops(item) {
+      var pTime = moment.utc(item.pickupTime);
+      var dTime = moment.utc(item.dropoffTime);
 
+      return {
+        name: item.name,
+        position: { lat: item.latitude, lng: item.longitude },
+        pickupTime: pTime.local().format("h:mm A"),
+        dropoffTime: dTime.local().format("h:mm A"),
+        icon: this.stopMapMarker.icon,
+        label: this.stopMapMarker.label,
+      };
+    },
+    getInRangeStops() {
+      base_endpoint
+        .get("/api/student/getinrangestops/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          this.stopsInRange = response.data.map(this.getDisplayStops);
+
+          var bounds = new this.google.maps.LatLngBounds();
+          for (var i = 0; i < this.stopsInRange.length; i++) {
+            bounds.extend(this.stopsInRange[i].position);
+          }
+          this.$refs.mapRef.$mapPromise.then((map) => {
+            map.fitBounds(bounds);
+          });
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
+    getUserInfo() {
+      base_endpoint
+        .get("/api/profile/get/" + this.$store.state.loggedInUserID, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((res) => {
+          base_endpoint
+            .get("/api/student/getinrangestops/" + this.$route.query.id, {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
+              },
+            })
+            .then((response) => {
+              this.markers = response.data.map(this.getDisplayStops);
+
+              var house = {
+                position: {
+                  lat: parseFloat(res.data.latitude),
+                  lng: parseFloat(res.data.longitude),
+                },
+                icon: this.bluePerson.icon,
+                label: this.bluePerson.label,
+              };
+              this.markers.push(house);
+
+              console.log(this.markers);
+
+              var bounds = new this.google.maps.LatLngBounds();
+              for (var i = 0; i < this.markers.length; i++) {
+                bounds.extend(this.markers[i].position);
+              }
+
+              if (this.firstBusLoc) {
+                if (this.buses.length == 0) {
+                  setTimeout(this.getUserInfo, 1000);
+                } else {
+                  bounds.extend(this.buses[0].position);
+                  this.firstBusLoc = false;
+                }
+              }
+
+              this.$refs.mapRef.$mapPromise.then((map) => {
+                map.fitBounds(bounds);
+              });
+            })
+            .catch((err) => {
+              this.showSnackBar();
+              console.log(err);
+            });
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
     updateStudent() {
       console.log(this.school.id);
       console.log(this.parent.id);
@@ -481,7 +620,8 @@ export default {
         )
         .then((response) => {
           console.log(response);
-          this.getStudentInfo();
+          clearInterval(this.intervalId);
+          this.intervalId = setInterval(this.getStudentInfo, 1000);
         })
         .catch((err) => {
           this.showSnackBar();
@@ -625,12 +765,20 @@ export default {
       this.$refs.form.resetValidation();
     },
   },
+  computed: {
+    google: gmapApi,
+  },
   created() {
     this.userType = window.localStorage.getItem("userType");
     this.userID = window.localStorage.getItem("userID");
-    this.getStudentInfo();
-    console.log("Here is studentAccountState");
-    console.log(this.studentAccountState);
+    this.intervalId = setInterval(this.getStudentInfo, 1000);
+
+    this.getInRangeStops();
+    this.getUserInfo();
+  },
+  beforeDestroy() {
+    clearInterval(this.intervalId);
+    
   },
 };
 </script>

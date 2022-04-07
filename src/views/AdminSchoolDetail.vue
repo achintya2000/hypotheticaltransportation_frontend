@@ -204,6 +204,20 @@
         <v-icon v-if="item.studentInRange == true"> mdi-check </v-icon>
       </template>
     </v-data-table>
+    <GmapMap
+      style="width: 100%; height: 400px"
+      ref="mapRef"
+      :center="center"
+      :zoom="12"
+    >
+      <GmapMarker
+        :key="index"
+        v-for="(m, index) in markers"
+        :position="m.position"
+        :icon="m.icon"
+        :label="m.label"
+      />
+    </GmapMap>
   </v-card>
 </template>
 
@@ -212,6 +226,7 @@ import { base_endpoint } from "../services/axios-api";
 import { mapActions } from "vuex";
 import moment from "moment";
 import SendEmail from "../components/SendEmail.vue";
+import { gmapApi } from "vue2-google-maps-withscopedautocomp";
 
 export default {
   components: {
@@ -219,6 +234,10 @@ export default {
   },
   data() {
     return {
+      center: { lat: 36.001465, lng: -78.939133 },
+      markers: [],
+      intervalId: null,
+      firstBusLoc: true,
       schoolName: "",
       schoolAddress: "",
       newBusArriveTime: "",
@@ -276,6 +295,67 @@ export default {
       this.snackBar(
         "Uh-Oh! Something Went Wrong! Make sure to click the Autofill result to complete your Address!"
       );
+    },
+    getDisplayLog(item) {
+      return {
+        driverID: item.driver_id,
+        driverName: item.driver_name,
+        busNumber: item.bus,
+        schoolID: item.school_id,
+        schoolName: item.school_name,
+        routeID: item.route_id,
+        routeName: item.route_name,
+        direction: item.direction,
+        startDateAndTime: item.start_time,
+        duration: item.duration,
+        lat: item.latitude,
+        lng: item.longitude,
+      };
+    },
+    getRequestAllRoutes() {
+      base_endpoint
+        .get("/api/getschoolintransitlogs/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log("GOT HERE");
+          console.log(response);
+          this.logs = response.data.map(this.getDisplayLog);
+          //this.$store.state.addresses = response.data;
+          this.markers = [];
+
+          this.logs.forEach((e) => {
+            this.markers.push({
+              position: { lat: e.lat, lng: e.lng },
+              icon: {
+                path: this.google.maps.SymbolPath.CIRCLE,
+                scale: 20,
+                fillOpacity: 1,
+                strokeWeight: 2,
+                fillColor: "#5384ED",
+                strokeColor: "#ffffff",
+              },
+              label: {
+                text: e.busNumber.toString(),
+              },
+            });
+          });
+
+          if (this.firstBusLoc) {
+            var bounds = new this.google.maps.LatLngBounds();
+            for (var i = 0; i < this.markers.length; i++) {
+              bounds.extend(this.markers[i].position);
+            }
+            this.$refs.mapRef.$mapPromise.then((map) => {
+              map.fitBounds(bounds);
+            });
+            this.firstBusLoc = false;
+          }
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
     },
     setPlace(place) {
       this.formatted_address = place.formatted_address;
@@ -399,23 +479,6 @@ export default {
       }
     },
     submitDataForModify() {
-      // console.log("Here it is: " + this.newBusArriveTime);
-      // console.log("Here it is: " + this.newBusDepTime);
-      // console.log(
-      //   "Here it is 2: " +
-      //     new Date("2021-01-01 " + this.newBusArriveTime + ":00").toUTCString()
-      // );
-      // let test = new moment(
-      //   "2021-01-01" + this.newBusArriveTime + ":00",
-      //   "YYYY-MM-DD hh:mm:ss"
-      // );
-      // let out = moment.utc(test).format("DD-MM-YYYY, HH:mm:ss Z");
-      // console.log("Here it is 3: " + out);
-
-      // if (navigator.userAgent.includes("Safari")) {
-      //   console.log("safari only");
-      //   console.log(new Date());
-      // }
       base_endpoint
         .patch(
           "/api/school/update/" + this.$route.query.id,
@@ -519,13 +582,20 @@ export default {
       }
     },
   },
-
+  computed: {
+    google: gmapApi,
+  },
   created() {
     this.userType = window.localStorage.getItem("userType");
     this.userID = window.localStorage.getItem("userID");
     this.getSchoolInfo();
     this.getSchoolRoutes();
     this.getStudents();
+
+    this.intervalId = setInterval(this.getRequestAllRoutes, 1000);
+  },
+  beforeDestroy() {
+    clearInterval(this.intervalId);
   },
 };
 </script>
