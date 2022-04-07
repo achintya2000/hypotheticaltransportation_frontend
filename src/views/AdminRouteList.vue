@@ -77,6 +77,28 @@
         </v-card>
       </v-dialog>
 
+      <v-dialog v-if="cur_routeInTransit" v-model="dialog3" width="500">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
+            Mark Stop as Reached
+          </v-btn>
+        </template>
+
+        <v-card>
+          <v-card-title class="text-h5 grey lighten-2">
+            Please Confirm
+          </v-card-title>
+
+          <v-card-text>
+            <v-form ref="form">
+              <v-btn class="mr-4"> Stop </v-btn>
+
+              <v-btn @click="dialog2 = false"> Cancel </v-btn>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
       <v-snackbar v-model="routeSuccess" outlines color="green">
         Run Started
       </v-snackbar>
@@ -246,6 +268,9 @@ export default {
           this.dialog2 = false;
           this.getRouteStatus();
         });
+    },
+    getCurrentRunInfo() {
+
     },
     getRouteStatus() {
       base_endpoint

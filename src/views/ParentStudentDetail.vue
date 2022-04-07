@@ -144,6 +144,13 @@ export default {
           this.studentSchoolId = response.data.school_id;
           this.studentRouteId = response.data.route_id;
           this.studentParentId = response.data.parent_id;
+          
+          this.routeInTransit = response.data.in_transit;
+          this.routeInTransitBus = response.data.bus_id;
+          this.routeInTransitDriverID = response.data.driver_id;
+          this.routeInTransitDriverName = response.data.driver_name;
+          this.routeInTransitLat = response.data.driver_name;
+          this.routeInTransitLong = response.data.driver_name;
 
           this.buses = [];
           var busMarker = {
@@ -164,6 +171,7 @@ export default {
             },
           };
           this.buses.push(busMarker);
+          
         })
         .catch((err) => {
           this.showSnackBar();
