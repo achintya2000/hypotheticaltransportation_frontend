@@ -182,6 +182,13 @@ export default {
           this.studentRouteId = response.data.route_id;
           this.studentParentId = response.data.parent_id;
           this.in_transit = response.data.in_transit;
+          
+          this.routeInTransit = response.data.in_transit;
+          this.routeInTransitBus = response.data.bus_id;
+          this.routeInTransitDriverID = response.data.driver_id;
+          this.routeInTransitDriverName = response.data.driver_name;
+          this.routeInTransitLat = response.data.driver_name;
+          this.routeInTransitLong = response.data.driver_name;
 
           this.buses = [];
           var busMarker = {

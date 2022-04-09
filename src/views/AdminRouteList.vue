@@ -4,7 +4,7 @@
       Your Routes
       <v-spacer></v-spacer>
 
-      <v-dialog v-model="dialog" width="500">
+      <v-dialog v-model="dialog" width="500" v-if="this.userType=='busDriver'">
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Start A Run
@@ -77,6 +77,37 @@
         </v-card>
       </v-dialog>
 
+      <v-dialog v-if="cur_routeInTransit" v-model="dialog3" width="500">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
+            Mark Stop as Reached
+          </v-btn>
+        </template>
+
+        <v-card>
+          <v-card-title class="text-h5 grey lighten-2">
+            Please Confirm
+          </v-card-title>
+
+          <v-card-text>
+            <v-form ref="form">
+              <v-autocomplete
+                v-model="stopSelected"
+                item-text="name"
+                :rules="stopValidateArray"
+                label="Stop you just reached:"
+                :items="stops"
+                return-object
+              ></v-autocomplete>
+
+              <v-btn class="mr-4" @click="submitNewStopReached"> Submit </v-btn>
+
+              <v-btn @click="dialog3 = false"> Cancel </v-btn>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
       <v-snackbar v-model="routeSuccess" outlines color="green">
         Run Started
       </v-snackbar>
@@ -119,10 +150,12 @@
 <script>
 import { base_endpoint } from "../services/axios-api";
 import { mapActions } from "vuex";
+import moment from "moment";
 export default {
   data() {
     return {
       forceSubmitRoute: false,
+      stopSelected: "",
       routeSuccess: false,
       routeError: false,
       routeStop: false,
@@ -133,9 +166,14 @@ export default {
       selectedRouteCancel: null,
       dialog: false,
       dialog2: false,
+      dialog3: false,
       search: "",
       userType: "",
+      cur_direction: "",
       userID: "",
+      stops:  [],
+      routeSchool: "",
+      routeSchoolID: "",
       headers: [
         {
           text: "Name",
@@ -153,6 +191,7 @@ export default {
       schools: [],
       cur_routeInTransit: false,
       cur_routeID: 0,
+      cur_routeName: "",
     };
   },
   methods: {
@@ -247,6 +286,83 @@ export default {
           this.getRouteStatus();
         });
     },
+    getRequestAllStops() {
+      base_endpoint
+        .get("/api/stop/getallfromroute/" + this.cur_routeID, {
+          headers: {
+            Authorization: `Token ${this.$store.state.accessToken}`,
+          },
+        })
+        .then((response) => {
+          this.stops = response.data.map(this.getDisplayStops);
+          if (this.cur_direction == "to") {
+            this.stops.sort((a, b) => (a.order > b.order ? 1 : -1));
+          } else {
+            this.stops.sort((a, b) => (a.order > b.order ? -1 : 1));
+          }
+          
+          base_endpoint
+          .get("/api/route/get/" + this.cur_routeID, {
+            headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+          })
+          .then((response) => {
+            this.routeSchool = response.data.school;
+            this.routeSchoolID = response.data.school_id;
+            /* this.dict = {
+              order: "School",
+              name: this.routeSchool,
+              id: this.routeSchoolID,
+            };
+            this.stops.push(this.dict); */
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+          
+          console.log("Here are the stops");
+          console.log(this.stops);
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
+    submitNewStopReached() {
+      base_endpoint
+        .patch(
+          "/api/updatelogstop",
+          {
+            stop: this.stopSelected.id,
+          },
+          {
+            headers: {
+              Authorization: `Token ${this.$store.state.accessToken}`,
+            },
+          }
+        )
+        .then(() => {
+          this.dialog3 = false;
+        });
+    },
+    getDisplayStops(item) {
+      var pTime = moment.utc(item.pickupTime);
+      var dTime = moment.utc(item.dropoffTime);
+
+      return {
+        id: item.id,
+        order: item.order,
+        name: item.name,
+        pickupTime: pTime.local().format("h:mm A"),
+        dropoffTime: dTime.local().format("h:mm A"),
+        position: { lat: item.latitude, lng: item.longitude },
+        label: {
+          text: item.order.toString(),
+          fontFamily: "Roboto",
+          color: "#ffffff",
+          fontSize: "18px",
+        },
+      };
+    },
     getRouteStatus() {
       base_endpoint
         .get("/api/intransit", {
@@ -255,6 +371,11 @@ export default {
         .then((res) => {
           this.cur_routeInTransit = res.data.in_transit;
           this.cur_routeID = res.data.route_id;
+          this.cur_direction = res.data.direction;
+          this.cur_routeName = res.data.route_name;
+          if (this.cur_routeInTransit) {
+            this.getRequestAllStops();
+          }
         });
     },
   },

@@ -403,7 +403,7 @@
                 Yes, Submit
               </v-btn>
 
-              <v-btn color="success" @click="confirm3 = false"> Cancel </v-btn>
+              <v-btn color="warning" @click="confirm3 = false"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -549,7 +549,7 @@
                 Yes, Submit
               </v-btn>
 
-              <v-btn color="success" @click="confirm2 = false"> Cancel </v-btn>
+              <v-btn color="warning" @click="confirm2 = false"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -601,6 +601,17 @@
               label="School Name"
               :rules="studentSchoolValidateArray"
             ></v-autocomplete>
+
+            <v-text-field
+                v-model="editedStudent.student_email"
+                :rules="studentEmailValidateArray"
+                label="Student Email"
+              ></v-text-field>
+              <v-text-field
+                v-model="editedStudent.phone_number"
+                label="Student Phone Number"
+                append-icon="mdi-phone"
+              ></v-text-field>
 
             <v-btn
               color="success"
@@ -705,6 +716,7 @@ export default {
       studentIDValidateArray: [this.studentIDValidate],
       studentSchoolValidateArray: [this.studentSchoolValidate],
       studentParentValidateArray: [this.studentParentValidate],
+      studentEmailValidateArray: [this.studentEmailValidate],
       csvTaskId: "",
       submitTaskId: "",
       parentCSVData: [],
@@ -731,6 +743,8 @@ export default {
       studentCSVData: [],
       headerStudent: [
         { text: "Name", value: "name" },
+        { text: "Student Email", value: "student_email" },
+        { text: "Student Phone", value: "phone_number" },
         { text: "Parent Email", value: "parent_email" },
         { text: "Student Id", value: "student_id" },
         { text: "School Name", value: "school_name" },
@@ -742,6 +756,8 @@ export default {
       editedStudent: {
         id: "",
         name: "",
+        student_email: "",
+        phone_number: "",
         parent_email: "",
         student_id: "",
         school_name: "",
@@ -824,7 +840,7 @@ export default {
           .post(
             "/api/bulkimportvalidate",
             {
-              headers: ["name", "parent_email", "student_id", "school_name"],
+              headers: ["name", "student_email", "phone_number", "parent_email", "student_id", "school_name"],
               csvdata: this.studentCSVData,
             },
             {
@@ -971,7 +987,7 @@ export default {
           .post(
             "/api/bulkimportsubmit",
             {
-              headers: ["name", "parent_email", "student_id", "school_name"],
+              headers: ["name", "student_email", "phone_number", "parent_email", "student_id", "school_name"],
               csvdata: studentCSVSubmisson,
             },
             {
@@ -1181,6 +1197,28 @@ export default {
         return "Student's parent is required";
       } else {
         return true;
+      }
+    },
+    studentEmailValidate() {
+      if (
+        (this.editedStudent.student_email == null || this.editedStudent.student_email == "")
+      ) {
+        return "Student email is required";
+      } else {
+          const splitStringAt = this.editedStudent.student_email.split("@");
+          if (splitStringAt.length != 2) {
+            return "Please enter a valid email address";
+          } else {
+            const splitStringPeriod = splitStringAt[1].split(".");
+            if (
+              splitStringPeriod.length != 2 ||
+              splitStringPeriod[1].length == 0
+            ) {
+              return "Please enter a valid email address";
+            } else {
+              return true;
+            }
+          }
       }
     },
     reset() {

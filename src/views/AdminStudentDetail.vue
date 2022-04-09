@@ -114,6 +114,7 @@
             <v-form ref="form">
               <v-radio-group v-model="studentDeleteChoice" row dense>
                 <v-radio
+                  v-if="studentAccountState==true"
                   label="Student Login Ability Only"
                   value="loginOnly"
                 ></v-radio>
@@ -219,6 +220,7 @@
         No Route Assigned
       </span>
     </v-card-subtitle>
+    <v-data-table :headers="headers2" :items="stopsInRange"> </v-data-table>
 
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> In Transit Status: </span
@@ -319,8 +321,19 @@ export default {
         { text: "Address", value: "address" },
         { text: "Actions", value: "actions", sortable: false },
       ],
+      headers2: [
+        {
+          text: "Stop Name",
+          align: "start",
+          value: "name",
+        },
+        { text: "Pick Up Time", align: "start", value: "pickupTime" },
+        { text: "Drop Off Time", align: "start", value: "dropoffTime" },
+        { text: "ETA", align: "start", value: "eta" },
+      ],
       schoolItems: [],
       parentItems: [],
+      
       school: null,
       parent: null,
       studentSchool: "",
@@ -331,12 +344,13 @@ export default {
       studentInRangeStatus: "",
       studentParent: "",
       studentParentEmail: "",
+      studentAccountState: null,
       newStudentAccountState: null,
       newStudentEmail: "",
       studentParentAddress: "",
       studentParentPhone: "",
       newStudentName: "",
-      studentDeleteChoice: "loginOnly",
+      studentDeleteChoice: "",
       newStudentId: "",
       newStudentSchool: "",
       newStudentParent: "",
@@ -386,10 +400,15 @@ export default {
           this.newStudentEmail = response.data.studentEmail;
 
           if (this.studentEmail == "" || this.studentEmail == null) {
+            this.studentAccountState = false;
             this.newStudentAccountState = false;
+            this.studentDeleteChoice = "wholeThing";
           } else {
+            this.studentAccountState = true;
             this.newStudentAccountState = true;
+            this.studentDeleteChoice = "loginOnly";
           }
+
           this.studentPhone = response.data.studentPhone;
           this.newStudentPhone = response.data.studentPhone;
 
@@ -502,6 +521,7 @@ export default {
     getDisplayStops(item) {
       var pTime = moment.utc(item.pickupTime);
       var dTime = moment.utc(item.dropoffTime);
+      var etaTime = moment.utc(item.eta);
 
       return {
         name: item.name,
@@ -510,6 +530,7 @@ export default {
         dropoffTime: dTime.local().format("h:mm A"),
         icon: this.stopMapMarker.icon,
         label: this.stopMapMarker.label,
+        eta: etaTime.local().format("h:mm A"),
       };
     },
     getInRangeStops() {
@@ -773,6 +794,7 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.intervalId);
+    
   },
 };
 </script>
