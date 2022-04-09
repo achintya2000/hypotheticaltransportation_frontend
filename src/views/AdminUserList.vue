@@ -8,7 +8,7 @@
         v-if="this.userType!='busDriver'"
       ></create-new-student>
       <send-email :typeOfEmail="'allGA'"
-       v-if="this.userType!='busDriver'"
+       v-if="this.userType=='admin'"
       ></send-email>
       <v-spacer></v-spacer>
       <v-text-field

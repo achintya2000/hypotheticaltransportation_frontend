@@ -220,6 +220,7 @@
         No Route Assigned
       </span>
     </v-card-subtitle>
+    <v-data-table :headers="headers2" :items="stopsInRange"> </v-data-table>
 
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> In Transit Status: </span
@@ -320,8 +321,19 @@ export default {
         { text: "Address", value: "address" },
         { text: "Actions", value: "actions", sortable: false },
       ],
+      headers2: [
+        {
+          text: "Stop Name",
+          align: "start",
+          value: "name",
+        },
+        { text: "Pick Up Time", align: "start", value: "pickupTime" },
+        { text: "Drop Off Time", align: "start", value: "dropoffTime" },
+        { text: "ETA", align: "start", value: "eta" },
+      ],
       schoolItems: [],
       parentItems: [],
+      
       school: null,
       parent: null,
       studentSchool: "",
@@ -509,6 +521,7 @@ export default {
     getDisplayStops(item) {
       var pTime = moment.utc(item.pickupTime);
       var dTime = moment.utc(item.dropoffTime);
+      var etaTime = moment.utc(item.eta);
 
       return {
         name: item.name,
@@ -517,6 +530,7 @@ export default {
         dropoffTime: dTime.local().format("h:mm A"),
         icon: this.stopMapMarker.icon,
         label: this.stopMapMarker.label,
+        eta: etaTime.local().format("h:mm A"),
       };
     },
     getInRangeStops() {

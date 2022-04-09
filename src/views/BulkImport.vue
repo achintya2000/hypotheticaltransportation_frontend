@@ -403,7 +403,7 @@
                 Yes, Submit
               </v-btn>
 
-              <v-btn color="success" @click="confirm3 = false"> Cancel </v-btn>
+              <v-btn color="warning" @click="confirm3 = false"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -549,7 +549,7 @@
                 Yes, Submit
               </v-btn>
 
-              <v-btn color="success" @click="confirm2 = false"> Cancel </v-btn>
+              <v-btn color="warning" @click="confirm2 = false"> Cancel </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
