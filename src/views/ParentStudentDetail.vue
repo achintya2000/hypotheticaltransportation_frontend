@@ -118,6 +118,9 @@ export default {
       buses: [],
       intervalId: null,
       firstBusLoc: true,
+      in_transit: false,
+      parentLat: 0,
+      parentLng: 0,
     };
   },
   methods: {
@@ -125,7 +128,7 @@ export default {
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
     },
-    getStudentInfo() {
+    getStudentInfoInit() {
       base_endpoint
         .get("/api/student/get/" + this.$route.query.id, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
@@ -144,6 +147,41 @@ export default {
           this.studentSchoolId = response.data.school_id;
           this.studentRouteId = response.data.route_id;
           this.studentParentId = response.data.parent_id;
+          this.in_transit = response.data.in_transit;
+
+          this.parentLat = response.data.parentLatitude;
+          this.parentLng = response.data.parentLongitude;
+
+          this.getUserInfo();
+        })
+        .catch((err) => {
+          this.showSnackBar();
+          console.log(err);
+        });
+    },
+    getStudentInfo() {
+      base_endpoint
+        .get("/api/student/get/" + this.$route.query.id, {
+          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        })
+        .then((response) => {
+          console.log("YEET");
+          console.log(response);
+
+          this.studentName = response.data.full_name;
+          this.newStudentName = response.data.full_name;
+          this.studentId = response.data.sid;
+          this.newStudentId = response.data.sid;
+          this.studentSchool = response.data.school;
+          this.newStudentSchool = response.data.school;
+          this.studentRoute = response.data.route;
+          this.studentRouteDescription = response.data.route_description;
+          this.studentParent = response.data.parent;
+          this.newStudentParent = response.data.parent;
+          this.studentSchoolId = response.data.school_id;
+          this.studentRouteId = response.data.route_id;
+          this.studentParentId = response.data.parent_id;
+          this.in_transit = response.data.in_transit;
 
           this.buses = [];
           var busMarker = {
@@ -163,7 +201,10 @@ export default {
               text: response.data.bus_id.toString(),
             },
           };
-          this.buses.push(busMarker);
+
+          if (this.in_transit) {
+            this.buses.push(busMarker);
+          }
         })
         .catch((err) => {
           this.showSnackBar();
@@ -205,68 +246,70 @@ export default {
         });
     },
     getUserInfo() {
+      // base_endpoint
+      //   .get("/api/profile/get/" + this.studentParentId, {
+      //     headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+      //   })
+      //   .then((res) => {
       base_endpoint
-        .get("/api/profile/get/" + this.$store.state.loggedInUserID, {
-          headers: { Authorization: `Token ${this.$store.state.accessToken}` },
+        .get("/api/student/getinrangestops/" + this.$route.query.id, {
+          headers: {
+            Authorization: `Token ${this.$store.state.accessToken}`,
+          },
         })
-        .then((res) => {
-          base_endpoint
-            .get("/api/student/getinrangestops/" + this.$route.query.id, {
-              headers: {
-                Authorization: `Token ${this.$store.state.accessToken}`,
-              },
-            })
-            .then((response) => {
-              this.markers = response.data.map(this.getDisplayStops);
+        .then((response) => {
+          this.markers = response.data.map(this.getDisplayStops);
 
-              var house = {
-                position: {
-                  lat: parseFloat(res.data.latitude),
-                  lng: parseFloat(res.data.longitude),
-                },
-                icon: this.bluePerson.icon,
-                label: this.bluePerson.label,
-              };
-              this.markers.push(house);
+          var house = {
+            position: {
+              lat: parseFloat(this.parentLat),
+              lng: parseFloat(this.parentLng),
+            },
+            icon: this.bluePerson.icon,
+            label: this.bluePerson.label,
+          };
+          this.markers.push(house);
+          console.log("YOTE");
+          console.log(this.markers);
 
-              console.log(this.markers);
+          var bounds = new this.google.maps.LatLngBounds();
+          for (var i = 0; i < this.markers.length; i++) {
+            bounds.extend(this.markers[i].position);
+          }
 
-              var bounds = new this.google.maps.LatLngBounds();
-              for (var i = 0; i < this.markers.length; i++) {
-                bounds.extend(this.markers[i].position);
+          if (this.in_transit) {
+            if (this.firstBusLoc) {
+              if (this.buses.length == 0) {
+                setTimeout(this.getUserInfo, 1000);
+              } else {
+                bounds.extend(this.buses[0].position);
+                this.firstBusLoc = false;
               }
+            }
+          }
 
-              if (this.firstBusLoc) {
-                if (this.buses.length == 0) {
-                  setTimeout(this.getUserInfo, 1000);
-                } else {
-                  bounds.extend(this.buses[0].position);
-                  this.firstBusLoc = false;
-                }
-              }
-
-              this.$refs.mapRef.$mapPromise.then((map) => {
-                map.fitBounds(bounds);
-              });
-            })
-            .catch((err) => {
-              this.showSnackBar();
-              console.log(err);
-            });
+          this.$refs.mapRef.$mapPromise.then((map) => {
+            map.fitBounds(bounds);
+          });
         })
         .catch((err) => {
           this.showSnackBar();
           console.log(err);
         });
+      // })
+      // .catch((err) => {
+      //   this.showSnackBar();
+      //   console.log(err);
+      // });
     },
     validate() {
       this.$refs.form.validate();
     },
   },
   created() {
+    this.getStudentInfoInit();
     this.intervalId = setInterval(this.getStudentInfo, 1000);
     this.getInRangeStops();
-    this.getUserInfo();
   },
   computed: {
     google: gmapApi,

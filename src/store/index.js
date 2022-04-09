@@ -17,7 +17,7 @@ export default new Vuex.Store({
       state.accessToken = access
       window.localStorage.setItem('token', access)
     },
-    updateAdminStatus(state, { isAdmin, userID, userType }) {
+    updateAdminStatus(state, { isAdmin, userID, userType, studentID }) {
       console.log("GOT HERE" + userType)
       state.isAdmin = isAdmin
       state.loggedInUserID = userID
@@ -25,6 +25,7 @@ export default new Vuex.Store({
       window.localStorage.setItem('isAdmin', isAdmin)
       window.localStorage.setItem('userID', userID)
       window.localStorage.setItem('userType', userType)
+      window.localStorage.setItem('studentID', studentID)
     },
     destroyToken(state) {
       state.accessToken = null
@@ -52,6 +53,8 @@ export default new Vuex.Store({
         window.localStorage.removeItem('isAdmin')
         window.localStorage.removeItem('userID')
         window.localStorage.removeItem('userType')
+        window.localStorage.removeItem('studentID')
+
       }
     },
     userLogin(context, usercredentials) {
@@ -87,7 +90,7 @@ export default new Vuex.Store({
           headers: { Authorization: `Token ${credentials.token}` },
         })
           .then(response => {
-            context.commit('updateAdminStatus', { isAdmin: response.data.is_superuser.toString(), userID: response.data.id, userType: response.data.type })
+            context.commit('updateAdminStatus', { isAdmin: response.data.is_superuser.toString(), userID: response.data.id, userType: response.data.type, studentID: response.data.studentid })
             resolve()
           })
           .catch((err) => {

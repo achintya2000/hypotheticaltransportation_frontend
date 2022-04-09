@@ -55,8 +55,12 @@
         </v-card>
       </v-dialog>
     </v-card-title>
-    <v-card-subtitle v-if="this.activeRouteID==null"> To begin editing, select a route below </v-card-subtitle>
-    <v-card-subtitle v-if="this.activeRouteID!=null"> You can now add houses to the route and create and modify stops </v-card-subtitle>
+    <v-card-subtitle v-if="this.activeRouteID == null">
+      To begin editing, select a route below
+    </v-card-subtitle>
+    <v-card-subtitle v-if="this.activeRouteID != null">
+      You can now add houses to the route and create and modify stops
+    </v-card-subtitle>
 
     <v-row>
       <v-col width="50%">
@@ -143,46 +147,45 @@
       </v-col>
       <v-col width="50%">
         <div class="map" id="map">
-        <GmapMap
-          style="width: 100%; height: 400px"
-          ref="mapRef"
-          :center="center"
-          @click="addStopMarker($event)"
-          
-        >
-          <GmapMarker
-            :key="index"
-            v-for="(m, index) in markers"
-            :position="m.position"
-            @click="toggleInfo(m)"
-            :icon="getMarkerIcons(m)"
-            :label="getMarkerLabels(m)"
-          />
-          <GmapMarker
-            :key="'stop_' + index"
-            v-for="(m, index) in stops"
-            :position="m.position"
-            :icon="stopMapMarker.icon"
-            :label="m.label"
-            :draggable="true"
-            @drag="moveCircle($event, index)"
-            @dragend="updateStopPosition($event, m)"
-          />
-          <GmapCircle
-            :key="'circle_' + index"
-            v-for="(m, index) in stops"
-            :center="m.position"
-            :radius="483"
-            :visible="true"
-            :options="{
-              strokeColor: '#FF0000',
-              strokeOpacity: 0.8,
-              strokeWeight: 2,
-              fillColor: '#FF0000',
-              fillOpacity: 0.35,
-            }"
-          />
-        </GmapMap>
+          <GmapMap
+            style="width: 100%; height: 400px"
+            ref="mapRef"
+            :center="center"
+            @click="addStopMarker($event)"
+          >
+            <GmapMarker
+              :key="index"
+              v-for="(m, index) in markers"
+              :position="m.position"
+              @click="toggleInfo(m)"
+              :icon="getMarkerIcons(m)"
+              :label="getMarkerLabels(m)"
+            />
+            <GmapMarker
+              :key="'stop_' + index"
+              v-for="(m, index) in stops"
+              :position="m.position"
+              :icon="stopMapMarker.icon"
+              :label="m.label"
+              :draggable="true"
+              @drag="moveCircle($event, index)"
+              @dragend="updateStopPosition($event, m)"
+            />
+            <GmapCircle
+              :key="'circle_' + index"
+              v-for="(m, index) in stops"
+              :center="m.position"
+              :radius="483"
+              :visible="true"
+              :options="{
+                strokeColor: '#FF0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#FF0000',
+                fillOpacity: 0.35,
+              }"
+            />
+          </GmapMap>
         </div>
       </v-col>
     </v-row>
@@ -250,6 +253,7 @@
           </v-dialog>
         </v-card-title>
         <v-data-table
+          v-model="selectedRoute"
           :headers="headers"
           :items="routes"
           :search="search"
@@ -438,6 +442,7 @@ export default {
         routeNumStudent: 0,
       },
       reorderedStop: null,
+      selectedRoute: [],
     };
   },
   methods: {
@@ -541,7 +546,7 @@ export default {
         isInRange: item.inRange,
       };
     },
-    getRequestAllRoutes() {
+    getRequestAllRoutes(routeCreated) {
       this.snackbar3 = true;
       this.snackbar2 = false;
       base_endpoint
@@ -550,6 +555,18 @@ export default {
         })
         .then((response) => {
           this.routes = response.data.map(this.getDisplayRoute);
+
+          console.log("HELLLOOOO");
+          if (routeCreated) {
+            console.log(this.activeRouteID);
+            console.log(this.routes);
+            this.routes.forEach((e) => {
+              if (e.id == this.activeRouteID) {
+                this.selectedRoute.push(e);
+              }
+            });
+          }
+
           this.snackbar3 = false;
         })
         .catch((err) => {
@@ -587,7 +604,7 @@ export default {
             map.fitBounds(bounds);
           });
 
-          this.getRequestAllRoutes();
+          this.getRequestAllRoutes(false);
         })
         .catch((err) => {
           this.showSnackBarMapError();
@@ -605,7 +622,7 @@ export default {
           this.snackbar3 = false;
           this.markers = response.data.map(this.getDisplayMarkers);
 
-          this.getRequestAllRoutes();
+          this.getRequestAllRoutes(false);
         })
         .catch((err) => {
           this.showSnackBarMapError();
@@ -636,8 +653,10 @@ export default {
             },
           }
         )
-        .then(() => {
-          this.getRequestAllRoutes();
+        .then((res) => {
+          console.log(res);
+          this.activeRouteID = res.data.id;
+          this.getRequestAllRoutes(true);
           this.description = "";
         })
         .catch((err) => {
@@ -790,7 +809,7 @@ export default {
         .then((response) => {
           console.log(response);
           this.stops = [];
-          this.getRequestAllRoutes();
+          this.getRequestAllRoutes(false);
         })
         .catch((err) => {
           console.log(err);
@@ -936,7 +955,7 @@ export default {
     },
   },
   created() {
-    this.getRequestAllRoutes();
+    this.getRequestAllRoutes(false);
     this.getSchoolInfo();
     this.getMarkerDataInitial();
   },
@@ -965,14 +984,14 @@ tr.v-data-table__selected {
   text-decoration: underline;
   cursor: pointer;
 }
-.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {  
+.row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {
   cursor: pointer;
 }
 #map {
-    background-color: black;
-    padding-top: 2px;
-    padding-right: 2px;
-    padding-bottom: 2px;
-    padding-left: 2px;
+  background-color: black;
+  padding-top: 2px;
+  padding-right: 2px;
+  padding-bottom: 2px;
+  padding-left: 2px;
 }
 </style>
