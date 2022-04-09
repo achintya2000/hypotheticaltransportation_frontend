@@ -634,12 +634,14 @@ export default {
             bounds.extend(this.markers[i].position);
           }
 
-          if (this.firstBusLoc) {
-            if (this.buses.length == 0) {
-              setTimeout(this.getRouteMarkers, 1000);
-            } else {
-              bounds.extend(this.buses[0].position);
-              this.firstBusLoc = false;
+          if (this.routeInTransit) {
+            if (this.firstBusLoc) {
+              if (this.buses.length == 0) {
+                setTimeout(this.getRouteMarkers, 1000);
+              } else {
+                bounds.extend(this.buses[0].position);
+                this.firstBusLoc = false;
+              }
             }
           }
 

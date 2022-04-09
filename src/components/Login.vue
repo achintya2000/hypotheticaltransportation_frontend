@@ -95,7 +95,6 @@
       </template>
     </v-snackbar>
   </v-dialog>
-  
 </template>
 
 <script>
@@ -111,7 +110,7 @@ export default {
       dialog: false,
       incorrectAuth: false,
       valid: true,
-       valid2: true,
+      valid2: true,
       show: false,
       loginEmailRules: [
         (v) => !!v || "Required",
@@ -121,7 +120,7 @@ export default {
         (v) => !!v || "Required",
         (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
       ],
-      
+
       emailRules: [
         (v) => !!v || "Required",
         (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
@@ -135,12 +134,9 @@ export default {
   methods: {
     forgetPassword() {
       base_endpoint
-        .post(
-          "/api/forgotpassword",
-          {
-            email: this.username2,
-          },
-        )
+        .post("/api/forgotpassword", {
+          email: this.username2,
+        })
         .then((response) => {
           console.log(response);
           this.$router.push({
@@ -167,7 +163,14 @@ export default {
               token: localStorage.getItem("token"),
             })
             .then(() => {
-              this.$router.push({ name: "ParentDetails" });
+              if (localStorage.getItem("userType") == "student") {
+                this.$router.push({
+                  name: "ParentStudentDetail",
+                  query: { id: localStorage.getItem("studentID") },
+                });
+              } else {
+                this.$router.push({ name: "ParentDetails" });
+              }
             })
             .catch((err) => {
               console.log(err);

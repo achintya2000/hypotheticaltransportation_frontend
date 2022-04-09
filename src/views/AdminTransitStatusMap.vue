@@ -31,7 +31,7 @@
       style="width: 100%; height: 400px"
       ref="mapRef"
       :center="center"
-      :zoom="12"
+      :zoom="6"
     >
       <GmapMarker
         :key="index"
@@ -52,7 +52,7 @@ import { gmapApi } from "vue2-google-maps-withscopedautocomp";
 export default {
   data() {
     return {
-      center: { lat: 36.001465, lng: -78.939133 },
+      center: { lat: 39.930886713537696, lng: -98.76953125 },
       search: "",
       userType: "",
       userID: "",
@@ -79,6 +79,14 @@ export default {
     ...mapActions(["snackBar"]),
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
+    geolocate() {
+      navigator.geolocation.getCurrentPosition((position) => {
+        this.center = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+      });
     },
     viewItem(item) {
       this.$router.push({ name: "AdminRouteDetail", query: { id: item.id } });
@@ -129,13 +137,17 @@ export default {
           });
 
           if (this.firstBusLoc) {
-            var bounds = new this.google.maps.LatLngBounds();
-            for (var i = 0; i < this.markers.length; i++) {
-              bounds.extend(this.markers[i].position);
+            if (this.markers.length > 0) {
+              var bounds = new this.google.maps.LatLngBounds();
+              for (var i = 0; i < this.markers.length; i++) {
+                bounds.extend(this.markers[i].position);
+              }
+              this.$refs.mapRef.$mapPromise.then((map) => {
+                map.fitBounds(bounds);
+              });
+            } else {
+              this.geolocate();
             }
-            this.$refs.mapRef.$mapPromise.then((map) => {
-              map.fitBounds(bounds);
-            });
             this.firstBusLoc = false;
           }
         })

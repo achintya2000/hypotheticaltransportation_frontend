@@ -342,13 +342,17 @@ export default {
           });
 
           if (this.firstBusLoc) {
-            var bounds = new this.google.maps.LatLngBounds();
-            for (var i = 0; i < this.markers.length; i++) {
-              bounds.extend(this.markers[i].position);
+            if (this.markers.length > 0) {
+              var bounds = new this.google.maps.LatLngBounds();
+              for (var i = 0; i < this.markers.length; i++) {
+                bounds.extend(this.markers[i].position);
+              }
+              this.$refs.mapRef.$mapPromise.then((map) => {
+                map.fitBounds(bounds);
+              });
+            } else {
+              this.geolocate();
             }
-            this.$refs.mapRef.$mapPromise.then((map) => {
-              map.fitBounds(bounds);
-            });
             this.firstBusLoc = false;
           }
         })
@@ -378,6 +382,14 @@ export default {
       this.$router.push({
         name: "AdminStudentDetail",
         query: { id: row.studentId },
+      });
+    },
+    geolocate() {
+      navigator.geolocation.getCurrentPosition((position) => {
+        this.center = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
       });
     },
     getSchoolInfo() {
