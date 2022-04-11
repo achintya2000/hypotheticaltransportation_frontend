@@ -174,10 +174,10 @@
           <span class="black--text font-weight-bold"> School: </span>
           <span
             text
-            @click="viewSchool(studentSchoolId)"
+            @click="viewSchool(studentSchool.id)"
             class="txt blue--text text--darken-4"
           >
-            {{ studentSchool }}
+            {{ studentSchool.name }}
           </span>
         </v-card-subtitle>
 
@@ -251,10 +251,10 @@
           <span class="black--text font-weight-bold"> Parent: </span>
           <span
             text
-            @click="viewParent(studentParentId)"
+            @click="viewParent(studentParent.id)"
             class="txt blue--text text--darken-4"
           >
-            {{ studentParent }}
+            {{ studentParent.full_name }}
           </span>
         </v-card-subtitle>
         <v-card-subtitle>
@@ -398,13 +398,22 @@ export default {
           console.log("YOOO");
           console.log(response);
           console.log(this.parentItems);
-          if (this.dialog2 == false) {
+          if (this.dialog2 == false && this.dialog == false) {
             this.newStudentName = response.data.full_name;
             this.newStudentSchool = response.data.school;
             this.newStudentId = response.data.sid;
             this.newStudentParent = response.data.parent;
             this.newStudentEmail = response.data.studentEmail;
             this.newStudentPhone = response.data.studentPhone;
+            if (this.studentEmail == "" || this.studentEmail == null) {
+              this.studentAccountState = false;
+              this.newStudentAccountState = false;
+              this.studentDeleteChoice = "wholeThing";
+            } else {
+              this.studentAccountState = true;
+              this.newStudentAccountState = true;
+              this.studentDeleteChoice = "loginOnly";
+            }
           }
           this.studentName = response.data.full_name;
 
@@ -425,15 +434,7 @@ export default {
 
           this.studentEmail = response.data.studentEmail;
 
-          if (this.studentEmail == "" || this.studentEmail == null) {
-            this.studentAccountState = false;
-            this.newStudentAccountState = false;
-            this.studentDeleteChoice = "wholeThing";
-          } else {
-            this.studentAccountState = true;
-            this.newStudentAccountState = true;
-            this.studentDeleteChoice = "loginOnly";
-          }
+          
 
           this.studentPhone = response.data.studentPhone;
 
@@ -592,6 +593,7 @@ export default {
               },
             })
             .then((response) => {
+              this.markers = [];
               this.markers = response.data.map(this.getDisplayStops);
 
               var house = {
@@ -671,6 +673,7 @@ export default {
           this.dialog2 = false;
           this.intervalId = setInterval(this.getStudentInfo, 1000);
           this.getInRangeStops();
+          this.getUserInfo();
         })
         .catch((err) => {
           this.showSnackBar();
@@ -750,14 +753,14 @@ export default {
       }
     },
     studentSchoolValidate() {
-      if (this.school == null || this.school == "") {
+      if (this.newStudentSchool == null || this.newStudentSchool == "") {
         return "Student school is required";
       } else {
         return true;
       }
     },
     studentParentValidate() {
-      if (this.parent == null || this.parent == "") {
+      if (this.newStudentParent == null || this.newStudentParent == "") {
         return "Student's parent is required";
       } else {
         return true;

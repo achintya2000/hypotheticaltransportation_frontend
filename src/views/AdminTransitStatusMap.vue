@@ -21,11 +21,12 @@
           @click:row="viewItem"
           class="row-pointer"
         >
-          <template v-slot:[`item.routeComplete`]="{ item }">
-            <v-icon v-if="item.routeComplete == false" color="red">
-              mdi-close
-            </v-icon>
-            <v-icon v-if="item.routeComplete == true"> mdi-check </v-icon>
+          <template v-slot:[`item.routeName`]="{ item }">
+            <span text 
+            @click="viewRoute(item.routeID)"
+            class="txt blue--text text--darken-4">
+            {{ item.routeName }} 
+            </span>
           </template>
         </v-data-table>
       </v-col>
@@ -86,6 +87,9 @@ export default {
     ...mapActions(["snackBar"]),
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
+    viewRoute(item) {
+      this.$router.push({ name: "AdminRouteDetail", query: { id: item } });
     },
     geolocate() {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -184,4 +188,8 @@ export default {
 .row-pointer > .v-data-table__wrapper > table > tbody > tr:hover {
   cursor: pointer;
 }
+.txt:hover {
+          text-decoration: underline;
+          cursor: pointer;
+      }
 </style>

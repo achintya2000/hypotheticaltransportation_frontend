@@ -16,7 +16,7 @@
         </v-card-subtitle>
         <v-card-subtitle>
           <span class="black--text font-weight-bold"> School: </span
-          ><span class="black--text"> {{ studentSchool }} </span>
+          ><span class="black--text"> {{ studentSchool.name }} </span>
         </v-card-subtitle>
 
         <v-card-subtitle>
@@ -31,7 +31,7 @@
 
         <v-card-subtitle>
           <span class="black--text font-weight-bold"> Parent: </span
-          ><span class="black--text"> {{ studentParent }} </span>
+          ><span class="black--text"> {{ studentParent.full_name }} </span>
         </v-card-subtitle>
 
         <v-data-table :headers="headers" :items="stopsInRange"> </v-data-table>
