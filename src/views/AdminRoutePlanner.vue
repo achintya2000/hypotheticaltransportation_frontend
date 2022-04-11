@@ -562,7 +562,9 @@ export default {
             console.log(this.routes);
             this.routes.forEach((e) => {
               if (e.id == this.activeRouteID) {
+                this.selectedRoute = [];
                 this.selectedRoute.push(e);
+                this.canCreateStops = true;
               }
             });
           }

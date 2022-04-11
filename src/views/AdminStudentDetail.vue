@@ -114,7 +114,7 @@
             <v-form ref="form">
               <v-radio-group v-model="studentDeleteChoice" row dense>
                 <v-radio
-                  v-if="studentAccountState==true"
+                  v-if="studentAccountState == true"
                   label="Student Login Ability Only"
                   value="loginOnly"
                 ></v-radio>
@@ -192,7 +192,11 @@
             {{ studentRoute }}
           </span>
 
-          <span text class="red--text" v-if="studentRoute == 'No route assigned'">
+          <span
+            text
+            class="red--text"
+            v-if="studentRoute == 'No route assigned'"
+          >
             No Route Assigned
           </span>
         </v-card-subtitle>
@@ -203,7 +207,8 @@
             text
             class="black--text"
             v-if="
-              studentRoute != 'No route assigned' && studentInRangeStatus == true
+              studentRoute != 'No route assigned' &&
+              studentInRangeStatus == true
             "
           >
             Stop(s) in Range
@@ -212,13 +217,18 @@
             text
             class="red--text"
             v-if="
-              studentRoute != 'No route assigned' && studentInRangeStatus == false
+              studentRoute != 'No route assigned' &&
+              studentInRangeStatus == false
             "
           >
             Stop(s) not in Range
           </span>
 
-          <span text class="red--text" v-if="studentRoute == 'No route assigned'">
+          <span
+            text
+            class="red--text"
+            v-if="studentRoute == 'No route assigned'"
+          >
             No Route Assigned
           </span>
         </v-card-subtitle>
@@ -261,7 +271,6 @@
         </v-card-subtitle>
       </v-col>
       <v-col>
-
         <GmapMap
           ref="mapRef"
           style="width: 100%; height: 400px"
@@ -285,8 +294,6 @@
         </GmapMap>
       </v-col>
     </v-row>
-    
-    
   </v-card>
 </template>
 
@@ -342,7 +349,7 @@ export default {
       ],
       schoolItems: [],
       parentItems: [],
-      
+
       school: null,
       parent: null,
       studentSchool: "",
@@ -388,22 +395,22 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-           if (this.dialog2 == false) {
-             this.newStudentName = response.data.full_name;
-             this.newStudentId = response.data.sid;
-             this.newStudentParent = response.data.parent;
-             this.newStudentEmail = response.data.studentEmail;
-             this.newStudentPhone = response.data.studentPhone;
-           }
+          if (this.dialog2 == false) {
+            this.newStudentName = response.data.full_name;
+            this.newStudentId = response.data.sid;
+            this.newStudentParent = response.data.parent;
+            this.newStudentEmail = response.data.studentEmail;
+            this.newStudentPhone = response.data.studentPhone;
+          }
           this.studentName = response.data.full_name;
-          
+
           this.studentId = response.data.sid;
-          
+
           this.studentSchool = response.data.school;
           this.newStudentSchool = response.data.school;
           this.studentRoute = response.data.route;
           this.studentParent = response.data.parent;
-          
+
           this.studentParentEmail = response.data.email;
           this.studentParentAddress = response.data.address;
           this.studentParentPhone = response.data.phone;
@@ -413,7 +420,6 @@ export default {
           this.studentInRangeStatus = response.data.inRange;
 
           this.studentEmail = response.data.studentEmail;
-          
 
           if (this.studentEmail == "" || this.studentEmail == null) {
             this.studentAccountState = false;
@@ -426,7 +432,6 @@ export default {
           }
 
           this.studentPhone = response.data.studentPhone;
-          
 
           this.routeInTransit = response.data.in_transit;
           this.routeInTransitBus = response.data.bus_id;
@@ -572,7 +577,7 @@ export default {
     },
     getUserInfo() {
       base_endpoint
-        .get("/api/profile/get/" + this.$store.state.loggedInUserID, {
+        .get("/api/student/get/" + this.$route.query.id, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((res) => {
@@ -587,8 +592,8 @@ export default {
 
               var house = {
                 position: {
-                  lat: parseFloat(res.data.latitude),
-                  lng: parseFloat(res.data.longitude),
+                  lat: parseFloat(res.data.parentLatitude),
+                  lng: parseFloat(res.data.parentLongitude),
                 },
                 icon: this.bluePerson.icon,
                 label: this.bluePerson.label,
@@ -810,7 +815,6 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.intervalId);
-    
   },
 };
 </script>
