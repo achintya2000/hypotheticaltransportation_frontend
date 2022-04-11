@@ -4,6 +4,8 @@
       {{ routeName }}
       <v-spacer></v-spacer>
 
+      <v-btn outlined @click="goToLog"> View Log </v-btn>
+
       <v-btn
         style="margin: 10px"
         @click="planNewRoute"
@@ -210,8 +212,7 @@
         </v-card-subtitle>
 
         <v-card-subtitle>
-          <span class="black--text font-weight-bold"> In Transit Status: </span
-          >
+          <span class="black--text font-weight-bold"> In Transit Status: </span>
           <span text class="black--text" v-if="routeInTransit == true">
             Bus In Transit
           </span>
@@ -439,12 +440,12 @@ export default {
             this.newRouteName = response.data.name;
             this.newRouteDescription = response.data.description;
           }
-          
+
           this.routeSchool = response.data.school;
           this.routeSchoolID = response.data.school_id;
           this.newRouteSchool = response.data.school;
           this.routeDescription = response.data.description;
-          
+
           this.oldSchoolID = response.data.school.id;
           this.routeStatus = response.data.complete;
 
@@ -685,6 +686,12 @@ export default {
     },
     resetValidation() {
       this.$refs.form.resetValidation();
+    },
+    goToLog() {
+      this.$router.push({
+        name: "AdminTransitLog",
+        query: { name: this.routeName },
+      });
     },
   },
   created() {

@@ -185,7 +185,7 @@
         </GmapMap>
       </v-col>
     </v-row>
-    
+
     <v-card-title> Bus Routes </v-card-title>
 
     <v-data-table
@@ -234,6 +234,7 @@ import { mapActions } from "vuex";
 import moment from "moment";
 import SendEmail from "../components/SendEmail.vue";
 import { gmapApi } from "vue2-google-maps-withscopedautocomp";
+import { schoolMapMarker } from "../assets/markers";
 
 export default {
   components: {
@@ -241,6 +242,8 @@ export default {
   },
   data() {
     return {
+      schoolMarker: null,
+      schoolMapMarker,
       center: { lat: 36.001465, lng: -78.939133 },
       markers: [],
       intervalId: null,
@@ -330,6 +333,7 @@ export default {
           this.logs = response.data.map(this.getDisplayLog);
           //this.$store.state.addresses = response.data;
           this.markers = [];
+          this.markers.push(this.schoolMarker);
 
           this.logs.forEach((e) => {
             this.markers.push({
@@ -421,6 +425,16 @@ export default {
           this.newBusArriveTime = newarrTime.local().format("HH:mm");
           var newdepTime = moment.utc(response.data.departureTime);
           this.newBusDepTime = newdepTime.local().format("HH:mm");
+
+          this.schoolMarker = {
+            position: { lat: this.latitude, lng: this.longitude },
+            icon: schoolMapMarker.icon,
+            label: schoolMapMarker.label,
+          };
+
+          this.markers.push(this.schoolMarker);
+
+          this.intervalId = setInterval(this.getRequestAllRoutes, 1000);
         })
         .catch((err) => {
           this.showSnackBar();
@@ -611,7 +625,7 @@ export default {
     this.getSchoolRoutes();
     this.getStudents();
 
-    this.intervalId = setInterval(this.getRequestAllRoutes, 1000);
+    //this.intervalId = setInterval(this.getRequestAllRoutes, 1000);
   },
   beforeDestroy() {
     clearInterval(this.intervalId);
