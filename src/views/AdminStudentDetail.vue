@@ -32,7 +32,7 @@
                 :rules="studentIDValidateArray"
               ></v-text-field>
               <v-autocomplete
-                v-model="parent"
+                v-model="newStudentParent"
                 :items="parentItems"
                 item-text="full_name"
                 label="Parent"
@@ -41,7 +41,7 @@
               ></v-autocomplete>
 
               <v-autocomplete
-                v-model="school"
+                v-model="newStudentSchool"
                 :items="schoolItems"
                 item-text="name"
                 label="School Name"
@@ -71,7 +71,6 @@
                 class="mr-4"
                 @click="updateStudent"
                 :disabled="!valid"
-                type="submit"
               >
                 Save
               </v-btn>
@@ -390,6 +389,7 @@ export default {
         .then((response) => {
            if (this.dialog2 == false) {
              this.newStudentName = response.data.full_name;
+             this.newStudentSchool = response.data.school;
              this.newStudentId = response.data.sid;
              this.newStudentParent = response.data.parent;
              this.newStudentEmail = response.data.studentEmail;
@@ -400,7 +400,7 @@ export default {
           this.studentId = response.data.sid;
           
           this.studentSchool = response.data.school;
-          this.newStudentSchool = response.data.school;
+          
           this.studentRoute = response.data.route;
           this.studentParent = response.data.parent;
           
@@ -628,20 +628,17 @@ export default {
         });
     },
     updateStudent() {
-      console.log(this.school.id);
-      console.log(this.parent.id);
-      this.dialog2 = false;
       base_endpoint
         .patch(
           "/api/student/update/" + this.$route.query.id,
           {
             full_name: this.newStudentName,
             sid: this.newStudentId,
-            school: this.school.id,
+            school: this.newStudentSchool.id,
             route: this.studentRoute,
             email: this.newStudentEmail,
             phone: this.newStudentPhone,
-            parent: this.parent.id,
+            parent: this.newStudentParent.id,
             profile: this.newStudentAccountState,
           },
           {
@@ -653,6 +650,7 @@ export default {
         .then((response) => {
           console.log(response);
           clearInterval(this.intervalId);
+          this.dialog2 = false;
           this.intervalId = setInterval(this.getStudentInfo, 1000);
         })
         .catch((err) => {
