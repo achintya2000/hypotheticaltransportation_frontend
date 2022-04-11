@@ -31,6 +31,7 @@
                 label="Student ID"
                 :rules="studentIDValidateArray"
               ></v-text-field>
+
               <v-autocomplete
                 v-model="newStudentParent"
                 :items="parentItems"
@@ -394,20 +395,23 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
-           if (this.dialog2 == false) {
-             this.newStudentName = response.data.full_name;
-             this.newStudentSchool = response.data.school;
-             this.newStudentId = response.data.sid;
-             this.newStudentParent = response.data.parent;
-             this.newStudentEmail = response.data.studentEmail;
-             this.newStudentPhone = response.data.studentPhone;
-           }
+          console.log("YOOO");
+          console.log(response);
+          console.log(this.parentItems);
+          if (this.dialog2 == false) {
+            this.newStudentName = response.data.full_name;
+            this.newStudentSchool = response.data.school;
+            this.newStudentId = response.data.sid;
+            this.newStudentParent = response.data.parent;
+            this.newStudentEmail = response.data.studentEmail;
+            this.newStudentPhone = response.data.studentPhone;
+          }
           this.studentName = response.data.full_name;
 
           this.studentId = response.data.sid;
 
           this.studentSchool = response.data.school;
-          
+
           this.studentRoute = response.data.route;
           this.studentParent = response.data.parent;
 
@@ -633,6 +637,15 @@ export default {
         });
     },
     updateStudent() {
+      console.log("HERE");
+      console.log(this.newStudentName);
+      console.log(this.newStudentId);
+      console.log(this.newStudentSchool);
+      console.log(this.studentRoute);
+      console.log(this.newStudentEmail);
+      console.log(this.newStudentPhone);
+      console.log(this.newStudentParent);
+      console.log(this.newStudentAccountState);
       base_endpoint
         .patch(
           "/api/student/update/" + this.$route.query.id,
