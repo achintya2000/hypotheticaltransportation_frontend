@@ -4,7 +4,11 @@
       Your Routes
       <v-spacer></v-spacer>
 
-      <v-dialog v-model="dialog" width="500" v-if="this.userType=='busDriver'">
+      <v-dialog
+        v-model="dialog"
+        width="500"
+        v-if="this.userType == 'busDriver'"
+      >
         <template v-slot:activator="{ on, attrs }">
           <v-btn style="margin: 10px" outlined v-bind="attrs" v-on="on">
             Start A Run
@@ -118,6 +122,10 @@
         {{ this.routeErrorText }}
       </v-snackbar>
 
+      <v-snackbar v-model="routeForceStart" outlines color="green">
+        Run Force Started
+      </v-snackbar>
+
       <v-snackbar v-model="routeStop" outlines color="green">
         Run Stopped
       </v-snackbar>
@@ -147,8 +155,8 @@
         <v-icon v-if="item.routeComplete == true"> mdi-check </v-icon>
       </template>
       <template v-slot:[`item.inTransit`]="{ item }">
-        <div v-if="item.inTransit==true"> In Transit </div>
-        <div v-if="item.inTransit==false"> Not In Transit </div>
+        <div v-if="item.inTransit == true">In Transit</div>
+        <div v-if="item.inTransit == false">Not In Transit</div>
       </template>
     </v-data-table>
   </v-card>
@@ -166,6 +174,7 @@ export default {
       routeSuccess: false,
       routeError: false,
       routeStop: false,
+      routeForceStart: false,
       routeErrorText: "",
       radioGroup: null,
       busNum: "",
@@ -178,7 +187,7 @@ export default {
       userType: "",
       cur_direction: "",
       userID: "",
-      stops:  [],
+      stops: [],
       routeSchool: "",
       routeSchoolID: "",
       headers: [
@@ -274,37 +283,46 @@ export default {
         });
     },
     startRun() {
-      if ((this.busNum != null && this.busNum != "") && 
-          (this.selectedRoute != null && this.selectedRoute != "") && 
-          (this.radioGroup != null && this.radioGroup != "")) {
-          base_endpoint
-            .post(
-              "/api/startrun",
-              {
-                route: this.selectedRoute.id,
-                bus: this.busNum,
-                direction: this.radioGroup,
-                forcesubmit: this.forceSubmitRoute,
+      if (
+        this.busNum != null &&
+        this.busNum != "" &&
+        this.selectedRoute != null &&
+        this.selectedRoute != "" &&
+        this.radioGroup != null &&
+        this.radioGroup != ""
+      ) {
+        base_endpoint
+          .post(
+            "/api/startrun",
+            {
+              route: this.selectedRoute.id,
+              bus: this.busNum,
+              direction: this.radioGroup,
+              forcesubmit: this.forceSubmitRoute,
+            },
+            {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
               },
-              {
-                headers: {
-                  Authorization: `Token ${this.$store.state.accessToken}`,
-                },
-              }
-            )
-            .then((res) => {
-              console.log(res);
-              if (res.data.error != "") {
-                this.routeErrorText = res.data.error;
-                this.routeError = true;
-                this.forceSubmitRoute = true;
-              } else {
-                this.routeSuccess = true;
-              }
+            }
+          )
+          .then((res) => {
+            console.log(res);
+            if (this.forceSubmitRoute == true) {
+              this.routeForceStart = true;
               this.dialog = false;
-              this.getRouteStatus();
-            });
-          }
+            }
+            if (res.data.error != "") {
+              this.routeErrorText = res.data.error;
+              this.routeError = true;
+              this.forceSubmitRoute = true;
+            } else {
+              this.routeSuccess = true;
+              this.dialog = false;
+            }
+            this.getRouteStatus();
+          });
+      }
     },
     stopRun() {
       base_endpoint
@@ -339,19 +357,21 @@ export default {
           } else {
             this.stops.sort((a, b) => (a.order > b.order ? -1 : 1));
           }
-          
+
           base_endpoint
-          .get("/api/route/get/" + this.cur_routeID, {
-            headers: { Authorization: `Token ${this.$store.state.accessToken}` },
-          })
-          .then((response) => {
-            this.routeSchool = response.data.school;
-            this.routeSchoolID = response.data.school_id;
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-          
+            .get("/api/route/get/" + this.cur_routeID, {
+              headers: {
+                Authorization: `Token ${this.$store.state.accessToken}`,
+              },
+            })
+            .then((response) => {
+              this.routeSchool = response.data.school;
+              this.routeSchoolID = response.data.school_id;
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+
           console.log("Here are the stops");
           console.log(this.stops);
         })

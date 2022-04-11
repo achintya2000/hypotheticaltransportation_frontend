@@ -19,40 +19,42 @@
       class="row-pointer"
     >
       <template v-slot:[`item.routeComplete`]="{ item }">
-        <v-icon v-if="item.routeComplete==false" color="red"> mdi-close </v-icon>
-        <v-icon v-if="item.routeComplete==true"> mdi-check </v-icon>
+        <v-icon v-if="item.routeComplete == false" color="red">
+          mdi-close
+        </v-icon>
+        <v-icon v-if="item.routeComplete == true"> mdi-check </v-icon>
       </template>
-      
+
       <template v-slot:[`item.driverName`]="{ item }">
-        <span text 
-        @click="viewUser(item.driverID)"
-         class="txt blue--text text--darken-4">
-        {{ item.driverName }} 
+        <span
+          text
+          @click="viewUser(item.driverID)"
+          class="txt blue--text text--darken-4"
+        >
+          {{ item.driverName }}
         </span>
       </template>
       <template v-slot:[`item.schoolName`]="{ item }">
-        <span text 
-        @click="viewSchool(item.schoolID)"
-         class="txt blue--text text--darken-4">
-        {{ item.schoolName }} 
+        <span
+          text
+          @click="viewSchool(item.schoolID)"
+          class="txt blue--text text--darken-4"
+        >
+          {{ item.schoolName }}
         </span>
       </template>
       <template v-slot:[`item.routeName`]="{ item }">
-        <span text 
-        @click="viewRoute(item.routeID)"
-         class="txt blue--text text--darken-4">
-        {{ item.routeName }} 
+        <span
+          text
+          @click="viewRoute(item.routeID)"
+          class="txt blue--text text--darken-4"
+        >
+          {{ item.routeName }}
         </span>
       </template>
       <template v-slot:[`item.direction`]="{ item }">
-       <span
-            v-if="item.direction == 'to'"
-            >To-School</span
-          >
-          <span
-            v-if="item.direction != 'to'"
-            >From-School</span
-          >
+        <span v-if="item.direction == 'to'">To-School</span>
+        <span v-if="item.direction != 'to'">From-School</span>
       </template>
     </v-data-table>
   </v-card>
@@ -96,7 +98,7 @@ export default {
         driverName: item.driver_name,
         busNumber: item.bus,
         schoolID: item.school_id,
-        schoolName: item.school_name ,
+        schoolName: item.school_name,
         routeID: item.route_id,
         routeName: item.route_name,
         direction: item.direction,
@@ -133,13 +135,14 @@ export default {
     this.userType = window.localStorage.getItem("userType");
     this.userID = window.localStorage.getItem("userID");
     this.getRequestAllRoutes();
+    this.search = this.$route.query.name;
   },
 };
 </script>
 
 <style>
 .txt:hover {
-          text-decoration: underline;
-          cursor: pointer;
-      }
+  text-decoration: underline;
+  cursor: pointer;
+}
 </style>
