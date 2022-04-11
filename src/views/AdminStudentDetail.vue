@@ -670,6 +670,7 @@ export default {
           clearInterval(this.intervalId);
           this.dialog2 = false;
           this.intervalId = setInterval(this.getStudentInfo, 1000);
+          this.getInRangeStops();
         })
         .catch((err) => {
           this.showSnackBar();

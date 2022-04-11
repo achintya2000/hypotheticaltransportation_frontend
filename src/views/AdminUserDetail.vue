@@ -160,10 +160,6 @@
       <span v-if="userPhone != ''" class="black--text"> {{ userPhone }} </span>
       <span v-if="userPhone == ''" class="black--text">No phone number</span>
     </v-card-subtitle>
-    <!-- <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Admin: </span
-      ><span class="black--text"> {{ administrator }} </span>
-    </v-card-subtitle> -->
     <v-card-subtitle>
       <span class="black--text font-weight-bold"> User Type: </span
       >
