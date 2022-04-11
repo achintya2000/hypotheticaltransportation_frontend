@@ -4,7 +4,8 @@
       Your Students
       <v-spacer></v-spacer>
       <create-new-student
-        @studentcreated="getRequestAllStudents(); snackbar = true"
+        @studentcreated="getRequestAllStudents(); studentCreatedSnackBar = true"
+        @usercreated="userCreaterSnackBar = true"
         v-if="this.userType!='busDriver'"
       ></create-new-student>
 
@@ -38,7 +39,7 @@
       </template>
     </v-data-table>
     <v-snackbar
-      v-model="snackbar"
+      v-model="studentCreatedSnackBar"
       outlines
       bottom
       color="success"
@@ -50,11 +51,39 @@
           color="white"
           text
           v-bind="attrs"
-          @click="snackbar = false"
+          @click="studentCreatedSnackBar = false"
         >
           Close
         </v-btn>
       </template>
+    </v-snackbar>
+    <v-snackbar
+      v-model="userCreaterSnackBar"
+      outlines
+      color="success"
+    >
+      A new user has been created
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          @click="userCreaterSnackBar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar
+      v-model="loadingStudentsSnackbar"
+      outlines
+      bottom
+      color="blue"
+    >
+      Loading students
+
+      <v-progress-circular indeterminate color="black"></v-progress-circular>
     </v-snackbar>
   </v-card>
 </template>
@@ -68,7 +97,9 @@ export default {
   data() {
     return {
       search: "",
-      snackbar: false,
+      studentCreatedSnackBar: false,
+      userCreaterSnackBar: false,
+      loadingStudentsSnackbar: false,
       userType: "",
       userID: "",
       headers: [
@@ -112,15 +143,18 @@ export default {
       };
     },
     getRequestAllStudents() {
+      this.loadingStudentsSnackbar = true;
       base_endpoint
         .get("/api/student/getall/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
           this.students = response.data.map(this.getDisplayStudent);
+          this.loadingStudentsSnackbar = false;
           //this.$store.state.addresses = response.data;
         })
         .catch((err) => {
+          this.loadingStudentsSnackbar = false;
           this.showSnackBar();
           console.log(err);
         });

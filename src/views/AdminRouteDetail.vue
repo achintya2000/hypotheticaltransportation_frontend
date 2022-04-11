@@ -211,7 +211,13 @@
 
         <v-card-subtitle>
           <span class="black--text font-weight-bold"> In Transit Status: </span
-          ><span class="black--text"> {{ routeInTransit }} </span>
+          >
+          <span text class="black--text" v-if="routeInTransit == true">
+            Bus In Transit
+          </span>
+          <span text class="black--text" v-if="routeInTransit == false">
+            No Bus In Transit
+          </span>
         </v-card-subtitle>
         <v-card-subtitle v-if="this.routeInTransit == true">
           <span class="black--text font-weight-bold"> In Transit Bus: </span
@@ -429,12 +435,16 @@ export default {
           console.log(response);
 
           this.routeName = response.data.name;
-          this.newRouteName = response.data.name;
+          if (this.dialog2 == false) {
+            this.newRouteName = response.data.name;
+            this.newRouteDescription = response.data.description;
+          }
+          
           this.routeSchool = response.data.school;
           this.routeSchoolID = response.data.school_id;
           this.newRouteSchool = response.data.school;
           this.routeDescription = response.data.description;
-          this.newRouteDescription = response.data.description;
+          
           this.oldSchoolID = response.data.school.id;
           this.routeStatus = response.data.complete;
 

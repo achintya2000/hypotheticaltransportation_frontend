@@ -17,11 +17,12 @@
           </v-card-title>
 
           <v-card-text>
-            <v-form ref="form">
+            <v-form ref="form" lazy-validation>
               <v-text-field
                 v-model="busNum"
                 placeholder="Bus Number"
                 @change="forceSubmitRoute = false"
+                :rules="busNumberValidateArray"
               ></v-text-field>
 
               <v-autocomplete
@@ -30,12 +31,14 @@
                 item-text="name"
                 label="Select Route"
                 :items="schools"
+                :rules="busRouteValidateArray"
                 return-object
               ></v-autocomplete>
 
               <v-radio-group
                 v-model="radioGroup"
                 @change="forceSubmitRoute = false"
+                :rules="busDirectionValidateArray"
               >
                 <v-radio :key="1" :label="`To School`" :value="`to`"></v-radio>
                 <v-radio
@@ -143,6 +146,10 @@
         </v-icon>
         <v-icon v-if="item.routeComplete == true"> mdi-check </v-icon>
       </template>
+      <template v-slot:[`item.inTransit`]="{ item }">
+        <div v-if="item.inTransit==true"> In Transit </div>
+        <div v-if="item.inTransit==false"> Not In Transit </div>
+      </template>
     </v-data-table>
   </v-card>
 </template>
@@ -192,6 +199,9 @@ export default {
       cur_routeInTransit: false,
       cur_routeID: 0,
       cur_routeName: "",
+      busNumberValidateArray: [this.busNumberValidate],
+      busRouteValidateArray: [this.busRouteValidate],
+      busDirectionValidateArray: [this.busDirectionValidate],
     };
   },
   methods: {
@@ -201,6 +211,31 @@ export default {
     },
     viewItem(item) {
       this.$router.push({ name: "AdminRouteDetail", query: { id: item.id } });
+    },
+    busNumberValidate() {
+      if (isNaN(this.busNum) == true) {
+        return "Bus number must be a number";
+      } else if (isNaN(this.busNum) == false) {
+        if (parseInt(this.busNum) < 1 || parseInt(this.busNum) > 99999) {
+          return "Bus number must be between 1 and 99999";
+        }
+      } else {
+        return true;
+      }
+    },
+    busRouteValidate() {
+      if (this.selectedRoute == null || this.selectedRoute == "") {
+        return "Bus route is required";
+      } else {
+        return true;
+      }
+    },
+    busDirectionValidate() {
+      if (this.radioGroup == null || this.radioGroup == "") {
+        return "Bus direction is required";
+      } else {
+        return true;
+      }
     },
     getDisplayRoute(item) {
       return {
@@ -239,33 +274,37 @@ export default {
         });
     },
     startRun() {
-      base_endpoint
-        .post(
-          "/api/startrun",
-          {
-            route: this.selectedRoute.id,
-            bus: this.busNum,
-            direction: this.radioGroup,
-            forcesubmit: this.forceSubmitRoute,
-          },
-          {
-            headers: {
-              Authorization: `Token ${this.$store.state.accessToken}`,
-            },
+      if ((this.busNum != null && this.busNum != "") && 
+          (this.selectedRoute != null && this.selectedRoute != "") && 
+          (this.radioGroup != null && this.radioGroup != "")) {
+          base_endpoint
+            .post(
+              "/api/startrun",
+              {
+                route: this.selectedRoute.id,
+                bus: this.busNum,
+                direction: this.radioGroup,
+                forcesubmit: this.forceSubmitRoute,
+              },
+              {
+                headers: {
+                  Authorization: `Token ${this.$store.state.accessToken}`,
+                },
+              }
+            )
+            .then((res) => {
+              console.log(res);
+              if (res.data.error != "") {
+                this.routeErrorText = res.data.error;
+                this.routeError = true;
+                this.forceSubmitRoute = true;
+              } else {
+                this.routeSuccess = true;
+              }
+              this.dialog = false;
+              this.getRouteStatus();
+            });
           }
-        )
-        .then((res) => {
-          console.log(res);
-          if (res.data.error != "") {
-            this.routeErrorText = res.data.error;
-            this.routeError = true;
-            this.forceSubmitRoute = true;
-          } else {
-            this.routeSuccess = true;
-          }
-          this.dialog = false;
-          this.getRouteStatus();
-        });
     },
     stopRun() {
       base_endpoint
@@ -308,12 +347,6 @@ export default {
           .then((response) => {
             this.routeSchool = response.data.school;
             this.routeSchoolID = response.data.school_id;
-            /* this.dict = {
-              order: "School",
-              name: this.routeSchool,
-              id: this.routeSchoolID,
-            };
-            this.stops.push(this.dict); */
           })
           .catch((err) => {
             console.log(err);

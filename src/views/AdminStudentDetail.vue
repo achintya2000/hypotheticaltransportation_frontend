@@ -135,149 +135,158 @@
         </v-card>
       </v-dialog>
     </v-card-title>
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> ID: </span>
-      <span class="black--text" v-if="studentId != null">
-        {{ studentId }}
-      </span>
-      <span class="black--text" v-if="studentId == null || studentId == ''">
-        None
-      </span>
-    </v-card-subtitle>
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Email: </span>
-      <span class="black--text" v-if="studentEmail != null">
-        {{ studentEmail }}
-      </span>
-      <span
-        class="black--text"
-        v-if="studentEmail == null || studentEmail == ''"
-      >
-        None
-      </span>
-    </v-card-subtitle>
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Phone: </span>
-      <span class="black--text" v-if="studentPhone != null">
-        {{ studentPhone }}
-      </span>
-      <span
-        class="black--text"
-        v-if="studentPhone == null || studentPhone == ''"
-      >
-        None
-      </span>
-    </v-card-subtitle>
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> School: </span>
-      <span
-        text
-        @click="viewSchool(studentSchoolId)"
-        class="txt blue--text text--darken-4"
-      >
-        {{ studentSchool }}
-      </span>
-    </v-card-subtitle>
+    <v-row>
+      <v-col>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> ID: </span>
+          <span class="black--text" v-if="studentId != null">
+            {{ studentId }}
+          </span>
+          <span class="black--text" v-if="studentId == null || studentId == ''">
+            None
+          </span>
+        </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> Email: </span>
+          <span class="black--text" v-if="studentEmail != null">
+            {{ studentEmail }}
+          </span>
+          <span
+            class="black--text"
+            v-if="studentEmail == null || studentEmail == ''"
+          >
+            None
+          </span>
+        </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> Phone: </span>
+          <span class="black--text" v-if="studentPhone != null">
+            {{ studentPhone }}
+          </span>
+          <span
+            class="black--text"
+            v-if="studentPhone == null || studentPhone == ''"
+          >
+            None
+          </span>
+        </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> School: </span>
+          <span
+            text
+            @click="viewSchool(studentSchoolId)"
+            class="txt blue--text text--darken-4"
+          >
+            {{ studentSchool }}
+          </span>
+        </v-card-subtitle>
 
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Route: </span>
-      <span
-        text
-        @click="viewRoute(studentRouteId)"
-        class="txt blue--text text--darken-4"
-        v-if="studentRoute != 'No route assigned'"
-      >
-        {{ studentRoute }}
-      </span>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> Route: </span>
+          <span
+            text
+            @click="viewRoute(studentRouteId)"
+            class="txt blue--text text--darken-4"
+            v-if="studentRoute != 'No route assigned'"
+          >
+            {{ studentRoute }}
+          </span>
 
-      <span text class="red--text" v-if="studentRoute == 'No route assigned'">
-        No Route Assigned
-      </span>
-    </v-card-subtitle>
+          <span text class="red--text" v-if="studentRoute == 'No route assigned'">
+            No Route Assigned
+          </span>
+        </v-card-subtitle>
 
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Stop Status: </span>
-      <span
-        text
-        class="black--text"
-        v-if="
-          studentRoute != 'No route assigned' && studentInRangeStatus == true
-        "
-      >
-        Stop(s) in Range
-      </span>
-      <span
-        text
-        class="red--text"
-        v-if="
-          studentRoute != 'No route assigned' && studentInRangeStatus == false
-        "
-      >
-        Stop(s) not in Range
-      </span>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> Stop Status: </span>
+          <span
+            text
+            class="black--text"
+            v-if="
+              studentRoute != 'No route assigned' && studentInRangeStatus == true
+            "
+          >
+            Stop(s) in Range
+          </span>
+          <span
+            text
+            class="red--text"
+            v-if="
+              studentRoute != 'No route assigned' && studentInRangeStatus == false
+            "
+          >
+            Stop(s) not in Range
+          </span>
 
-      <span text class="red--text" v-if="studentRoute == 'No route assigned'">
-        No Route Assigned
-      </span>
-    </v-card-subtitle>
-    <v-data-table :headers="headers2" :items="stopsInRange"> </v-data-table>
+          <span text class="red--text" v-if="studentRoute == 'No route assigned'">
+            No Route Assigned
+          </span>
+        </v-card-subtitle>
+        <v-data-table :headers="headers2" :items="stopsInRange"> </v-data-table>
 
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> In Transit Status: </span
-      ><span class="black--text"> {{ routeInTransit }} </span>
-    </v-card-subtitle>
-    <v-card-subtitle v-if="this.routeInTransit == true">
-      <span class="black--text font-weight-bold"> In Transit Bus: </span
-      ><span class="black--text"> {{ routeInTransitBus }} </span>
-    </v-card-subtitle>
-    <v-card-subtitle v-if="this.routeInTransit == true">
-      <span class="black--text font-weight-bold"> In Transit Driver: </span
-      ><span class="black--text"> {{ routeInTransitDriverName }} </span>
-    </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> In Transit Status: </span
+          ><span class="black--text"> {{ routeInTransit }} </span>
+        </v-card-subtitle>
+        <v-card-subtitle v-if="this.routeInTransit == true">
+          <span class="black--text font-weight-bold"> In Transit Bus: </span
+          ><span class="black--text"> {{ routeInTransitBus }} </span>
+        </v-card-subtitle>
+        <v-card-subtitle v-if="this.routeInTransit == true">
+          <span class="black--text font-weight-bold"> In Transit Driver: </span
+          ><span class="black--text"> {{ routeInTransitDriverName }} </span>
+        </v-card-subtitle>
 
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Parent: </span>
-      <span
-        text
-        @click="viewParent(studentParentId)"
-        class="txt blue--text text--darken-4"
-      >
-        {{ studentParent }}
-      </span>
-    </v-card-subtitle>
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Parent Email: </span>
-      <span class="black--text"> {{ studentParentEmail }} </span>
-    </v-card-subtitle>
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Parent Address: </span>
-      <span class="black--text"> {{ studentParentAddress }} </span>
-    </v-card-subtitle>
-    <v-card-subtitle>
-      <span class="black--text font-weight-bold"> Parent Phone: </span>
-      <span class="black--text"> {{ studentParentPhone }} </span>
-    </v-card-subtitle>
-    <GmapMap
-      ref="mapRef"
-      style="width: 100%; height: 400px"
-      :center="center"
-      :zoom="12"
-    >
-      <GmapMarker
-        :key="index"
-        v-for="(m, index) in markers"
-        :position="m.position"
-        :icon="m.icon"
-        :label="m.label"
-      />
-      <GmapMarker
-        :key="'bus_' + index"
-        v-for="(m, index) in buses"
-        :position="m.position"
-        :icon="m.icon"
-        :label="m.label"
-      />
-    </GmapMap>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> Parent: </span>
+          <span
+            text
+            @click="viewParent(studentParentId)"
+            class="txt blue--text text--darken-4"
+          >
+            {{ studentParent }}
+          </span>
+        </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> Parent Email: </span>
+          <span class="black--text"> {{ studentParentEmail }} </span>
+        </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> Parent Address: </span>
+          <span class="black--text"> {{ studentParentAddress }} </span>
+        </v-card-subtitle>
+        <v-card-subtitle>
+          <span class="black--text font-weight-bold"> Parent Phone: </span>
+          <span class="black--text"> {{ studentParentPhone }} </span>
+        </v-card-subtitle>
+      </v-col>
+      <v-col>
+
+        <GmapMap
+          ref="mapRef"
+          style="width: 100%; height: 400px"
+          :center="center"
+          :zoom="12"
+        >
+          <GmapMarker
+            :key="index"
+            v-for="(m, index) in markers"
+            :position="m.position"
+            :icon="m.icon"
+            :label="m.label"
+          />
+          <GmapMarker
+            :key="'bus_' + index"
+            v-for="(m, index) in buses"
+            :position="m.position"
+            :icon="m.icon"
+            :label="m.label"
+          />
+        </GmapMap>
+      </v-col>
+    </v-row>
+    
+    
   </v-card>
 </template>
 
@@ -379,15 +388,22 @@ export default {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
+           if (this.dialog2 == false) {
+             this.newStudentName = response.data.full_name;
+             this.newStudentId = response.data.sid;
+             this.newStudentParent = response.data.parent;
+             this.newStudentEmail = response.data.studentEmail;
+             this.newStudentPhone = response.data.studentPhone;
+           }
           this.studentName = response.data.full_name;
-          this.newStudentName = response.data.full_name;
+          
           this.studentId = response.data.sid;
-          this.newStudentId = response.data.sid;
+          
           this.studentSchool = response.data.school;
           this.newStudentSchool = response.data.school;
           this.studentRoute = response.data.route;
           this.studentParent = response.data.parent;
-          this.newStudentParent = response.data.parent;
+          
           this.studentParentEmail = response.data.email;
           this.studentParentAddress = response.data.address;
           this.studentParentPhone = response.data.phone;
@@ -397,7 +413,7 @@ export default {
           this.studentInRangeStatus = response.data.inRange;
 
           this.studentEmail = response.data.studentEmail;
-          this.newStudentEmail = response.data.studentEmail;
+          
 
           if (this.studentEmail == "" || this.studentEmail == null) {
             this.studentAccountState = false;
@@ -410,7 +426,7 @@ export default {
           }
 
           this.studentPhone = response.data.studentPhone;
-          this.newStudentPhone = response.data.studentPhone;
+          
 
           this.routeInTransit = response.data.in_transit;
           this.routeInTransitBus = response.data.bus_id;

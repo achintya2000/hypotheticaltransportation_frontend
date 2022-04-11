@@ -11,36 +11,44 @@
         hide-details
       ></v-text-field>
     </v-card-title>
-    <v-data-table
-      :headers="headers"
-      :items="logs"
-      :sort-by="['name']"
-      :search="search"
-      @click:row="viewItem"
-      class="row-pointer"
-    >
-      <template v-slot:[`item.routeComplete`]="{ item }">
-        <v-icon v-if="item.routeComplete == false" color="red">
-          mdi-close
-        </v-icon>
-        <v-icon v-if="item.routeComplete == true"> mdi-check </v-icon>
-      </template>
-    </v-data-table>
+    <v-row>
+      <v-col>
+        <v-data-table
+          :headers="headers"
+          :items="logs"
+          :sort-by="['name']"
+          :search="search"
+          @click:row="viewItem"
+          class="row-pointer"
+        >
+          <template v-slot:[`item.routeComplete`]="{ item }">
+            <v-icon v-if="item.routeComplete == false" color="red">
+              mdi-close
+            </v-icon>
+            <v-icon v-if="item.routeComplete == true"> mdi-check </v-icon>
+          </template>
+        </v-data-table>
+      </v-col>
+      <v-col>
+            <GmapMap
+        style="width: 100%; height: 400px"
+        ref="mapRef"
+        :center="center"
+        :zoom="6"
+      >
+        <GmapMarker
+          :key="index"
+          v-for="(m, index) in markers"
+          :position="m.position"
+          :icon="m.icon"
+          :label="m.label"
+        />
+      </GmapMap>
+      </v-col>
+    </v-row>
+    
 
-    <GmapMap
-      style="width: 100%; height: 400px"
-      ref="mapRef"
-      :center="center"
-      :zoom="6"
-    >
-      <GmapMarker
-        :key="index"
-        v-for="(m, index) in markers"
-        :position="m.position"
-        :icon="m.icon"
-        :label="m.label"
-      />
-    </GmapMap>
+
   </v-card>
 </template>
 
@@ -57,17 +65,16 @@ export default {
       userType: "",
       userID: "",
       headers: [
+        { text: "Bus Number", value: "busNumber" },
         {
           text: "Driver",
           align: "start",
           value: "driverName",
         },
-        { text: "Bus Number", value: "busNumber" },
+        
         { text: "School", value: "schoolName" },
         { text: "Route", value: "routeName" },
         { text: "Direction", value: "direction" },
-        { text: "Start Date & Time", value: "startDateAndTime" },
-        { text: "Duration", value: "duration" },
       ],
       logs: [],
       markers: [],

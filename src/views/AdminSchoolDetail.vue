@@ -152,19 +152,40 @@
         :relevantName="this.schoolName"
       ></send-email>
     </v-card-title>
-    <v-card-subtitle class="black--text">
-      <span class="black--text font-weight-bold"> Address: </span
-      ><span class="black--text"> {{ schoolAddress }} </span>
-    </v-card-subtitle>
+    <v-row>
+      <v-col>
+        <v-card-subtitle class="black--text">
+          <span class="black--text font-weight-bold"> Address: </span
+          ><span class="black--text"> {{ schoolAddress }} </span>
+        </v-card-subtitle>
 
-    <v-card-subtitle class="black--text">
-      <span class="black--text font-weight-bold"> Bus Arrival Time: </span
-      ><span class="black--text"> {{ busArriveTime }} </span>
-    </v-card-subtitle>
-    <v-card-subtitle class="black--text">
-      <span class="black--text font-weight-bold"> Bus Departure Time: </span
-      ><span class="black--text"> {{ busDepTime }} </span>
-    </v-card-subtitle>
+        <v-card-subtitle class="black--text">
+          <span class="black--text font-weight-bold"> Bus Arrival Time: </span
+          ><span class="black--text"> {{ busArriveTime }} </span>
+        </v-card-subtitle>
+        <v-card-subtitle class="black--text">
+          <span class="black--text font-weight-bold"> Bus Departure Time: </span
+          ><span class="black--text"> {{ busDepTime }} </span>
+        </v-card-subtitle>
+      </v-col>
+      <v-col>
+        <GmapMap
+          style="width: 100%; height: 400px"
+          ref="mapRef"
+          :center="center"
+          :zoom="12"
+        >
+          <GmapMarker
+            :key="index"
+            v-for="(m, index) in markers"
+            :position="m.position"
+            :icon="m.icon"
+            :label="m.label"
+          />
+        </GmapMap>
+      </v-col>
+    </v-row>
+    
     <v-card-title> Bus Routes </v-card-title>
 
     <v-data-table
@@ -204,20 +225,6 @@
         <v-icon v-if="item.studentInRange == true"> mdi-check </v-icon>
       </template>
     </v-data-table>
-    <GmapMap
-      style="width: 100%; height: 400px"
-      ref="mapRef"
-      :center="center"
-      :zoom="12"
-    >
-      <GmapMarker
-        :key="index"
-        v-for="(m, index) in markers"
-        :position="m.position"
-        :icon="m.icon"
-        :label="m.label"
-      />
-    </GmapMap>
   </v-card>
 </template>
 

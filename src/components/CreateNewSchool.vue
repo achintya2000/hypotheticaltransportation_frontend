@@ -74,6 +74,7 @@
             @click="
               dialog = false;
               reset();
+              resetValidation();
             "
           >
             Cancel
@@ -155,6 +156,10 @@ export default {
         )
         .then((response) => {
           this.postResponse = response.data;
+          this.$emit(
+                      "schoolcreated",
+                      "A new school has been created and sent to database"
+                    );
         })
         .catch((err) => {
           this.showSnackBarAddress();
@@ -178,7 +183,11 @@ export default {
       }
     },
     reset() {
-      this.$refs.form.reset();
+      //this.$refs.form.reset();
+      this.name = "";
+      this.address = "";
+      this.busArriveTime = null;
+      this.busDepTime = null;
     },
     resetValidation() {
       this.$refs.form.resetValidation();

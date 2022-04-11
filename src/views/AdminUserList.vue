@@ -4,7 +4,8 @@
       Your Users
       <v-spacer></v-spacer>
       <create-new-student
-        @usercreated="getRequestAllUsers(); snackbar = true"
+        @usercreated="getRequestAllUsers(); userCreaterSnackBar = true"
+        @studentcreated="studentCreatedSnackBar = true"
         v-if="this.userType!='busDriver'"
       ></create-new-student>
       <send-email :typeOfEmail="'allGA'"
@@ -39,7 +40,7 @@
       </template>
     </v-data-table>
     <v-snackbar
-      v-model="snackbar"
+      v-model="userCreaterSnackBar"
       outlines
       color="success"
     >
@@ -50,11 +51,40 @@
           color="white"
           text
           v-bind="attrs"
-          @click="snackbar = false"
+          @click="userCreaterSnackBar = false"
         >
           Close
         </v-btn>
       </template>
+    </v-snackbar>
+    <v-snackbar
+      v-model="studentCreatedSnackBar"
+      outlines
+      bottom
+      color="success"
+    >
+      A new student has been created
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          text
+          v-bind="attrs"
+          @click="studentCreatedSnackBar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar
+      v-model="loadingUsersSnackbar"
+      outlines
+      bottom
+      color="blue"
+    >
+      Loading users
+
+      <v-progress-circular indeterminate color="black"></v-progress-circular>
     </v-snackbar>
   </v-card>
 </template>
@@ -72,7 +102,9 @@ export default {
   data() {
     return {
       search: "",
-      snackbar: false,
+      userCreaterSnackBar: false,
+      studentCreatedSnackBar: false,
+      loadingUsersSnackbar: false,
       userType: "",
       userID: "",
       headers: [
@@ -113,14 +145,17 @@ export default {
       };
     },
     getRequestAllUsers() {
+      this.loadingUsersSnackbar = true;
       base_endpoint
         .get("/api/profile/getall/" + this.userID, {
           headers: { Authorization: `Token ${this.$store.state.accessToken}` },
         })
         .then((response) => {
+          this.loadingUsersSnackbar = false;
           this.profiles = response.data.map(this.getDisplayUser);
         })
         .catch((err) => {
+          this.loadingUsersSnackbar = false;
           this.showSnackBar();
           console.log(err);
         });

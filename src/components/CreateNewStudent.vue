@@ -203,8 +203,6 @@
             @click="
               dialog = false;
               reset();
-              userCheckbox = false;
-              studentCheckbox = false;
             "
           >
             Cancel
@@ -375,10 +373,7 @@ export default {
     submitData() {
       if (this.userCheckbox == true) {
         console.log("Got into 'this.userCheckbox == true' if statement");
-        if (
-          this.userType == "schoolStaff" &&
-          this.allParentEmails.includes(this.parentEmail)
-        ) {
+        if (this.userType == "schoolStaff" && this.allParentEmails.includes(this.parentEmail)) {
           console.log(
             "Got into the if statement for school staff parent email weird thing"
           );
@@ -411,6 +406,7 @@ export default {
                     }
                   )
                   .then(() => {
+                    this.dialog = false;
                     this.$emit(
                       "studentcreated",
                       "A new student has been created and sent to database"
@@ -453,6 +449,8 @@ export default {
             .then((response) => {
               console.log(response.data.id);
               this.newParentID = response.data.id;
+              this.getRequestAllParentsWithUserID();
+              this.dialog = false;
 
               this.$emit(
                 "usercreated",
@@ -480,6 +478,7 @@ export default {
                     }
                   )
                   .then(() => {
+                    this.dialog = false;
                     this.$emit(
                       "studentcreated",
                       "A new student has been created and sent to database"
@@ -499,6 +498,7 @@ export default {
       } else {
         console.log("GOT INTO THE ELSE STATMENT");
         if (this.isStudentOkayToSubmitStudentOnly()) {
+          console.log("Now posting with:");
           base_endpoint
             .post(
               "/api/student/create",
@@ -518,6 +518,7 @@ export default {
               }
             )
             .then(() => {
+              this.dialog = false;
               this.$emit(
                 "studentcreated",
                 "usercreated",
@@ -556,12 +557,34 @@ export default {
       ) {
         this.$refs.form.validate();
         this.submitData();
-        this.dialog = false;
+        
       }
     },
     reset() {
-      this.$refs.form.reset();
+      //this.$refs.form.reset();
+      this.parentName = "";
+      this.parentEmail = "";
+      this.parentPhone = "";
+      this.passType2 = "";
+      if (this.studentCheckbox) {
+        this.userRoleType = "parent";
+      } else {
+        this.userRoleType = "";
+      }
+      this.selectedSchoolsForSchoolStaff = [];
+      this.parentAddress = "";
+      this.studentName = "";
+      this.sid = "";
+      this.parentSelected = "";
+      this.schoolSelected = "";
+      this.studentAccountState = "false";
+      this.studentEmail = "";
+      this.studentPhone = "";
+
       this.userAdminCheckbox = false;
+      this.userCheckbox = false;
+      this.studentCheckbox = false;
+      this.studentCheckbox = this.userType == "schoolStaff";
     },
     resetValidation() {
       this.$refs.form.resetValidation();
@@ -704,8 +727,7 @@ export default {
     },
     studentParentValidate() {
       if (
-        this.studentCheckbox == true &&
-        this.userCheckbox == false &&
+        this.studentCheckbox == true && this.userCheckbox == false &&
         (this.parentSelected == null || this.parentSelected == "")
       ) {
         return "Student's parent is required";
@@ -713,11 +735,8 @@ export default {
         return true;
       }
     },
-    updateUserRole() {},
     isStudentOkayToSubmit() {
       console.log("Checking for isStudentOkayToSubmit()");
-      console.log(this.studentEmail != null && this.studentEmail != "");
-      console.log(this.newParentID);
       console.log(
         this.studentName != null &&
           this.studentName != "" &&
@@ -729,15 +748,10 @@ export default {
             this.studentAccountState == "false")
       );
       return (
-        this.studentName != null &&
-        this.studentName != "" &&
-        this.schoolSelected.id != null &&
-        this.schoolSelected.id != "" &&
-        this.newParentID != null &&
-        this.newParentID != "" &&
-        ((this.studentEmail != null && this.studentEmail != "") ||
-          this.studentAccountState == "false")
-      );
+        this.studentName != null && this.studentName != "" &&
+        this.schoolSelected.id != null && this.schoolSelected.id != "" &&
+        ((this.newParentID != null && this.newParentID != "") || (this.theSpeicalID != null && this.theSpeicalID != "")) &&
+        ((this.studentEmail != null && this.studentEmail != "") || this.studentAccountState == "false"));
     },
     isStudentOkayToSubmitStudentOnly() {
       console.log("Checking for isStudentOkayToSubmitStudentOnly()");
@@ -752,15 +766,10 @@ export default {
             this.studentAccountState == "false")
       );
       return (
-        this.studentName != null &&
-        this.studentName != "" &&
-        this.schoolSelected.id != null &&
-        this.schoolSelected.id != "" &&
-        this.parentSelected.id != null &&
-        this.parentSelected.id != "" &&
-        ((this.studentEmail != null && this.studentEmail != "") ||
-          this.studentAccountState == "false")
-      );
+        this.studentName != null && this.studentName != "" &&
+        this.schoolSelected.id != null && this.schoolSelected.id != "" &&
+        this.parentSelected.id != null && this.parentSelected.id != "" &&
+        ((this.studentEmail != null && this.studentEmail != "") || this.studentAccountState == "false"));
     },
     updateUserRoleType() {
       if (this.studentCheckbox) {
@@ -774,7 +783,9 @@ export default {
     this.getRequestAllSchools();
     this.getRequestAllParentsWithUserID();
     this.getRequestAllParents();
+   
     this.studentCheckbox = this.userType == "schoolStaff";
+     this.updateUserRoleType();
   },
   computed: {
     //...mapGetters(["loggedIn", "isAdmin", "loggedInUserID","loggedInUserType"]),

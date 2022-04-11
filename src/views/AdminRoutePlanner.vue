@@ -948,6 +948,7 @@ export default {
             console.log(err);
           });
       }
+      this.stopName = "";
       this.canPlaceStopMarker = false;
     },
     enableStopMarkerCreation() {

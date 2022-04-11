@@ -178,7 +178,12 @@
     </v-card-subtitle>
     <v-card-subtitle v-if="this.userRoleType=='busDriver'">
       <span class="black--text font-weight-bold"> In Transit Status: </span
-      ><span class="black--text"> {{ busDriverInTransit }} </span>
+      ><span text class="black--text" v-if="busDriverInTransit == true">
+            Bus In Transit
+          </span>
+          <span text class="black--text" v-if="busDriverInTransit == false">
+            No Bus In Transit
+          </span>
     </v-card-subtitle>
     <v-card-subtitle v-if="this.userRoleType=='busDriver' && this.busDriverInTransit == true">
       <span class="black--text font-weight-bold"> In Transit Bus: </span
@@ -191,7 +196,7 @@
          {{ busDriverInTransitRouteName }} 
       </span>  
     </v-card-subtitle>
-    <v-card-title> Students </v-card-title>
+    <v-card-title v-if="this.userRoleType=='parent'"> Students </v-card-title>
     <v-data-table
       :headers="headers"
       :items="students"
@@ -199,6 +204,7 @@
       :sort-by="['studentName']"
       @click:row="viewStudent"
       class="row-pointer"
+      v-if="this.userRoleType=='parent'"
     >
       <template v-slot:[`item.studentRoute`]="{ item }">
         <div v-if="item.studentRoute">{{ item.studentRoute }}</div>
@@ -339,11 +345,7 @@ export default {
       this.$router.push({ name: "AdminRouteDetail", query: { id: item } });
     },
     getDisplaySchool(item) {
-      return {
-        id: item.id,
-        name: item.name,
-        address: item.address
-      };
+      return item.name;
     },
     getUserInfo() {
       base_endpoint
@@ -370,7 +372,7 @@ export default {
           this.managedSchools = response.data.managed_schools.map(this.getDisplaySchool);
           this.newManagedSchools = response.data.managed_schools.map(this.getDisplaySchool);
           for (let i = 0; i < this.managedSchools.length; i++) {
-            this.formattedSchools = this.formattedSchools + this.managedSchools[i].name;
+            this.formattedSchools = this.formattedSchools + this.managedSchools[i];
             if (this.managedSchools[i+1] != null) {
               this.formattedSchools = this.formattedSchools + ", ";
             }
@@ -412,8 +414,6 @@ export default {
     },
 
     updateUser() {
-      this.dialog2 = false;
-      console.log(this.newUserRoleType);
       base_endpoint
         .patch(
           "/api/profile/update/" + this.$route.query.id,
@@ -437,6 +437,7 @@ export default {
         .then((response) => {
           console.log("Got here");
           console.log(response);
+          this.dialog2 = false;
           this.full_name = this.newFull_name;
           this.address = this.newCurrentAddress;
           this.administrator = this.newAdministrator;
@@ -451,7 +452,7 @@ export default {
     },
     userPhoneValidate() {
       if (
-        (this.parentPhone == null || this.parentPhone == "")
+        (this.newPhone == null || this.newPhone == "")
       ) {
         return "Parent phone number is required";
       } else {
