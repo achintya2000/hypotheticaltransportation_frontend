@@ -1203,7 +1203,7 @@ export default {
       if (
         (this.editedStudent.student_email == null || this.editedStudent.student_email == "")
       ) {
-        return "Student email is required";
+        return true;
       } else {
           const splitStringAt = this.editedStudent.student_email.split("@");
           if (splitStringAt.length != 2) {

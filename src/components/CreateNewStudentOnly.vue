@@ -165,6 +165,9 @@ export default {
             sid: this.sid,
             school: this.schoolSelected.id,
             parent: this.$route.query.id,
+            createProfile: this.studentAccountState,
+            email: this.studentEmail,
+            phone: this.studentPhone,
           },
           {
             headers: {

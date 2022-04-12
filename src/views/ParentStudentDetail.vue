@@ -99,6 +99,7 @@ export default {
         },
         { text: "Pick Up Time", align: "start", value: "pickupTime" },
         { text: "Drop Off Time", align: "start", value: "dropoffTime" },
+        { text: "ETA", align: "start", value: "eta" },
       ],
       schoolItems: [],
       parentItems: [],
@@ -221,6 +222,7 @@ export default {
     getDisplayStops(item) {
       var pTime = moment.utc(item.pickupTime);
       var dTime = moment.utc(item.dropoffTime);
+      var etaTime = moment.utc(item.eta);
 
       return {
         name: item.name,
@@ -229,6 +231,7 @@ export default {
         dropoffTime: dTime.local().format("h:mm A"),
         icon: this.stopMapMarker.icon,
         label: this.stopMapMarker.label,
+        eta: etaTime.local().format("h:mm A"),
       };
     },
     getInRangeStops() {
