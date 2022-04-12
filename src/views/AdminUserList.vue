@@ -81,6 +81,7 @@
       outlines
       bottom
       color="blue"
+      timeout=-1
     >
       Loading users
 
