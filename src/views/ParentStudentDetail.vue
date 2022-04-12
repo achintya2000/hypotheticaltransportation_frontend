@@ -223,16 +223,29 @@ export default {
       var pTime = moment.utc(item.pickupTime);
       var dTime = moment.utc(item.dropoffTime);
       var etaTime = moment.utc(item.eta);
-
-      return {
-        name: item.name,
-        position: { lat: item.latitude, lng: item.longitude },
-        pickupTime: pTime.local().format("h:mm A"),
-        dropoffTime: dTime.local().format("h:mm A"),
-        icon: this.stopMapMarker.icon,
-        label: this.stopMapMarker.label,
-        eta: etaTime.local().format("h:mm A"),
-      };
+      var etaMessage = item.etaMessage;
+      if (item.eta == null) {
+        return {
+          name: item.name,
+          position: { lat: item.latitude, lng: item.longitude },
+          pickupTime: pTime.local().format("h:mm A"),
+          dropoffTime: dTime.local().format("h:mm A"),
+          icon: this.stopMapMarker.icon,
+          label: this.stopMapMarker.label,
+          eta: etaMessage,
+        };
+      } else {
+        return {
+          name: item.name,
+          position: { lat: item.latitude, lng: item.longitude },
+          pickupTime: pTime.local().format("h:mm A"),
+          dropoffTime: dTime.local().format("h:mm A"),
+          icon: this.stopMapMarker.icon,
+          label: this.stopMapMarker.label,
+          eta: etaTime.local().format("h:mm A"),
+          
+        };
+      }
     },
     getInRangeStops() {
       base_endpoint
