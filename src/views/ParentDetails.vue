@@ -70,12 +70,13 @@
       ><span class="black--text"> {{ userAddress }} </span>
     </v-card-subtitle>
 
-    <v-card-title>Your Students:</v-card-title>
+    <v-card-title v-if="this.userRoleType=='parent'">Your Students:</v-card-title>
     <v-data-table
       :headers="headers"
       :items="students"
       :search="search"
       @click:row="viewItem"
+      v-if="this.userRoleType=='parent'"
       class="row-pointer"
     >
       <template v-slot:[`item.route`]="{ item }">
@@ -108,6 +109,7 @@ export default {
       reveal: false,
       snackbar: false,
       search: "",
+      userRoleType: "",
       newPassword: "",
       newPasswordRules: [(v) => !!v || "Name is required"],
       newPassword2: "",
@@ -155,6 +157,7 @@ export default {
           this.userName = response.data.full_name;
           this.userAddress = response.data.address;
           this.administrator = response.data.is_superuser;
+          this.userRoleType = response.data.type;
         })
         .catch((err) => {
           this.showSnackBar();
