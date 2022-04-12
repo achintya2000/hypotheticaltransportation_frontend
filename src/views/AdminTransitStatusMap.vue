@@ -22,34 +22,33 @@
           class="row-pointer"
         >
           <template v-slot:[`item.routeName`]="{ item }">
-            <span text 
-            @click="viewRoute(item.routeID)"
-            class="txt blue--text text--darken-4">
-            {{ item.routeName }} 
+            <span
+              text
+              @click="viewRoute(item.routeID)"
+              class="txt blue--text text--darken-4"
+            >
+              {{ item.routeName }}
             </span>
           </template>
         </v-data-table>
       </v-col>
       <v-col>
-            <GmapMap
-        style="width: 100%; height: 400px"
-        ref="mapRef"
-        :center="center"
-        :zoom="6"
-      >
-        <GmapMarker
-          :key="index"
-          v-for="(m, index) in markers"
-          :position="m.position"
-          :icon="m.icon"
-          :label="m.label"
-        />
-      </GmapMap>
+        <GmapMap
+          style="width: 100%; height: 400px"
+          ref="mapRef"
+          :center="center"
+          :zoom="6"
+        >
+          <GmapMarker
+            :key="index"
+            v-for="(m, index) in markers"
+            :position="m.position"
+            :icon="m.icon"
+            :label="m.label"
+          />
+        </GmapMap>
       </v-col>
     </v-row>
-    
-
-
   </v-card>
 </template>
 
@@ -72,7 +71,7 @@ export default {
           align: "start",
           value: "driverName",
         },
-        
+
         { text: "School", value: "schoolName" },
         { text: "Route", value: "routeName" },
         { text: "Direction", value: "direction" },
@@ -87,6 +86,9 @@ export default {
     ...mapActions(["snackBar"]),
     showSnackBar() {
       this.snackBar("Uh-Oh! Something Went Wrong!");
+    },
+    showSnackBar2() {
+      this.snackBar("Some bus locations have not been set.");
     },
     viewRoute(item) {
       this.$router.push({ name: "AdminRouteDetail", query: { id: item } });
@@ -131,20 +133,26 @@ export default {
           this.markers = [];
 
           this.logs.forEach((e) => {
-            this.markers.push({
-              position: { lat: e.lat, lng: e.lng },
-              icon: {
-                path: this.google.maps.SymbolPath.CIRCLE,
-                scale: 20,
-                fillOpacity: 1,
-                strokeWeight: 2,
-                fillColor: "#5384ED",
-                strokeColor: "#ffffff",
-              },
-              label: {
-                text: e.busNumber.toString(),
-              },
-            });
+            if (e.lat != null && e.lng != null) {
+              this.markers.push({
+                position: { lat: e.lat, lng: e.lng },
+                icon: {
+                  path: this.google.maps.SymbolPath.CIRCLE,
+                  scale: 20,
+                  fillOpacity: 1,
+                  strokeWeight: 2,
+                  fillColor: "#5384ED",
+                  strokeColor: "#ffffff",
+                },
+                label: {
+                  text: e.busNumber.toString(),
+                },
+              });
+            } else {
+              if (this.firstBusLoc) {
+                this.showSnackBar2();
+              }
+            }
           });
 
           if (this.firstBusLoc) {
@@ -189,7 +197,7 @@ export default {
   cursor: pointer;
 }
 .txt:hover {
-          text-decoration: underline;
-          cursor: pointer;
-      }
+  text-decoration: underline;
+  cursor: pointer;
+}
 </style>

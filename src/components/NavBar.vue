@@ -113,7 +113,9 @@ export default {
         {
           title: "Your Details",
           to: "/parentdetails",
-          show: this.loggedIn,
+          show:
+            this.loggedIn &&
+            window.localStorage.getItem("userType") != "student",
         },
         {
           title: "Import",
